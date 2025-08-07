@@ -18,7 +18,7 @@ const Header: React.FC = () => {
           >
             <img 
               src={process.env.PUBLIC_URL + '/images/logo/logo.svg'} 
-              alt="TRADEFOOX Logo" 
+              alt="One Media Company Logo" 
               className="h-12 w-auto"
             />
           </div>
