@@ -36,7 +36,7 @@ Add these secrets to your GitHub repository (Settings > Secrets and variables > 
 
 1. **Push to main branch** - Triggers automatic deployment
 2. **GitHub Actions builds** - Runs `npm run build`
-3. **Files uploaded** - Deployed to `/dayone-mediagroup.com/`
+3. **Files uploaded** - Deployed to `/www/htdocs/w00ac8e2/dayone-mediagroup.com/`
 4. **Site updated** - Available at `https://dayone-mediagroup.com`
 
 ### Manual Deployment
