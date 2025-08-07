@@ -1,0 +1,283 @@
+{
+  "hero": {
+    "badge": "🌍 TRADEFOOX – Die Plattform für Handel, soziale Medien & Kommunikation in einer App",
+    "title": "Investieren Sie in die europäische Antwort auf",
+    "titleHighlight": "Super-Apps",
+    "subtitle": "TRADEFOOX kombiniert E-Commerce, Kurzvideos, soziale Interaktion und Messaging – eine All-in-One-App für Privatpersonen, Vereine und Unternehmen.",
+    "cta": {
+      "pitchDeck": "Pitch Deck anfordern",
+      "watchVideo": "Intro-Video ansehen",
+      "getInTouch": "Kontakt aufnehmen"
+    },
+    "stats": {
+      "languages": "Sprachen",
+      "users": "Aktive Nutzer",
+      "features": "Kernfunktionen"
+    }
+  },
+  "vision": {
+    "title": "🚀 Unsere Vision",
+    "tagline": "\"Eine App. Alle Möglichkeiten.\"",
+    "description": "Unsere Vision ist es, eine europäische Plattform zu entwickeln, die das Beste aus Online-Marktplatz, sozialem Netzwerk und Content-Erstellung kombiniert. TRADEFOOX soll eine Alternative zu asiatischen und US-amerikanischen Super-Apps sein – modern, datenschutzkonform und nutzerzentriert.",
+    "cards": {
+      "european": {
+        "title": "Europäische Alternative",
+        "description": "Entwicklung einer europäischen Super-App, die Privatsphäre und Datenschutzbestimmungen respektiert und gleichzeitig erstklassige Funktionalität bietet."
+      },
+      "global": {
+        "title": "Globale Skalierung",
+        "description": "Entwickelt für internationale Expansion mit mehrsprachiger Unterstützung und Lokalisierung für europäische, lateinamerikanische und afrikanische Märkte."
+      },
+      "userCentric": {
+        "title": "Nutzerzentriert",
+        "description": "Privatsphäre-zuerst Ansatz mit transparenter Datenverarbeitung und Nutzerkontrolle über persönliche Informationen."
+      }
+    }
+  },
+  "features": {
+    "title": "🛠️ Was macht TRADEFOOX einzigartig",
+    "subtitle": "Sechs Kernfunktionen, die eine umfassende Plattform für modernes digitales Leben schaffen",
+    "items": {
+      "marketplace": {
+        "title": "Marktplatz",
+        "description": "Verkauf neuer und gebrauchter Produkte, einschließlich Lebensmittel"
+      },
+      "listings": {
+        "title": "Kleinanzeigen",
+        "description": "Jobs, Immobilien, Dienstleistungen, Fahrzeuge – wie eBay Kleinanzeigen"
+      },
+      "watchFeed": {
+        "title": "Watch Feed",
+        "description": "Kurzvideos à la TikTok & YouTube Shorts – mit Creator-Monetarisierung"
+      },
+      "newsFeed": {
+        "title": "News Feed",
+        "description": "Wählbares Layout (klassisch oder Instagram-Design)"
+      },
+      "messenger": {
+        "title": "Messenger & Gruppen",
+        "description": "Soziale Interaktion und Community-Features"
+      },
+      "ads": {
+        "title": "TRADEFOOX Ads",
+        "description": "Integriertes Werbenetzwerk für zielgerichtete Reichweite"
+      }
+    },
+    "cta": {
+      "title": "All-in-One Plattform",
+      "description": "Vom Einkaufen bis zum Sozialisieren, von der Content-Erstellung bis zur Kommunikation – alles was Sie brauchen in einer nahtlosen Erfahrung."
+    }
+  },
+  "globalScale": {
+    "title": "🌐 Bereit für globale Skalierung",
+    "subtitle": "Von Grund auf für internationale Expansion entwickelt mit umfassender mehrsprachiger Unterstützung und plattformübergreifender Verfügbarkeit.",
+    "features": {
+      "languages": {
+        "title": "Plattform in fünf Sprachen",
+        "description": "Deutsch, Englisch, Spanisch, Französisch, Portugiesisch mit vollständiger i18n-Implementierung"
+      },
+      "strategy": {
+        "title": "Internationalisierungsstrategie",
+        "description": "Vorbereitet für Europa, Lateinamerika und Afrika mit lokalisierten Inhalten und Features"
+      },
+      "mobile": {
+        "title": "Native mobile Apps",
+        "description": "iOS & Android Apps mit vollständiger Feature-Parität und optimierter Performance"
+      },
+      "web": {
+        "title": "Web-Plattform",
+        "description": "Vollwertige Web-Anwendung, die von jedem Gerät aus mit responsivem Design zugänglich ist"
+      }
+    },
+    "stats": {
+      "languages": "Sprachen",
+      "continents": "Kontinente",
+      "mobileOS": "Mobile OS",
+      "webApp": "Web App"
+    }
+  },
+  "traction": {
+    "title": "📈 Traktion & Meilensteine",
+    "subtitle": "Unser Weg vom Konzept zur Live-Plattform mit messbarem Fortschritt und Erfolgen",
+    "milestones": {
+      "launch": {
+        "title": "Soft Launch in der DACH-Region",
+        "description": "Erfolgreich abgeschlossen"
+      },
+      "users": {
+        "title": "Mehrere tausend registrierte Nutzer",
+        "description": "Frühe Wachstumsphase"
+      },
+      "ads": {
+        "title": "TRADEFOOX Ads Modul aktiv",
+        "description": "Erste Kampagnen laufen"
+      },
+      "beta": {
+        "title": "Beta abgeschlossen",
+        "description": "Marktplatz in React Native, produktiver Rollout beginnt in Woche 6"
+      },
+      "sales": {
+        "title": "Lokales Vertriebsteam in Entwicklung",
+        "description": "Start: Chemnitz, Sachsen"
+      },
+      "creator": {
+        "title": "Creator-Profile und Monetarisierung",
+        "description": "Integration im Watch Feed geplant"
+      }
+    },
+    "cta": {
+      "title": "Bereit für Investitionen",
+      "description": "Mit bewiesener Traktion und einer skalierbaren Plattform sind wir bereit, das Wachstum mit strategischen Investment-Partnern zu beschleunigen."
+    }
+  },
+  "team": {
+    "title": "👤 Gründer & Team",
+    "subtitle": "Lernen Sie die visionäre Führung und das interdisziplinäre Team kennen, das die Zukunft digitaler Plattformen aufbaut",
+    "founder": {
+      "name": "Ronny Streit",
+      "title": "Gründer & CEO",
+      "description": "Visionär mit Fokus auf Technologie, Plattform-Ökonomie und App-Architektur. Führt die Entwicklung einer skalierbaren Plattform mit europäischer DNA.",
+      "expertise": {
+        "economics": "Plattform-Ökonomie Experte",
+        "tech": "Tech-Architektur Spezialist",
+        "growth": "Wachstumsstrategie Leiter"
+      }
+    },
+    "interdisciplinary": {
+      "title": "Interdisziplinäres Team",
+      "description": "Mit einem interdisziplinären Team aus Produktdesign, Softwareentwicklung und Vertrieb baut TRADEFOOX eine skalierbare Plattform mit europäischer DNA.",
+      "roles": {
+        "design": {
+          "title": "Produktdesign",
+          "description": "User Experience & Interface Design"
+        },
+        "development": {
+          "title": "Softwareentwicklung",
+          "description": "Full-Stack & Mobile Development"
+        },
+        "sales": {
+          "title": "Vertrieb & Wachstum",
+          "description": "Marktexpansion & Partnerschaften"
+        }
+      }
+    },
+    "dna": {
+      "title": "Europäische DNA",
+      "description": "Unser Team kombiniert tiefgreifende technische Expertise mit einem starken Verständnis europäischer Marktdynamiken und regulatorischer Anforderungen.",
+      "expertise": {
+        "title": "Vielfältige Expertise",
+        "description": "Funktionsübergreifendes Team mit komplementären Fähigkeiten"
+      }
+    }
+  },
+  "investment": {
+    "title": "🤝 Strategische Investoren willkommen",
+    "subtitle": "Wir öffnen derzeit eine Runde für Partner, die mit uns zusammenarbeiten möchten, um die Zukunft der digitalen Plattform-Ökonomie in Europa zu gestalten.",
+    "opportunity": {
+      "title": "Investment-Möglichkeit",
+      "round": "Series A",
+      "focus": "Europäische Expansion",
+      "status": "Live & Skalierbar",
+      "revenue": "3 Aktive Modelle"
+    },
+    "reasons": {
+      "title": "Warum jetzt investieren?",
+      "items": {
+        "platform": {
+          "title": "Plattform bereits live & skalierbar",
+          "description": "Bewiesener Tech-Stack mit nachgewiesenem Wachstumspotenzial"
+        },
+        "monetization": {
+          "title": "Monetarisierungsmodelle aktiv",
+          "description": "Werbung, Marktplatz, Premium-Features generieren Umsatz"
+        },
+        "privacy": {
+          "title": "Europäische Positionierung & Datenschutz",
+          "description": "DSGVO-konform mit starkem Privatsphäre-Fokus"
+        },
+        "growth": {
+          "title": "Große Wachstumschancen",
+          "description": "Social Commerce & Creator Economy Expansionspotenzial"
+        },
+        "access": {
+          "title": "Früher Zugang",
+          "description": "Exklusive Investment-Möglichkeiten in europäischer Super-App"
+        }
+      }
+    },
+    "contact": {
+      "title": "Loslegen",
+      "description": "Fordern Sie unser Pitch Deck an oder vereinbaren Sie eine erste Beratung, um mehr über unsere Investment-Möglichkeit zu erfahren.",
+      "email": "E-Mail: invest@tradefoox.com",
+      "schedule": "Beratung vereinbaren"
+    },
+    "market": {
+      "title": "Marktchance",
+      "description": "Der europäische Super-App-Markt ist unterversorgt. TRADEFOOX ist positioniert, diese Chance mit einem Privatsphäre-zuerst, europäischen Ansatz zu nutzen."
+    }
+  },
+  "contact": {
+    "title": "📥 Kontaktieren Sie uns jetzt",
+    "subtitle": "Möchten Sie unser Pitch Deck erhalten oder eine unverbindliche Diskussion führen? Dann schreiben Sie uns direkt oder besuchen Sie unser LinkedIn-Profil für Updates & Einblicke.",
+    "touch": {
+      "title": "Kontakt aufnehmen",
+      "email": "E-Mail",
+      "schedule": "Meeting vereinbaren",
+      "linkedin": "LinkedIn",
+      "linkedinDesc": "Besuchen Sie unser Profil für Updates"
+    },
+    "why": {
+      "title": "Warum TRADEFOOX?",
+      "items": [
+        "Europäische Alternative zu asiatischen/US-Super-Apps",
+        "DSGVO-konform mit Privatsphäre-zuerst Ansatz",
+        "Live-Plattform mit bewiesener Traktion",
+        "Mehrere Umsatzströme bereits aktiv"
+      ]
+    },
+    "request": {
+      "title": "Informationen anfordern",
+      "description": "Erhalten Sie unser umfassendes Pitch Deck mit detaillierten Finanzdaten, Marktanalyse und Wachstumsprognosen.",
+      "pitchDeck": "Pitch Deck anfordern",
+      "discussion": "Diskussion vereinbaren"
+    },
+    "steps": {
+      "title": "Nächste Schritte",
+      "items": [
+        "Erste Beratungsgespräch",
+        "Pitch Deck Review",
+        "Due Diligence Prozess",
+        "Investment-Partnerschaft"
+      ]
+    }
+  },
+  "footer": {
+    "description": "Die europäische Antwort auf Super-Apps. Kombiniert E-Commerce, soziale Medien & Kommunikation in einer Privatsphäre-zuerst Plattform.",
+    "investorArea": "Investor-Bereich",
+    "legal": "Rechtliches",
+    "links": {
+      "vision": "Vision",
+      "features": "Features",
+      "traction": "Traction",
+      "team": "Team",
+      "contact": "Kontakt",
+      "imprint": "Impressum",
+      "privacy": "Datenschutz",
+      "faq": "Investor FAQ",
+      "terms": "Nutzungsbedingungen"
+    },
+    "copyright": "© 2024 TRADEFOOX. Alle Rechte vorbehalten.",
+    "legalLinks": {
+      "privacy": "Datenschutzerklärung",
+      "cookies": "Cookie-Richtlinie",
+      "accessibility": "Barrierefreiheit"
+    }
+  },
+  "navigation": {
+    "vision": "Vision",
+    "features": "Features",
+    "traction": "Traction",
+    "team": "Team",
+    "getInTouch": "Kontakt aufnehmen"
+  }
+} 
