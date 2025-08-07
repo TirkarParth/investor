@@ -16,6 +16,7 @@ A modern, responsive investor landing page for TRADEFOOX - the European answer t
 ### Prerequisites
 
 - Node.js (v16 or higher)
+
 - npm or yarn
 
 ### Installation
