@@ -6,25 +6,25 @@ const SelectInvestors: React.FC = () => {
       name: 'SPK Chemnitz',
       url: 'https://www.spk-chemnitz.de/de/home.html',
       description: 'Sparkasse Chemnitz',
-      logo: '/images/investors/sparkasse.svg'
+      logo: process.env.PUBLIC_URL + '/images/investors/sparkasse.svg'
     },
     {
       name: 'Volksbank Chemnitz',
       url: 'https://www.volksbank-chemnitz.de/startseite.html',
       description: 'Volksbank Chemnitz',
-      logo: '/images/investors/volksbank.png'
+      logo: process.env.PUBLIC_URL + '/images/investors/volksbank.png'
     },
     {
       name: 'Merkur Privatbank',
       url: 'https://www.merkur-privatbank.de/',
       description: 'Merkur Privatbank',
-      logo: '/images/investors/MB_Schriftzug-pdm.jpg'
+      logo: process.env.PUBLIC_URL + '/images/investors/MB_Schriftzug-pdm.jpg'
     },
     {
       name: 'SAB Sachsen',
       url: 'https://www.sab.sachsen.de/sab-sachsenkredit-universal-neu?gad_source=1',
       description: 'SAB Sachsenkredit Universal',
-      logo: '/images/investors/Sächsische_Aufbaubank_201x_logo.svg.png'
+      logo: process.env.PUBLIC_URL + '/images/investors/Sächsische_Aufbaubank_201x_logo.svg.png'
     }
   ];
 
