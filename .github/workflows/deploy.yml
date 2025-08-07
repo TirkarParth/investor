@@ -65,4 +65,5 @@ jobs:
           server-dir: /www/htdocs/w00ac8e2/dayone-mediagroup.com/
           local-dir: ./build/
           dangerous-clean-slate: true
-          timeout: 600000 
+          timeout: 600000
+          log-level: verbose 
