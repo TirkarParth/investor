@@ -56,7 +56,7 @@ jobs:
           fi
           echo "=== END DEBUG ==="
           
-      - name: Deploy to ALL-INKL.COM
+      - name: Deploy to ALL-INKL.COM (SCP)
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.ALL_INKL_HOST }}
@@ -65,4 +65,14 @@ jobs:
           port: 22
           source: "build/*"
           target: "/www/htdocs/w00ac8e2/dayone-mediagroup.com/"
-          strip_components: 0 
+          strip_components: 0
+          
+      - name: Deploy to ALL-INKL.COM (FTP - Alternative)
+        if: failure()
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.ALL_INKL_HOST }}
+          username: ${{ secrets.ALL_INKL_USERNAME }}
+          password: ${{ secrets.ALL_INKL_PASSWORD }}
+          server-dir: /www/htdocs/w00ac8e2/dayone-mediagroup.com/
+          local-dir: ./build/ 
