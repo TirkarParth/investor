@@ -66,6 +66,8 @@ jobs:
           source: "build/*"
           target: "/www/htdocs/w00ac8e2/dayone-mediagroup.com/investor/"
           strip_components: 0
+          timeout: 600s
+          command_timeout: 600s
           
       - name: Deploy to ALL-INKL.COM (FTP - Alternative)
         if: failure()
@@ -76,3 +78,5 @@ jobs:
           password: ${{ secrets.ALL_INKL_PASSWORD }}
           server-dir: /www/htdocs/w00ac8e2/dayone-mediagroup.com/investor/
           local-dir: ./build/
+          dangerous-clean-slate: true
+          timeout: 600000 
