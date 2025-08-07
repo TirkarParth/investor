@@ -64,7 +64,7 @@ jobs:
           password: ${{ secrets.ALL_INKL_PASSWORD }}
           port: 22
           source: "build/*"
-          target: "/www/htdocs/w00ac8e2/dayone-mediagroup.com/"
+          target: "/www/htdocs/w00ac8e2/"
           strip_components: 0
           
       - name: Deploy to ALL-INKL.COM (FTP - Alternative)
@@ -74,5 +74,5 @@ jobs:
           server: ${{ secrets.ALL_INKL_HOST }}
           username: ${{ secrets.ALL_INKL_USERNAME }}
           password: ${{ secrets.ALL_INKL_PASSWORD }}
-          server-dir: /www/htdocs/w00ac8e2/dayone-mediagroup.com/
+                     server-dir: /www/htdocs/w00ac8e2/
           local-dir: ./build/ 
