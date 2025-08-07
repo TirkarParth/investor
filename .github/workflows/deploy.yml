@@ -1,0 +1,47 @@
+name: Deploy to ALL-INKL.COM
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build project
+        run: npm run build
+        
+      - name: Deploy to ALL-INKL.COM
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.ALL_INKL_HOST }}
+          username: ${{ secrets.ALL_INKL_USERNAME }}
+          password: ${{ secrets.ALL_INKL_PASSWORD }}
+          port: 22
+          source: "build/*"
+          target: "/www/htdocs/w00ac8e2/webseite/"
+          strip_components: 0
+          
+      - name: Deploy to ALL-INKL.COM (Alternative method)
+        if: failure()
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.ALL_INKL_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.ALL_INKL_HOST }}
+          REMOTE_USER: ${{ secrets.ALL_INKL_USERNAME }}
+          TARGET: "/www/htdocs/w00ac8e2/webseite/"
+          SOURCE: "build/" 
