@@ -19,71 +19,44 @@ jobs:
           node-version: '18'
           cache: 'npm'
           
-      - name: Check environment
+      - name: Debug - Show environment
         run: |
-          echo "=== ENVIRONMENT CHECK ==="
-          echo "Node version: $(node --version)"
-          echo "NPM version: $(npm --version)"
-          echo "Current directory: $(pwd)"
-          echo "Directory contents:"
+          echo "=== DEBUG: ENVIRONMENT ==="
+          pwd
           ls -la
-          echo "=== END ENVIRONMENT CHECK ==="
+          node --version
+          npm --version
+          echo "=== END DEBUG ==="
           
       - name: Install dependencies
+        run: npm ci
+        
+      - name: Debug - Show after install
         run: |
-          npm ci --verbose
-          npm list --depth=0
+          echo "=== DEBUG: AFTER INSTALL ==="
+          ls -la
+          ls -la node_modules/ | head -5
+          echo "=== END DEBUG ==="
           
       - name: Build project
+        run: npm run build
+        
+      - name: Debug - Show after build
         run: |
-          echo "Starting build process..."
-          npm run build
-          echo "Build completed. Checking build directory:"
-          ls -la build/
-          echo "Build directory contents:"
-          find build/ -type f -name "*.html" -o -name "*.js" -o -name "*.css" | head -10
-          echo "Build verification completed"
-          
-      - name: Verify build files
-        run: |
-          echo "=== BUILD VERIFICATION ==="
-          echo "Current directory: $(pwd)"
+          echo "=== DEBUG: AFTER BUILD ==="
+          ls -la
           echo "Build directory exists: $(test -d build && echo 'YES' || echo 'NO')"
-          echo "Build directory contents:"
-          ls -la build/ || echo "Build directory not found"
-          echo "Checking critical files:"
-          test -f build/index.html && echo "✅ index.html exists" || echo "❌ index.html missing"
-          test -d build/static && echo "✅ static directory exists" || echo "❌ static directory missing"
-          test -f build/static/js/main.*.js && echo "✅ main.js exists" || echo "❌ main.js missing"
-          test -f build/static/css/main.*.css && echo "✅ main.css exists" || echo "❌ main.css missing"
-          echo "=== END VERIFICATION ==="
-          
-      - name: Prepare deployment files
-        run: |
-          echo "=== PREPARING DEPLOYMENT ==="
-          echo "Current directory: $(pwd)"
-          echo "Build directory contents:"
-          ls -la build/ || echo "Build directory not found"
-          echo "Creating deployment archive for verification:"
-          tar -czf deployment-test.tar.gz -C build .
-          echo "Archive created: $(ls -la deployment-test.tar.gz)"
-          echo "Archive contents:"
-          tar -tzf deployment-test.tar.gz | head -10
-          echo "=== DEPLOYMENT PREPARED ==="
+          if [ -d build ]; then
+            echo "Build directory contents:"
+            ls -la build/
+            echo "Build files:"
+            find build/ -type f | head -10
+          else
+            echo "Build directory not found!"
+          fi
+          echo "=== END DEBUG ==="
           
       - name: Deploy to ALL-INKL.COM
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.ALL_INKL_HOST }}
-          username: ${{ secrets.ALL_INKL_USERNAME }}
-          password: ${{ secrets.ALL_INKL_PASSWORD }}
-          port: 22
-          source: "build/*"
-          target: "/www/htdocs/w00ac8e2/dayone-mediagroup.com/"
-          strip_components: 0
-          
-      - name: Deploy to ALL-INKL.COM (Alternative method)
-        if: failure()
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.ALL_INKL_HOST }}
