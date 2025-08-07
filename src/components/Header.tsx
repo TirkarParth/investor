@@ -12,11 +12,14 @@ const Header: React.FC = () => {
       <div className="container-custom">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center">
+          <div 
+            className="flex items-center cursor-pointer hover:opacity-80 transition-opacity duration-200"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
             <img 
-              src={process.env.PUBLIC_URL + '/images/logo/logo.png'} 
-              alt="TRADEFOOX Logo" 
-              className="h-8 w-auto"
+              src={process.env.PUBLIC_URL + '/images/logo/logo.svg'} 
+              alt="One Media Company Logo" 
+              className="h-12 w-auto"
             />
           </div>
 
