@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, X, Globe } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 
@@ -12,11 +12,15 @@ const Header: React.FC = () => {
       <div className="container-custom">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-              <Globe className="w-5 h-5 text-white" />
-            </div>
-            <span className="text-xl font-bold text-gray-900">TRADEFOOX</span>
+          <div 
+            className="flex items-center cursor-pointer hover:opacity-80 transition-opacity duration-200"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
+            <img 
+              src={process.env.PUBLIC_URL + '/images/logo/logo.svg'} 
+              alt="TRADEFOOX Logo" 
+              className="h-12 w-auto"
+            />
           </div>
 
           {/* Desktop Navigation */}
