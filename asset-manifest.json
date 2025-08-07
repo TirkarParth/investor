@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/investor/static/css/main.bdf7f493.css",
+    "main.js": "/investor/static/js/main.14cee951.js",
+    "index.html": "/investor/index.html",
+    "main.bdf7f493.css.map": "/investor/static/css/main.bdf7f493.css.map",
+    "main.14cee951.js.map": "/investor/static/js/main.14cee951.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.bdf7f493.css",
+    "static/js/main.14cee951.js"
+  ]
+}
