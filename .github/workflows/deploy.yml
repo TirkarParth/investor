@@ -25,8 +25,19 @@ jobs:
           npm list --depth=0
         
       - name: Build project
-        run: npm run build
+        run: |
+          npm run build
+          ls -la build/
+          echo "Build completed successfully"
         
+      - name: Verify build files
+        run: |
+          echo "Checking build directory contents:"
+          ls -la build/
+          echo "Checking if build files exist:"
+          test -f build/index.html && echo "index.html exists" || echo "index.html missing"
+          test -d build/static && echo "static directory exists" || echo "static directory missing"
+          
       - name: Deploy to ALL-INKL.COM
         uses: appleboy/scp-action@v0.1.7
         with:
