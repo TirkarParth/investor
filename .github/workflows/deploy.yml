@@ -33,7 +33,7 @@ jobs:
           password: ${{ secrets.ALL_INKL_PASSWORD }}
           port: 22
           source: "build/*"
-          target: "/www/htdocs/w00ac8e2/webseite/"
+          target: "/dayone-mediagroup.com/"
           strip_components: 0
           
       - name: Deploy to ALL-INKL.COM (Alternative method)
@@ -43,5 +43,5 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.ALL_INKL_SSH_KEY }}
           REMOTE_HOST: ${{ secrets.ALL_INKL_HOST }}
           REMOTE_USER: ${{ secrets.ALL_INKL_USERNAME }}
-          TARGET: "/www/htdocs/w00ac8e2/webseite/"
+          TARGET: "/dayone-mediagroup.com/"
           SOURCE: "build/" 
