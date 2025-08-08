@@ -37,9 +37,13 @@ const Header: React.FC = () => {
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
             <img 
-              src={process.env.PUBLIC_URL + '/images/logo/logo.svg'} 
+              src={process.env.PUBLIC_URL + '/images/logo/dayonelogo-removebg-preview.png'} 
               alt="One Media Company Logo" 
-              className="h-12 w-auto"
+              className={`h-12 w-auto transition-all duration-300 ${
+                isTransparent 
+                  ? 'drop-shadow-2xl filter brightness-0 invert' 
+                  : ''
+              }`}
             />
           </div>
 
