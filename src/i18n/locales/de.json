@@ -73,8 +73,8 @@
     "subtitle": "Von Grund auf für internationale Expansion entwickelt mit umfassender mehrsprachiger Unterstützung und plattformübergreifender Verfügbarkeit.",
     "features": {
       "languages": {
-        "title": "Plattform in fünf Sprachen",
-        "description": "Deutsch, Englisch, Spanisch, Französisch, Portugiesisch mit vollständiger i18n-Implementierung"
+        "title": "Plattform in 19 Sprachen",
+        "description": "Deutsch, Englisch, Spanisch, Französisch, Portugiesisch, Andere mit vollständiger i18n-Implementierung"
       },
       "strategy": {
         "title": "Internationalisierungsstrategie",
