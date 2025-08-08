@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShoppingCart, List, Video, Newspaper, MessageCircle, Megaphone, ExternalLink } from 'lucide-react';
+import { ShoppingCart, List, Video, Newspaper, MessageCircle, Megaphone } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const Features: React.FC = () => {
@@ -74,12 +74,9 @@ const Features: React.FC = () => {
               <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 ${feature.color}`}>
                 <feature.icon className="w-8 h-8" />
               </div>
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-primary-600 transition-colors">{feature.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{feature.description}</p>
-                </div>
-                <ExternalLink className="w-5 h-5 text-gray-400 group-hover:text-primary-600 transition-colors flex-shrink-0 ml-2" />
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-primary-600 transition-colors">{feature.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
               </div>
             </a>
           ))}

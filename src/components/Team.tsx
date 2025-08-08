@@ -21,14 +21,21 @@ const Team: React.FC = () => {
           {/* Founder Section */}
           <div className="bg-white rounded-3xl p-8 shadow-2xl">
             <div className="text-center mb-8">
-              <div className="w-32 h-32 rounded-full overflow-hidden mx-auto mb-6">
-                <img 
-                  src={process.env.PUBLIC_URL + '/images/investors/ceo.jpeg'} 
-                  alt={t('team.founder.name')}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('team.founder.name')}</h3>
+              <a 
+                href="https://tradefoox.com/profile/aa200115-1bae-4915-b54f-5700ce5544f0" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="block group hover:scale-105 transition-transform duration-200"
+              >
+                <div className="w-32 h-32 rounded-full overflow-hidden mx-auto mb-6">
+                  <img 
+                    src={process.env.PUBLIC_URL + '/images/investors/ceo.jpeg'} 
+                    alt={t('team.founder.name')}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">{t('team.founder.name')}</h3>
+              </a>
               <p className="text-primary-600 font-semibold mb-4">{t('team.founder.title')}</p>
               <p className="text-gray-600 leading-relaxed">
                 {t('team.founder.description')}
