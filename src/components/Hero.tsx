@@ -78,11 +78,11 @@ const Hero: React.FC = () => {
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
             <div className="text-center">
-              <div className="text-3xl font-bold text-yellow-300 mb-2 drop-shadow-lg">5</div>
+              <div className="text-3xl font-bold text-yellow-300 mb-2 drop-shadow-lg">19</div>
               <div className="text-gray-200 drop-shadow-lg">{t('hero.stats.languages')}</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-yellow-300 mb-2 drop-shadow-lg">1000+</div>
+              <div className="text-3xl font-bold text-yellow-300 mb-2 drop-shadow-lg">5M+</div>
               <div className="text-gray-200 drop-shadow-lg">{t('hero.stats.users')}</div>
             </div>
             <div className="text-center">
