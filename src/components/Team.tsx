@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Users, Award, Code, Palette, TrendingUp } from 'lucide-react';
+import { Users, Award, Code, Palette, TrendingUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const Team: React.FC = () => {
@@ -21,8 +21,12 @@ const Team: React.FC = () => {
           {/* Founder Section */}
           <div className="bg-white rounded-3xl p-8 shadow-2xl">
             <div className="text-center mb-8">
-              <div className="w-32 h-32 bg-gradient-to-br from-primary-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <User className="w-16 h-16 text-white" />
+              <div className="w-32 h-32 rounded-full overflow-hidden mx-auto mb-6">
+                <img 
+                  src={process.env.PUBLIC_URL + '/images/investors/ceo.jpeg'} 
+                  alt={t('team.founder.name')}
+                  className="w-full h-full object-cover"
+                />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('team.founder.name')}</h3>
               <p className="text-primary-600 font-semibold mb-4">{t('team.founder.title')}</p>
