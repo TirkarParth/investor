@@ -24,7 +24,7 @@ const SelectInvestors: React.FC = () => {
       name: 'SAB Sachsen',
       url: 'https://www.sab.sachsen.de/sab-sachsenkredit-universal-neu?gad_source=1',
       description: 'SAB Sachsenkredit Universal',
-      logo: process.env.PUBLIC_URL + '/images/investors/Sächsische_Aufbaubank_201x_logo.svg.png'
+      logo: process.env.PUBLIC_URL + '/images/investors/sab_logo.png'
     }
   ];
 

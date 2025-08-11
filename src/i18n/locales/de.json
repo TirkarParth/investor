@@ -1,6 +1,6 @@
 {
   "hero": {
-    "badge": "🌍 TRADEFOOX – Die Plattform für Handel, soziale Medien & Kommunikation in einer App",
+    "badge": "TRADEFOOX – Die Plattform für Handel, soziale Medien & Kommunikation in einer App",
     "title": "Investieren Sie in die europäische Antwort auf",
     "titleHighlight": "Super-Apps",
     "subtitle": "TRADEFOOX kombiniert E-Commerce, Kurzvideos, soziale Interaktion und Messaging – eine All-in-One-App für Privatpersonen, Vereine und Unternehmen.",
@@ -16,7 +16,7 @@
     }
   },
   "vision": {
-    "title": "🚀 Unsere Vision",
+    "title": "Unsere Vision",
     "tagline": "\"Eine App. Alle Möglichkeiten.\"",
     "description": "Unsere Vision ist es, eine europäische Plattform zu entwickeln, die das Beste aus Online-Marktplatz, sozialem Netzwerk und Content-Erstellung kombiniert. TRADEFOOX soll eine Alternative zu asiatischen und US-amerikanischen Super-Apps sein – modern, datenschutzkonform und nutzerzentriert.",
     "cards": {
@@ -35,7 +35,7 @@
     }
   },
   "features": {
-    "title": "🛠️ Was macht TRADEFOOX einzigartig",
+    "title": "Was macht TRADEFOOX einzigartig",
     "subtitle": "Sechs Kernfunktionen, die eine umfassende Plattform für modernes digitales Leben schaffen",
     "items": {
       "marketplace": {
@@ -69,12 +69,12 @@
     }
   },
   "globalScale": {
-    "title": "🌐 Bereit für globale Skalierung",
+    "title": "Bereit für globale Skalierung",
     "subtitle": "Von Grund auf für internationale Expansion entwickelt mit umfassender mehrsprachiger Unterstützung und plattformübergreifender Verfügbarkeit.",
     "features": {
       "languages": {
-        "title": "Plattform in fünf Sprachen",
-        "description": "Deutsch, Englisch, Spanisch, Französisch, Portugiesisch mit vollständiger i18n-Implementierung"
+        "title": "Plattform in 19 Sprachen",
+        "description": "Deutsch, Englisch, Spanisch, Französisch, Portugiesisch, Andere mit vollständiger i18n-Implementierung"
       },
       "strategy": {
         "title": "Internationalisierungsstrategie",
@@ -97,7 +97,7 @@
     }
   },
   "traction": {
-    "title": "📈 Traktion & Meilensteine",
+    "title": "Traktion & Meilensteine",
     "subtitle": "Unser Weg vom Konzept zur Live-Plattform mit messbarem Fortschritt und Erfolgen",
     "milestones": {
       "launch": {
@@ -131,7 +131,7 @@
     }
   },
   "team": {
-    "title": "👤 Gründer & Team",
+    "title": "Gründer & Team",
     "subtitle": "Lernen Sie die visionäre Führung und das interdisziplinäre Team kennen, das die Zukunft digitaler Plattformen aufbaut",
     "founder": {
       "name": "Ronny Streit",
@@ -171,7 +171,7 @@
     }
   },
   "investment": {
-    "title": "🤝 Strategische Investoren willkommen",
+    "title": "Strategische Investoren willkommen",
     "subtitle": "Wir öffnen derzeit eine Runde für Partner, die mit uns zusammenarbeiten möchten, um die Zukunft der digitalen Plattform-Ökonomie in Europa zu gestalten.",
     "opportunity": {
       "title": "Investment-Möglichkeit",
@@ -217,7 +217,7 @@
     }
   },
   "contact": {
-    "title": "📥 Kontaktieren Sie uns jetzt",
+    "title": "Kontaktieren Sie uns jetzt",
     "subtitle": "Möchten Sie unser Pitch Deck erhalten oder eine unverbindliche Diskussion führen? Dann schreiben Sie uns direkt oder besuchen Sie unser LinkedIn-Profil für Updates & Einblicke.",
     "touch": {
       "title": "Kontakt aufnehmen",

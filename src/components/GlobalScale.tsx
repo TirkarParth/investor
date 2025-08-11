@@ -82,7 +82,7 @@ const GlobalScale: React.FC = () => {
             <div className="bg-white rounded-3xl p-8 shadow-2xl">
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div className="text-center p-4 bg-primary-50 rounded-xl">
-                  <div className="text-2xl font-bold text-primary-600 mb-1">5</div>
+                  <div className="text-2xl font-bold text-primary-600 mb-1">19</div>
                   <div className="text-sm text-gray-600">{t('globalScale.stats.languages')}</div>
                 </div>
                 <div className="text-center p-4 bg-purple-50 rounded-xl">
@@ -128,6 +128,12 @@ const GlobalScale: React.FC = () => {
                   <span className="text-sm text-gray-600">Portuguese</span>
                   <div className="w-24 h-2 bg-gray-200 rounded-full">
                     <div className="w-12 h-2 bg-primary-600 rounded-full"></div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">Others</span>
+                  <div className="w-24 h-2 bg-gray-200 rounded-full">
+                    <div className="w-8 h-2 bg-primary-600 rounded-full"></div>
                   </div>
                 </div>
               </div>
