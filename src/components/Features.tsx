@@ -57,8 +57,11 @@ const Features: React.FC = () => {
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             {t('features.title')}
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-4">
             {t('features.subtitle')}
+          </p>
+          <p className="text-lg text-gray-700 max-w-4xl mx-auto">
+            {t('features.description')}
           </p>
         </div>
 

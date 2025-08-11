@@ -35,8 +35,9 @@
     }
   },
   "features": {
-    "title": "What makes TRADEFOOX unique",
-    "subtitle": "Six core features that create a comprehensive platform for modern digital life",
+    "title": "What Makes TRADEFOOX Unique",
+    "subtitle": "Six powerful core functions – united in a single app – create a platform that redefines digital life.",
+    "description": "TRADEFOOX delivers everything others offer separately – seamlessly integrated, modern, and infinitely scalable.",
     "items": {
       "marketplace": {
         "title": "Marketplace",
