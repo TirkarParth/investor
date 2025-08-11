@@ -11,6 +11,7 @@ const Hero: React.FC = () => {
   const [scrollDirection, setScrollDirection] = useState<'up' | 'down' | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [sectionUnlocked, setSectionUnlocked] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const lastWheelTime = useRef<number>(0);
 
@@ -29,6 +30,36 @@ const Hero: React.FC = () => {
     }
   }, [videosLoaded]);
 
+  // Check if hero section is visible on the page
+  useEffect(() => {
+    const checkVisibility = () => {
+      if (sectionRef.current) {
+        const rect = sectionRef.current.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        
+        // Section is visible if it's at least 50% in the viewport
+        const isSectionVisible = rect.top < viewportHeight * 0.5 && rect.bottom > viewportHeight * 0.5;
+        
+        // If section becomes invisible and was previously locked, unlock it
+        if (!isSectionVisible && !sectionUnlocked && allVideosLoaded) {
+          setSectionUnlocked(true);
+        }
+        
+        setIsVisible(isSectionVisible);
+      }
+    };
+
+    // Check on mount and scroll
+    checkVisibility();
+    window.addEventListener('scroll', checkVisibility);
+    window.addEventListener('resize', checkVisibility);
+
+    return () => {
+      window.removeEventListener('scroll', checkVisibility);
+      window.removeEventListener('resize', checkVisibility);
+    };
+  }, [sectionUnlocked, allVideosLoaded]);
+
   // Handle video load events
   const handleVideoLoad = (index: number) => {
     setVideosLoaded(prev => {
@@ -40,7 +71,7 @@ const Hero: React.FC = () => {
 
   // Handle mouse wheel events to change videos
   useEffect(() => {
-    if (!allVideosLoaded) return;
+    if (!allVideosLoaded || !isVisible) return;
 
     const handleWheel = (event: WheelEvent) => {
       // Check if the hero section is fully visible on the page
@@ -128,12 +159,12 @@ const Hero: React.FC = () => {
         section.removeEventListener('wheel', handleWheel);
       }
     };
-  }, [videos.length, allVideosLoaded, currentVideoIndex, isTransitioning, sectionUnlocked]);
+  }, [videos.length, allVideosLoaded, currentVideoIndex, isTransitioning, sectionUnlocked, isVisible]);
 
   // Prevent scrolling to other sections until videos are loaded
   useEffect(() => {
-    if (!allVideosLoaded) {
-      // Lock scroll to current section
+    if (!allVideosLoaded && isVisible) {
+      // Lock scroll to current section only if visible
       document.body.style.overflow = 'hidden';
     } else {
       // Unlock scroll
@@ -143,14 +174,14 @@ const Hero: React.FC = () => {
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [allVideosLoaded]);
+  }, [allVideosLoaded, isVisible]);
 
   // Keep section fixed until user has experienced all videos
   useEffect(() => {
-    if (allVideosLoaded && !sectionUnlocked) {
-      // Lock scroll to keep hero section fixed
+    if (allVideosLoaded && !sectionUnlocked && isVisible) {
+      // Lock scroll to keep hero section fixed only if visible
       document.body.style.overflow = 'hidden';
-    } else if (sectionUnlocked) {
+    } else if (sectionUnlocked || !isVisible) {
       // Unlock scroll to allow navigation to other sections
       document.body.style.overflow = 'unset';
     }
@@ -158,13 +189,20 @@ const Hero: React.FC = () => {
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [allVideosLoaded, sectionUnlocked]);
+  }, [allVideosLoaded, sectionUnlocked, isVisible]);
+
+  // Cleanup effect to ensure scroll is unlocked on unmount
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, []);
 
   return (
     <section 
       ref={sectionRef} 
       className={`relative text-white overflow-hidden h-screen ${
-        allVideosLoaded && !sectionUnlocked ? 'fixed inset-0 z-40' : ''
+        allVideosLoaded && !sectionUnlocked && isVisible ? 'fixed inset-0 z-40' : ''
       }`}
     >
       {/* Loading Overlay */}
