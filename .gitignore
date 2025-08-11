@@ -101,4 +101,16 @@ dist
 
 # Temporary folders
 tmp/
-temp/ 
+temp/
+
+# Video files (large size)
+public/images/video/*.mp4
+public/images/video/*.mov
+public/images/video/*.avi
+public/images/video/*.mkv
+public/images/video/*.webm
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm 
