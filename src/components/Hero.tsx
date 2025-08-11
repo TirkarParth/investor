@@ -226,47 +226,6 @@ const Hero: React.FC = () => {
             ))}
           </div>
         </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute right-8 top-1/2 transform -translate-y-1/2 z-20 text-center">
-          <div className="text-white/70 text-sm mb-2">Scroll to change videos</div>
-          <div className="w-1 h-16 bg-white/30 rounded-full mx-auto relative">
-            <div 
-              className="w-1 bg-yellow-300 rounded-full transition-all duration-300 absolute bottom-0"
-              style={{ 
-                height: `${((currentVideoIndex + 1) / videos.length) * 100}%` 
-              }}
-            />
-          </div>
-          <div className="text-white/70 text-xs mt-2">{currentVideoIndex + 1}/{videos.length}</div>
-          
-          {/* Scroll Direction Display */}
-          <div className="mt-4 text-xs text-white/60">
-            {scrollDirection === 'up' && <ChevronDown className="w-3 h-3 mx-auto text-yellow-300 rotate-180" />}
-            {scrollDirection === 'down' && <ChevronDown className="w-3 h-3 mx-auto text-yellow-300" />}
-          </div>
-
-          {/* Transition Status */}
-          {isTransitioning && (
-            <div className="mt-2 text-xs text-yellow-300 animate-pulse">
-              Changing video...
-            </div>
-          )}
-
-          {/* Section Status */}
-          <div className="mt-4 text-xs text-white/40">
-            <div>Section: {sectionUnlocked ? 'Unlocked' : 'Locked'}</div>
-            <div>Current: {currentVideoIndex + 1}/{videos.length}</div>
-          </div>
-        </div>
-
-        {/* Continue Indicator - Only show when all videos viewed */}
-        {allVideosViewed && (
-          <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 z-20 text-center animate-bounce">
-            <div className="text-white/80 text-sm mb-2">Continue to explore</div>
-            <ChevronDown className="w-6 h-6 text-yellow-300 mx-auto" />
-          </div>
-        )}
       </div>
 
       {/* Content */}
