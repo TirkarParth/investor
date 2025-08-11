@@ -155,28 +155,34 @@ const Hero: React.FC = () => {
     };
   }, [videos.length, allVideosLoaded, currentVideoIndex, isTransitioning, sectionUnlocked, isVisible]);
 
-  // Prevent scrolling to other sections until videos are loaded
+  // Cleanup effect to ensure scroll is unlocked on unmount
   useEffect(() => {
-    if (!allVideosLoaded && isVisible) {
-      // Lock scroll to current section only if visible
-      document.body.style.overflow = 'hidden';
-    } else {
-      // Unlock scroll
-      document.body.style.overflow = 'unset';
-    }
-
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [allVideosLoaded, isVisible]);
+  }, []);
 
-  // Keep section fixed until user has experienced all videos
+  // Simple effect to unlock scroll when at top of page (fixes logo click issue)
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY === 0) {
+        // At the very top, ensure scroll is unlocked
+        document.body.style.overflow = 'unset';
+        setSectionUnlocked(true);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Simple scroll locking only during initial video experience
   useEffect(() => {
     if (allVideosLoaded && !sectionUnlocked && isVisible) {
-      // Lock scroll to keep hero section fixed only if visible
+      // Only lock scroll if section is visible and not unlocked
       document.body.style.overflow = 'hidden';
-    } else if (sectionUnlocked || !isVisible) {
-      // Unlock scroll to allow navigation to other sections
+    } else {
+      // Unlock scroll in all other cases
       document.body.style.overflow = 'unset';
     }
 
@@ -184,13 +190,6 @@ const Hero: React.FC = () => {
       document.body.style.overflow = 'unset';
     };
   }, [allVideosLoaded, sectionUnlocked, isVisible]);
-
-  // Cleanup effect to ensure scroll is unlocked on unmount
-  useEffect(() => {
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, []);
 
   return (
     <section 
