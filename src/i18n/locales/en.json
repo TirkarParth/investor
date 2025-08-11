@@ -1,9 +1,9 @@
 {
   "hero": {
-    "badge": "TRADEFOOX – The platform for commerce, social media & communication in one app",
+    "badge": "",
     "title": "Invest in the European answer to",
     "titleHighlight": "super apps",
-    "subtitle": "TRADEFOOX combines e-commerce, short videos, social interaction, and messaging – an all-in-one app for individuals, clubs, and companies.",
+    "subtitle": "With strong investors by our side, TRADEFOOX will become the next global success story – standing shoulder to shoulder with TikTok, Amazon, and Meta. Together, we will inspire the world and set new standards for digital super apps.",
     "cta": {
       "pitchDeck": "Request Pitch Deck",
       "watchVideo": "Watch Intro Video",
@@ -18,7 +18,7 @@
   "vision": {
     "title": "Our Vision",
     "tagline": "\"One App. All Possibilities.\"",
-    "description": "Our vision is to build a European platform that combines the best of online marketplace, social network, and content creation. TRADEFOOX is intended to be an alternative to Asian and US-based super apps – modern, data protection-compliant, and user-centric.",
+    "description": "TRADEFOOX is the next generation of apps – a true European Super App. It combines the best of online marketplaces, social networking, and content creation in one all-in-one platform. Modern, privacy-compliant, and user-centric. An app like TRADEFOOX has never existed before.",
     "cards": {
       "european": {
         "title": "European Alternative",
@@ -35,8 +35,9 @@
     }
   },
   "features": {
-    "title": "What makes TRADEFOOX unique",
-    "subtitle": "Six core features that create a comprehensive platform for modern digital life",
+    "title": "What Makes TRADEFOOX Unique",
+    "subtitle": "Six powerful core functions – united in a single app – create a platform that redefines digital life.",
+    "description": "TRADEFOOX delivers everything others offer separately – seamlessly integrated, modern, and infinitely scalable.",
     "items": {
       "marketplace": {
         "title": "Marketplace",
@@ -171,8 +172,8 @@
     }
   },
   "investment": {
-    "title": "Strategic investors welcome",
-    "subtitle": "We are currently opening a round for partners who want to work with us to shape the future of the digital platform economy in Europe.",
+    "title": "Strategic Investors Welcome",
+    "subtitle": "We are opening our round to partners who want to join TRADEFOOX in shaping the future of Europe's digital platform economy and benefit from the growth of a platform that unites in one app everything others offer separately. This is the entry into a venture with the potential to become the next world-class success story.",
     "opportunity": {
       "title": "Investment Opportunity",
       "round": "Series A",

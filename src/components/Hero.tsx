@@ -30,10 +30,10 @@ const Hero: React.FC = () => {
       {/* Content */}
       <div className="container-custom relative z-10 h-full flex items-center justify-center">
         <div className="text-center max-w-4xl mx-auto">
-          {/* Badge */}
-          <div className="inline-flex items-center px-4 py-2 bg-black/30 backdrop-blur-sm rounded-full text-sm font-medium mb-8 text-white">
+          {/* Badge - Commented out since badge text was removed */}
+          {/* <div className="inline-flex items-center px-4 py-2 bg-black/30 backdrop-blur-sm rounded-full text-sm font-medium mb-8 text-white">
             {t('hero.badge')}
-          </div>
+          </div> */}
 
           {/* Main Headline */}
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight text-white drop-shadow-2xl">
