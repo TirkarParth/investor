@@ -242,8 +242,8 @@ const Hero: React.FC = () => {
         ))}
         
         {/* Video Progress Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20">
-          <div className="flex space-x-2">
+        <div className="absolute right-8 top-1/2 transform -translate-y-1/2 z-20">
+          <div className="flex flex-col space-y-3">
             {videos.map((_, index) => (
               <button
                 key={index}
