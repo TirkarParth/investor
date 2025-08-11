@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { FileText, Play, Mail, ArrowRight, Loader2, ChevronDown } from 'lucide-react';
+import { FileText, Play, Mail, ArrowRight, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const Hero: React.FC = () => {
@@ -7,8 +7,6 @@ const Hero: React.FC = () => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [videosLoaded, setVideosLoaded] = useState<boolean[]>(new Array(4).fill(false));
   const [allVideosLoaded, setAllVideosLoaded] = useState(false);
-  const [allVideosViewed, setAllVideosViewed] = useState(false);
-  const [scrollDirection, setScrollDirection] = useState<'up' | 'down' | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [sectionUnlocked, setSectionUnlocked] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -91,7 +89,6 @@ const Hero: React.FC = () => {
         // Reset section state when user returns to hero section after going through the page
         if (sectionUnlocked && isFullyVisible && currentVideoIndex === 0) {
           setSectionUnlocked(false);
-          setAllVideosViewed(false);
         }
       }
 
@@ -118,7 +115,6 @@ const Hero: React.FC = () => {
 
       if (event.deltaY > 0) {
         // Scroll down - go to next video
-        setScrollDirection('down');
         if (currentVideoIndex < videos.length - 1) {
           setIsTransitioning(true);
           setCurrentVideoIndex(prev => prev + 1);
@@ -130,11 +126,9 @@ const Hero: React.FC = () => {
         } else if (currentVideoIndex === videos.length - 1) {
           // We're at the last video, unlock the section
           setSectionUnlocked(true);
-          setAllVideosViewed(true);
         }
       } else if (event.deltaY < 0) {
         // Scroll up - go to previous video (always allowed, even when unlocked)
-        setScrollDirection('up');
         if (currentVideoIndex > 0) {
           setIsTransitioning(true);
           setCurrentVideoIndex(prev => prev - 1);
