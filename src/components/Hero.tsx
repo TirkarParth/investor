@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FileText, Play, Mail, ArrowRight, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { getVideoQuality, getVideoSources } from '../utils/deviceDetection';
 
 const Hero: React.FC = () => {
   const { t } = useTranslation();
@@ -10,16 +11,41 @@ const Hero: React.FC = () => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [sectionUnlocked, setSectionUnlocked] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [videoQuality, setVideoQuality] = useState<'mobile' | 'desktop'>('desktop');
   const sectionRef = useRef<HTMLElement>(null);
   const lastWheelTime = useRef<number>(0);
 
-  // Array of video sources - you can add more videos here
-  const videos = [
-    `${process.env.PUBLIC_URL}/images/video/1.mp4`,
-    `${process.env.PUBLIC_URL}/images/video/2.mp4`,
-    `${process.env.PUBLIC_URL}/images/video/3.mp4`,
-    `${process.env.PUBLIC_URL}/images/video/4.mp4`,
-  ];
+  // Get video quality on mount and window resize
+  useEffect(() => {
+    const updateVideoQuality = () => {
+      const newQuality = getVideoQuality();
+      if (newQuality !== videoQuality) {
+        setVideoQuality(newQuality);
+      }
+    };
+
+    // Set initial quality
+    updateVideoQuality();
+
+    // Update on window resize
+    window.addEventListener('resize', updateVideoQuality);
+    
+    return () => {
+      window.removeEventListener('resize', updateVideoQuality);
+    };
+  }, [videoQuality]);
+
+  // Array of video sources with quality detection
+  const getVideos = () => {
+    const videoNames = ['1', '2', '3', '4'];
+    return videoNames.map(name => {
+      const sources = getVideoSources(name);
+      // Fallback to desktop if mobile video doesn't exist
+      return sources[videoQuality] || sources.desktop;
+    });
+  };
+
+  const videos = getVideos();
 
   // Check if all videos are loaded
   useEffect(() => {
@@ -27,6 +53,13 @@ const Hero: React.FC = () => {
       setAllVideosLoaded(true);
     }
   }, [videosLoaded]);
+
+  // Reset video loading state when quality changes
+  useEffect(() => {
+    setVideosLoaded(new Array(4).fill(false));
+    setAllVideosLoaded(false);
+    setCurrentVideoIndex(0);
+  }, [videoQuality]);
 
   // Check if hero section is visible on the page
   useEffect(() => {
@@ -204,8 +237,11 @@ const Hero: React.FC = () => {
           <div className="text-center">
             <Loader2 className="w-16 h-16 text-yellow-300 animate-spin mx-auto mb-4" />
             <div className="text-white text-xl mb-2">Loading Videos...</div>
-            <div className="text-white/70 text-sm">
+            <div className="text-white/70 text-sm mb-2">
               {videosLoaded.filter(loaded => loaded).length} of {videos.length} videos loaded
+            </div>
+            <div className="text-yellow-300 text-sm mb-4">
+              Quality: {videoQuality === 'mobile' ? 'Mobile Optimized' : 'High Quality'}
             </div>
             <div className="mt-4 flex justify-center space-x-2">
               {videosLoaded.map((loaded, index) => (
