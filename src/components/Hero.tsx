@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { FileText, Play, Mail, ArrowRight, Loader2 } from 'lucide-react';
+import { FileText, Play, Mail, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { getVideoQuality, getVideoSources } from '../utils/deviceDetection';
 
@@ -120,10 +120,16 @@ const Hero: React.FC = () => {
     }
   }, [videosLoaded]);
 
+  // Set allVideosLoaded to true immediately for better UX
+  useEffect(() => {
+    // Remove the loading delay - show videos immediately
+    setAllVideosLoaded(true);
+  }, []);
+
   // Reset video loading state when quality changes
   useEffect(() => {
     setVideosLoaded(new Array(4).fill(false));
-    setAllVideosLoaded(false);
+    setAllVideosLoaded(true); // Keep this true to avoid loading screen
     setCurrentVideoIndex(0);
   }, [videoQuality]);
 
@@ -287,31 +293,7 @@ const Hero: React.FC = () => {
         WebkitOverflowScrolling: 'touch'
       }}
     >
-      {/* Loading Overlay */}
-      {!allVideosLoaded && (
-        <div className="absolute inset-0 bg-black/80 z-50 flex items-center justify-center">
-          <div className="text-center">
-            <Loader2 className="w-16 h-16 text-yellow-300 animate-spin mx-auto mb-4" />
-            <div className="text-white text-xl mb-2">Loading Videos...</div>
-            <div className="text-white/70 text-sm mb-2">
-              {videosLoaded.filter(loaded => loaded).length} of {videos.length} videos loaded
-            </div>
-            <div className="text-yellow-300 text-sm mb-4">
-              Quality: {videoQuality === 'mobile' ? 'Mobile Optimized' : 'High Quality'}
-            </div>
-            <div className="mt-4 flex justify-center space-x-2">
-              {videosLoaded.map((loaded, index) => (
-                <div
-                  key={index}
-                  className={`w-3 h-3 rounded-full ${
-                    loaded ? 'bg-yellow-300' : 'bg-white/30'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+
 
       {/* Background Videos */}
       <div 
