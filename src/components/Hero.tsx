@@ -358,11 +358,11 @@ const Hero: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Video Counter */}
-        {videoQuality === 'mobile' && !sectionUnlocked && (
+        {/* Mobile Last Video Text - Only show on last video for mobile */}
+        {videoQuality === 'mobile' && !sectionUnlocked && currentVideoIndex === videos.length - 1 && (
           <div className="absolute left-8 top-1/2 transform -translate-y-1/2 z-20">
             <div className="bg-black/30 backdrop-blur-sm rounded-full px-3 py-2 text-white/90 text-sm font-medium">
-              {currentVideoIndex + 1} / {videos.length}
+              Last Video
             </div>
           </div>
         )}
