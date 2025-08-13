@@ -8,6 +8,11 @@ const Header: React.FC = () => {
   const [isTransparent, setIsTransparent] = useState(true);
   const { t } = useTranslation();
 
+  // Function to close mobile menu
+  const closeMobileMenu = () => {
+    setIsMenuOpen(false);
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -82,27 +87,116 @@ const Header: React.FC = () => {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className={`md:hidden py-4 border-t ${isTransparent ? 'border-white/20' : 'border-gray-200'}`}>
-            <nav className="flex flex-col space-y-4">
-              <a href="#vision" className={`transition-colors ${isTransparent ? 'text-white hover:text-yellow-300' : 'text-gray-600 hover:text-primary-600'}`}>
-                {t('navigation.vision')}
-              </a>
-              <a href="#features" className={`transition-colors ${isTransparent ? 'text-white hover:text-yellow-300' : 'text-gray-600 hover:text-primary-600'}`}>
-                {t('navigation.features')}
-              </a>
-              <a href="#traction" className={`transition-colors ${isTransparent ? 'text-white hover:text-yellow-300' : 'text-gray-600 hover:text-primary-600'}`}>
-                {t('navigation.traction')}
-              </a>
-              <a href="#team" className={`transition-colors ${isTransparent ? 'text-white hover:text-yellow-300' : 'text-gray-600 hover:text-primary-600'}`}>
-                {t('navigation.team')}
-              </a>
-              <a href="#contact" className={`inline-block text-center transition-all duration-200 ${isTransparent ? 'bg-white/20 text-white border border-white hover:bg-white hover:text-primary-600' : 'btn-primary'}`}>
-                {t('navigation.getInTouch')}
-              </a>
-              <div className="pt-2">
-                <LanguageSwitcher />
+          <div className={`md:hidden ${isTransparent ? 'bg-gradient-to-b from-black/95 to-black/85 backdrop-blur-xl' : 'bg-white shadow-lg'}`}>
+            {/* Menu Header */}
+            <div className={`px-6 py-4 border-b ${isTransparent ? 'border-white/10' : 'border-gray-100'}`}>
+              <div className="flex items-center justify-between">
+                <span className={`text-sm font-medium ${isTransparent ? 'text-white/70' : 'text-gray-500'}`}>
+                  Navigation
+                </span>
+                <div className="flex items-center space-x-2">
+                  <LanguageSwitcher />
+                </div>
+              </div>
+            </div>
+            
+            {/* Navigation Links */}
+            <nav className="px-6 py-6">
+              <div className="flex flex-col space-y-1">
+                <a 
+                  href="#vision" 
+                  onClick={closeMobileMenu}
+                  className={`group flex items-center justify-between py-3 px-4 rounded-lg transition-all duration-200 ${
+                    isTransparent 
+                      ? 'text-white hover:bg-white/10 hover:text-yellow-300' 
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-primary-600'
+                  }`}
+                >
+                  <span className="font-medium">{t('navigation.vision')}</span>
+                  <div className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                    isTransparent ? 'bg-yellow-300/50 group-hover:bg-yellow-300' : 'bg-primary-300/50 group-hover:bg-primary-500'
+                  }`}></div>
+                </a>
+                
+                <a 
+                  href="#features" 
+                  onClick={closeMobileMenu}
+                  className={`group flex items-center justify-between py-3 px-4 rounded-lg transition-all duration-200 ${
+                    isTransparent 
+                      ? 'text-white hover:bg-white/10 hover:text-yellow-300' 
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-primary-600'
+                  }`}
+                >
+                  <span className="font-medium">{t('navigation.features')}</span>
+                  <div className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                    isTransparent ? 'bg-yellow-300/50 group-hover:bg-yellow-300' : 'bg-primary-300/50 group-hover:bg-primary-500'
+                  }`}></div>
+                </a>
+                
+                <a 
+                  href="#traction" 
+                  onClick={closeMobileMenu}
+                  className={`group flex items-center justify-between py-3 px-4 rounded-lg transition-all duration-200 ${
+                    isTransparent 
+                      ? 'text-white hover:bg-white/10 hover:text-yellow-300' 
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-primary-600'
+                  }`}
+                >
+                  <span className="font-medium">{t('navigation.traction')}</span>
+                  <div className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                    isTransparent ? 'bg-yellow-300/50 group-hover:bg-yellow-300' : 'bg-primary-300/50 group-hover:bg-primary-500'
+                  }`}></div>
+                </a>
+                
+                <a 
+                  href="#team" 
+                  onClick={closeMobileMenu}
+                  className={`group flex items-center justify-between py-3 px-4 rounded-lg transition-all duration-200 ${
+                    isTransparent 
+                      ? 'text-white hover:bg-white/10 hover:text-yellow-300' 
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-primary-600'
+                  }`}
+                >
+                  <span className="font-medium">{t('navigation.team')}</span>
+                  <div className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                    isTransparent ? 'bg-yellow-300/50 group-hover:bg-yellow-300' : 'bg-primary-300/50 group-hover:bg-primary-500'
+                  }`}></div>
+                </a>
               </div>
             </nav>
+            
+            {/* Action Buttons */}
+            <div className="px-6 pb-6 space-y-3">
+              <a 
+                href="#contact" 
+                onClick={closeMobileMenu}
+                className={`block w-full text-center py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+                  isTransparent 
+                    ? 'bg-yellow-400 text-black hover:bg-yellow-300 active:scale-95' 
+                    : 'btn-primary'
+                }`}
+              >
+                {t('navigation.getInTouch')}
+              </a>
+              
+              {/* Quick Stats */}
+              <div className={`pt-4 border-t ${isTransparent ? 'border-white/10' : 'border-gray-100'}`}>
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  <div>
+                    <div className={`text-lg font-bold ${isTransparent ? 'text-yellow-300' : 'text-primary-600'}`}>19</div>
+                    <div className={`text-xs ${isTransparent ? 'text-white/60' : 'text-gray-500'}`}>Languages</div>
+                  </div>
+                  <div>
+                    <div className={`text-lg font-bold ${isTransparent ? 'text-yellow-300' : 'text-primary-600'}`}>5M+</div>
+                    <div className={`text-xs ${isTransparent ? 'text-white/60' : 'text-gray-500'}`}>Users</div>
+                  </div>
+                  <div>
+                    <div className={`text-lg font-bold ${isTransparent ? 'text-yellow-300' : 'text-primary-600'}`}>6</div>
+                    <div className={`text-xs ${isTransparent ? 'text-white/60' : 'text-gray-500'}`}>Features</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
