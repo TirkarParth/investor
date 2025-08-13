@@ -340,78 +340,7 @@ const Hero: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Last Video Text - Only show on last video for mobile */}
-        {videoQuality === 'mobile' && !sectionUnlocked && currentVideoIndex === videos.length - 1 && (
-          <div className="absolute left-8 top-1/2 transform -translate-y-1/2 z-20">
-            <div className="bg-black/30 backdrop-blur-sm rounded-full px-3 py-2 text-white/90 text-sm font-medium">
-              Last Video
-            </div>
-          </div>
-        )}
 
-        {/* Mobile Swipe Hint - Only show on mobile devices */}
-        {videoQuality === 'mobile' && !sectionUnlocked && (
-          <div className="absolute left-1/2 bottom-8 transform -translate-x-1/2 z-20 text-center">
-            <div className="bg-black/30 backdrop-blur-sm rounded-full px-4 py-2 text-white/80 text-sm">
-              <div className="flex items-center space-x-2">
-                <div className="flex flex-col items-center">
-                  <div className="w-4 h-4 border-t-2 border-white/60 rounded-t-full"></div>
-                  <div className="w-4 h-4 border-b-2 border-white/60 rounded-b-full mt-1"></div>
-                </div>
-                <span>Swipe to navigate videos</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Mobile Navigation Buttons - Fallback for touch navigation */}
-        {videoQuality === 'mobile' && !sectionUnlocked && (
-          <div className="absolute left-1/2 bottom-20 transform -translate-x-1/2 z-20 flex space-x-4">
-            <button
-              onClick={() => {
-                if (currentVideoIndex > 0 && !isTransitioning) {
-                  setIsTransitioning(true);
-                  setCurrentVideoIndex(prev => prev - 1);
-                  setTimeout(() => setIsTransitioning(false), 1000);
-                }
-              }}
-              disabled={currentVideoIndex === 0 || isTransitioning}
-              className={`p-3 rounded-full transition-all duration-200 ${
-                currentVideoIndex === 0 || isTransitioning
-                  ? 'bg-white/20 text-white/50 cursor-not-allowed'
-                  : 'bg-white/30 text-white hover:bg-white/50 active:scale-95'
-              }`}
-              aria-label="Previous video"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-              </svg>
-            </button>
-            
-            <button
-              onClick={() => {
-                if (currentVideoIndex < videos.length - 1 && !isTransitioning) {
-                  setIsTransitioning(true);
-                  setCurrentVideoIndex(prev => prev + 1);
-                  setTimeout(() => setIsTransitioning(false), 1000);
-                } else if (currentVideoIndex === videos.length - 1) {
-                  setSectionUnlocked(true);
-                }
-              }}
-              disabled={isTransitioning}
-              className={`p-3 rounded-full transition-all duration-200 ${
-                isTransitioning
-                  ? 'bg-white/20 text-white/50 cursor-not-allowed'
-                  : 'bg-white/30 text-white hover:bg-white/50 active:scale-95'
-              }`}
-              aria-label="Next video"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-            </button>
-          </div>
-        )}
 
         {/* Dedicated Touch Overlay for Mobile Swipe Detection */}
         {videoQuality === 'mobile' && !sectionUnlocked && (
@@ -424,9 +353,13 @@ const Hero: React.FC = () => {
             onTouchStart={(e) => {
               const touch = e.touches[0];
               touchStartY.current = touch.clientY;
+              touchEndY.current = touch.clientY; // Reset end position
             }}
             onTouchMove={(e) => {
               e.preventDefault();
+              // Update end position during move for better accuracy
+              const touch = e.touches[0];
+              touchEndY.current = touch.clientY;
             }}
             onTouchEnd={(e) => {
               const touch = e.changedTouches[0];
@@ -434,16 +367,25 @@ const Hero: React.FC = () => {
               const touchDiff = touchStartY.current - touchEndY.current;
               const minSwipeDistance = 50;
               
+              console.log('Touch detected:', {
+                start: touchStartY.current,
+                end: touchEndY.current,
+                diff: touchDiff,
+                threshold: minSwipeDistance
+              });
+              
               // Handle video navigation based on swipe direction
               if (Math.abs(touchDiff) >= minSwipeDistance) {
                 if (touchDiff > 0) {
                   // Swipe up - go to next video
+                  console.log('Swipe UP detected - going to next video');
                   setSwipeFeedback('up');
                   handleVideoNavigation('next');
                   // Clear feedback after animation
                   setTimeout(() => setSwipeFeedback(null), 1000);
                 } else {
                   // Swipe down - go to previous video
+                  console.log('Swipe DOWN detected - going to previous video');
                   setSwipeFeedback('down');
                   handleVideoNavigation('prev');
                   // Clear feedback after animation

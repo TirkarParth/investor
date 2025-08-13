@@ -88,17 +88,7 @@ const Header: React.FC = () => {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className={`md:hidden ${isTransparent ? 'bg-gradient-to-b from-black/95 to-black/85 backdrop-blur-xl' : 'bg-white shadow-lg'}`}>
-            {/* Menu Header */}
-            <div className={`px-6 py-4 border-b ${isTransparent ? 'border-white/10' : 'border-gray-100'}`}>
-              <div className="flex items-center justify-between">
-                <span className={`text-sm font-medium ${isTransparent ? 'text-white/70' : 'text-gray-500'}`}>
-                  Navigation
-                </span>
-                <div className="flex items-center space-x-2">
-                  <LanguageSwitcher />
-                </div>
-              </div>
-            </div>
+
             
             {/* Navigation Links */}
             <nav className="px-6 py-6">
@@ -179,21 +169,10 @@ const Header: React.FC = () => {
                 {t('navigation.getInTouch')}
               </a>
               
-              {/* Quick Stats */}
-              <div className={`pt-4 border-t ${isTransparent ? 'border-white/10' : 'border-gray-100'}`}>
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div>
-                    <div className={`text-lg font-bold ${isTransparent ? 'text-yellow-300' : 'text-primary-600'}`}>19</div>
-                    <div className={`text-xs ${isTransparent ? 'text-white/60' : 'text-gray-500'}`}>Languages</div>
-                  </div>
-                  <div>
-                    <div className={`text-lg font-bold ${isTransparent ? 'text-yellow-300' : 'text-primary-600'}`}>5M+</div>
-                    <div className={`text-xs ${isTransparent ? 'text-white/60' : 'text-gray-500'}`}>Users</div>
-                  </div>
-                  <div>
-                    <div className={`text-lg font-bold ${isTransparent ? 'text-yellow-300' : 'text-primary-600'}`}>6</div>
-                    <div className={`text-xs ${isTransparent ? 'text-white/60' : 'text-gray-500'}`}>Features</div>
-                  </div>
+              {/* Language Switcher at the bottom */}
+              <div className="pt-4 border-t border-white/10">
+                <div className="flex justify-center">
+                  <LanguageSwitcher />
                 </div>
               </div>
             </div>
