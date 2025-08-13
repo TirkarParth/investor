@@ -3,6 +3,15 @@ import { FileText, Play, Mail, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { getVideoQuality, getVideoSources } from '../utils/deviceDetection';
 
+// Function to get poster image for each video
+const getPosterImage = (videoIndex: number, quality: 'mobile' | 'desktop') => {
+  const videoNumber = videoIndex + 1;
+  if (quality === 'mobile') {
+    return `${process.env.PUBLIC_URL}/images/video/mobile/poster-${videoNumber}.jpg`;
+  }
+  return `${process.env.PUBLIC_URL}/images/video/poster-${videoNumber}.jpg`;
+};
+
 const Hero: React.FC = () => {
   const { t } = useTranslation();
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
@@ -316,7 +325,7 @@ const Hero: React.FC = () => {
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
               index === currentVideoIndex ? 'opacity-100' : 'opacity-0'
             }`}
-            poster={`${process.env.PUBLIC_URL}/images/video/poster.jpg`}
+            poster={getPosterImage(index, videoQuality)}
           >
             <source src={videoSrc} type="video/mp4" />
             Your browser does not support the video tag.
