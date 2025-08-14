@@ -280,5 +280,37 @@
     "traction": "Traction",
     "team": "Team",
     "getInTouch": "Get in Touch"
+  },
+  "cookies": {
+    "title": "Cookies",
+    "description": "This platform uses cookies! In order to operate this website, it is necessary for us to use cookies. Some cookies are necessary to ensure functionality, others are needed for our statistics and others help us to show you only the advertisements that interest you. You can find out more in our privacy policy.",
+    "selectGroups": "Select Cookie Groups:",
+    "categories": {
+      "googleAnalytics": "Google Analytics",
+      "googleTagManager": "Google Tag Manager",
+      "googleAdvertising": "Google Advertising",
+      "hubSpot": "HubSpot",
+      "notSpecified": "Not specified"
+    },
+    "descriptions": {
+      "googleAnalytics": "For website statistics and performance analysis",
+      "googleTagManager": "For managing website tags and tracking",
+      "googleAdvertising": "For personalized advertising and remarketing",
+      "hubSpot": "For marketing automation and CRM functions",
+      "notSpecified": "Additional cookie categories"
+    },
+    "buttons": {
+      "allowSelected": "Allow Selected Cookies",
+      "allowAll": "Allow All Cookies",
+      "denyAll": "Deny All Cookies"
+    },
+    "settings": {
+      "title": "Cookie Settings",
+      "save": "Save Settings"
+    },
+    "links": {
+      "imprint": "Imprint",
+      "privacy": "Data Protection"
+    }
   }
 } 

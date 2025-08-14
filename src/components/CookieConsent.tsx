@@ -34,10 +34,6 @@ const CookieConsent: React.FC = () => {
     setIsVisible(false);
   };
 
-  const handleCustomize = () => {
-    setShowCookieSettings(true);
-  };
-
   const toggleCookie = (cookieType: keyof typeof cookiePreferences) => {
     setCookiePreferences(prev => ({
       ...prev,
@@ -63,7 +59,7 @@ const CookieConsent: React.FC = () => {
       <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900">Cookies</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{t('cookies.title')}</h2>
           <button
             onClick={handleClose}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -75,17 +71,15 @@ const CookieConsent: React.FC = () => {
         {/* Content */}
         <div className="p-6">
           <p className="text-gray-700 leading-relaxed mb-6">
-            Diese Plattform verwendet Cookies! Um diese Website zu betreiben, ist es für uns notwendig Cookies zu verwenden. 
-            Einige Cookies sind erforderlich, um die Funktionalität zu gewährleisten, andere brauchen wir für unsere Statistik 
-            und wieder andere helfen uns, Dir nur die Werbung anzuzeigen, die Dich interessiert. Mehr erfährst Du in unserer Datenschutzerklärung.
+            {t('cookies.description')}
           </p>
 
           {/* Cookie Group Selection */}
           <div className="mb-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Cookie-Gruppen auswählen:</h3>
+            <h3 className="text-lg font-medium text-gray-900 mb-4">{t('cookies.selectGroups')}</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                <span className="text-gray-700">Google Analytics</span>
+                <span className="text-gray-700">{t('cookies.categories.googleAnalytics')}</span>
                 <button
                   onClick={() => toggleCookie('googleAnalytics')}
                   className={`w-12 h-6 rounded-full flex items-center p-1 transition-colors ${
@@ -98,7 +92,7 @@ const CookieConsent: React.FC = () => {
                 </button>
               </div>
               <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                <span className="text-gray-700">Google Tag Manager</span>
+                <span className="text-gray-700">{t('cookies.categories.googleTagManager')}</span>
                 <button
                   onClick={() => toggleCookie('googleTagManager')}
                   className={`w-12 h-6 rounded-full flex items-center p-1 transition-colors ${
@@ -111,7 +105,7 @@ const CookieConsent: React.FC = () => {
                 </button>
               </div>
               <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                <span className="text-gray-700">Google Advertising</span>
+                <span className="text-gray-700">{t('cookies.categories.googleAdvertising')}</span>
                 <button
                   onClick={() => toggleCookie('googleAdvertising')}
                   className={`w-12 h-6 rounded-full flex items-center p-1 transition-colors ${
@@ -124,7 +118,7 @@ const CookieConsent: React.FC = () => {
                 </button>
               </div>
               <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                <span className="text-gray-700">HubSpot</span>
+                <span className="text-gray-700">{t('cookies.categories.hubSpot')}</span>
                 <button
                   onClick={() => toggleCookie('hubSpot')}
                   className={`w-12 h-6 rounded-full flex items-center p-1 transition-colors ${
@@ -137,7 +131,7 @@ const CookieConsent: React.FC = () => {
                 </button>
               </div>
               <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
-                <span className="text-gray-700">Nicht angegeben</span>
+                <span className="text-gray-700">{t('cookies.categories.notSpecified')}</span>
                 <button
                   onClick={() => toggleCookie('notSpecified')}
                   className={`w-12 h-6 rounded-full flex items-center p-1 transition-colors ${
@@ -158,19 +152,19 @@ const CookieConsent: React.FC = () => {
               onClick={handleSavePreferences}
               className="flex-1 px-6 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 active:scale-95 transition-all duration-200"
             >
-              Ausgewählte Cookies zulassen
+              {t('cookies.buttons.allowSelected')}
             </button>
             <button
               onClick={handleAcceptAll}
               className="flex-1 px-6 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 active:scale-95 transition-all duration-200"
             >
-              Alle Cookies zulassen
+              {t('cookies.buttons.allowAll')}
             </button>
             <button
               onClick={handleRejectAll}
               className="flex-1 px-6 py-3 border-2 border-primary-600 text-primary-600 bg-white rounded-lg font-medium hover:bg-primary-50 transition-colors"
             >
-              Alle Cookies verweigern
+              {t('cookies.buttons.denyAll')}
             </button>
           </div>
 
@@ -182,7 +176,7 @@ const CookieConsent: React.FC = () => {
               rel="noopener noreferrer"
               className="text-primary-600 hover:text-primary-700 underline"
             >
-              Impressum
+              {t('cookies.links.imprint')}
             </a>
             <span className="mx-2 text-gray-400">|</span>
             <a 
@@ -191,7 +185,7 @@ const CookieConsent: React.FC = () => {
               rel="noopener noreferrer"
               className="text-primary-600 hover:text-primary-700 underline"
             >
-              Datenschutz
+              {t('cookies.links.privacy')}
             </a>
           </div>
         </div>
@@ -202,7 +196,7 @@ const CookieConsent: React.FC = () => {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h3 className="text-xl font-bold text-gray-900">Cookie-Einstellungen</h3>
+              <h3 className="text-xl font-bold text-gray-900">{t('cookies.settings.title')}</h3>
               <button
                 onClick={() => setShowCookieSettings(false)}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -214,8 +208,8 @@ const CookieConsent: React.FC = () => {
             <div className="p-6 space-y-4">
               <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                 <div>
-                  <h4 className="font-medium text-gray-900">Google Analytics</h4>
-                  <p className="text-sm text-gray-600">Für Website-Statistiken und Performance-Analysen</p>
+                  <h4 className="font-medium text-gray-900">{t('cookies.categories.googleAnalytics')}</h4>
+                  <p className="text-sm text-gray-600">{t('cookies.descriptions.googleAnalytics')}</p>
                 </div>
                 <button
                   onClick={() => toggleCookie('googleAnalytics')}
@@ -231,8 +225,8 @@ const CookieConsent: React.FC = () => {
               
               <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                 <div>
-                  <h4 className="font-medium text-gray-900">Google Tag Manager</h4>
-                  <p className="text-sm text-gray-600">Für die Verwaltung von Website-Tags und Tracking</p>
+                  <h4 className="font-medium text-gray-900">{t('cookies.categories.googleTagManager')}</h4>
+                  <p className="text-sm text-gray-600">{t('cookies.descriptions.googleTagManager')}</p>
                 </div>
                 <button
                   onClick={() => toggleCookie('googleTagManager')}
@@ -248,8 +242,8 @@ const CookieConsent: React.FC = () => {
               
               <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                 <div>
-                  <h4 className="font-medium text-gray-900">Google Advertising</h4>
-                  <p className="text-sm text-gray-600">Für personalisierte Werbung und Remarketing</p>
+                  <h4 className="font-medium text-gray-900">{t('cookies.categories.googleAdvertising')}</h4>
+                  <p className="text-sm text-gray-600">{t('cookies.descriptions.googleAdvertising')}</p>
                 </div>
                 <button
                   onClick={() => toggleCookie('googleAdvertising')}
@@ -265,8 +259,8 @@ const CookieConsent: React.FC = () => {
               
               <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                 <div>
-                  <h4 className="font-medium text-gray-900">HubSpot</h4>
-                  <p className="text-sm text-gray-600">Für Marketing-Automation und CRM-Funktionen</p>
+                  <h4 className="font-medium text-gray-900">{t('cookies.categories.hubSpot')}</h4>
+                  <p className="text-sm text-gray-600">{t('cookies.descriptions.hubSpot')}</p>
                 </div>
                 <button
                   onClick={() => toggleCookie('hubSpot')}
@@ -282,8 +276,8 @@ const CookieConsent: React.FC = () => {
               
               <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
                 <div>
-                  <h4 className="font-medium text-gray-900">Nicht angegeben</h4>
-                  <p className="text-sm text-gray-600">Weitere Cookie-Kategorien</p>
+                  <h4 className="font-medium text-gray-900">{t('cookies.categories.notSpecified')}</h4>
+                  <p className="text-sm text-gray-600">{t('cookies.descriptions.notSpecified')}</p>
                 </div>
                 <button
                   onClick={() => toggleCookie('notSpecified')}
@@ -303,7 +297,7 @@ const CookieConsent: React.FC = () => {
                 onClick={() => setShowCookieSettings(false)}
                 className="w-full px-6 py-3 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 active:scale-95 transition-all duration-200"
               >
-                Einstellungen speichern
+                {t('cookies.settings.save')}
               </button>
             </div>
           </div>

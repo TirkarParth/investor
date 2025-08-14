@@ -280,5 +280,37 @@
     "traction": "Traction",
     "team": "Team",
     "getInTouch": "Kontakt aufnehmen"
+  },
+  "cookies": {
+    "title": "Cookies",
+    "description": "Diese Plattform verwendet Cookies! Um diese Website zu betreiben, ist es für uns notwendig Cookies zu verwenden. Einige Cookies sind erforderlich, um die Funktionalität zu gewährleisten, andere brauchen wir für unsere Statistik und wieder andere helfen uns, Dir nur die Werbung anzuzeigen, die Dich interessiert. Mehr erfährst Du in unserer Datenschutzerklärung.",
+    "selectGroups": "Cookie-Gruppen auswählen:",
+    "categories": {
+      "googleAnalytics": "Google Analytics",
+      "googleTagManager": "Google Tag Manager",
+      "googleAdvertising": "Google Advertising",
+      "hubSpot": "HubSpot",
+      "notSpecified": "Nicht angegeben"
+    },
+    "descriptions": {
+      "googleAnalytics": "Für Website-Statistiken und Performance-Analysen",
+      "googleTagManager": "Für die Verwaltung von Website-Tags und Tracking",
+      "googleAdvertising": "Für personalisierte Werbung und Remarketing",
+      "hubSpot": "Für Marketing-Automation und CRM-Funktionen",
+      "notSpecified": "Weitere Cookie-Kategorien"
+    },
+    "buttons": {
+      "allowSelected": "Ausgewählte Cookies zulassen",
+      "allowAll": "Alle Cookies zulassen",
+      "denyAll": "Alle Cookies verweigern"
+    },
+    "settings": {
+      "title": "Cookie-Einstellungen",
+      "save": "Einstellungen speichern"
+    },
+    "links": {
+      "imprint": "Impressum",
+      "privacy": "Datenschutz"
+    }
   }
 } 
