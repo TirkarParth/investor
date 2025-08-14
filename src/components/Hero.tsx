@@ -21,7 +21,6 @@ const Hero: React.FC = () => {
   const [sectionUnlocked, setSectionUnlocked] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [videoQuality, setVideoQuality] = useState<'mobile' | 'desktop'>('desktop');
-  const [swipeFeedback, setSwipeFeedback] = useState<'up' | 'down' | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
   const lastWheelTime = useRef<number>(0);
   const touchStartY = useRef<number>(0);
@@ -388,35 +387,18 @@ const Hero: React.FC = () => {
                 if (touchDiff > 0) {
                   // Swipe up - go to next video
                   console.log('Swipe UP detected - going to next video');
-                  setSwipeFeedback('up');
                   handleVideoNavigation('next');
-                  // Clear feedback after animation
-                  setTimeout(() => setSwipeFeedback(null), 1000);
                 } else {
                   // Swipe down - go to previous video
                   console.log('Swipe DOWN detected - going to previous video');
-                  setSwipeFeedback('down');
                   handleVideoNavigation('prev');
-                  // Clear feedback after animation
-                  setTimeout(() => setSwipeFeedback(null), 1000);
                 }
               }
             }}
           />
         )}
 
-        {/* Swipe Feedback Animation */}
-        {swipeFeedback && (
-          <div className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none">
-            <div className={`bg-yellow-300/80 text-black px-6 py-3 rounded-full font-bold text-lg transform transition-all duration-500 ${
-              swipeFeedback === 'up' 
-                ? 'animate-bounce translate-y-[-100px]' 
-                : 'animate-bounce translate-y-[100px]'
-            }`}>
-              {swipeFeedback === 'up' ? '↑ Next Video' : '↓ Previous Video'}
-            </div>
-          </div>
-        )}
+
       </div>
 
       {/* Content - with lower z-index to prevent touch event conflicts */}
