@@ -21,13 +21,13 @@ const Milestones: React.FC = () => {
     },
     {
       key: 'webapp',
-      logo: '/images/milestones/tradefoox-logo.png',
+      logo: '/images/milestones/TF%20web%20Favicon.svg',
       favicon: '/images/milestones/TF%20web%20Favicon.svg',
       color: 'bg-purple-500'
     },
     {
       key: 'nativeapp',
-      logo: '/images/milestones/tradefoox-logo.png',
+      logo: '/images/milestones/TF%20app%20favicon.webp',
       favicon: '/images/milestones/TF%20app%20favicon.webp',
       color: 'bg-orange-500'
     }
