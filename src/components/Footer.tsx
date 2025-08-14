@@ -75,12 +75,12 @@ const Footer: React.FC = () => {
             <h3 className="text-lg font-semibold mb-4">{t('footer.legal')}</h3>
             <ul className="space-y-2">
               <li>
-                <a href="/imprint" className="text-gray-300 hover:text-white transition-colors">
+                <a href="https://tradefoox.com/impressum" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors">
                   {t('footer.links.imprint')}
                 </a>
               </li>
               <li>
-                <a href="/privacy" className="text-gray-300 hover:text-white transition-colors">
+                <a href="https://tradefoox.com/datenschutz" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors">
                   {t('footer.links.privacy')}
                 </a>
               </li>
@@ -105,7 +105,7 @@ const Footer: React.FC = () => {
               {t('footer.copyright')}
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <a href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">
+              <a href="https://tradefoox.com/datenschutz" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white text-sm transition-colors">
                 {t('footer.legalLinks.privacy')}
               </a>
               <a href="/cookies" className="text-gray-400 hover:text-white text-sm transition-colors">
