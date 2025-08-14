@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Calendar, Globe, Smartphone, Monitor } from 'lucide-react';
 
 const Milestones: React.FC = () => {
   const { t } = useTranslation();
@@ -9,23 +8,27 @@ const Milestones: React.FC = () => {
   const milestones = [
     {
       key: 'project',
-      icon: Calendar,
+      logo: '/images/milestones/Projekt%20auftrags%20vergabe.png',
+      favicon: '/images/milestones/Projekt%20auftrags%20vergabe.png',
       color: 'bg-blue-500',
       url: 'https://projekt-auftragsvergabe.com/'
     },
     {
       key: 'dayone',
-      icon: Globe,
+      logo: '/images/logo/dayonelogo-removebg-preview.png',
+      favicon: '/images/logo/Favicon.png',
       color: 'bg-green-500'
     },
     {
       key: 'webapp',
-      icon: Monitor,
+      logo: '/images/milestones/tradefoox-logo.png',
+      favicon: '/images/milestones/TF%20web%20Favicon.svg',
       color: 'bg-purple-500'
     },
     {
       key: 'nativeapp',
-      icon: Smartphone,
+      logo: '/images/milestones/tradefoox-logo.png',
+      favicon: '/images/milestones/TF%20app%20favicon.webp',
       color: 'bg-orange-500'
     }
   ];
@@ -43,26 +46,15 @@ const Milestones: React.FC = () => {
         {selectedMilestone && (
           <div className="mb-16">
             <div className="flex rounded-2xl shadow-xl overflow-hidden transition-all duration-500 max-w-4xl mx-auto">
-              {/* Left side - Dynamic colored background matching timeline icon */}
-              <div className={`p-6 text-white flex flex-col items-center justify-center w-64 h-64 ${
-                (() => {
-                  const selectedMilestoneData = milestones.find(m => m.key === selectedMilestone);
-                  if (selectedMilestoneData?.key === 'project') return 'bg-blue-500'; // Blue for project
-                  if (selectedMilestoneData?.key === 'dayone') return 'bg-green-500'; // Green for dayone
-                  if (selectedMilestoneData?.key === 'webapp') return 'bg-purple-500'; // Purple for webapp
-                  if (selectedMilestoneData?.key === 'nativeapp') return 'bg-orange-500'; // Orange for nativeapp
-                  return 'bg-blue-500'; // Default fallback
-                })()
-              }`}>
-                <div className="w-20 h-20 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mb-4">
-                  {(() => {
-                    const IconComponent = milestones.find(m => m.key === selectedMilestone)?.icon || Globe;
-                    return <IconComponent className="w-10 h-10 text-white" />;
-                  })()}
+              {/* Left side - Logo area */}
+              <div className="p-6 flex flex-col items-center justify-center w-64 h-64 bg-white">
+                <div className="w-64 h-64 flex items-center justify-center p-4">
+                  <img 
+                    src={milestones.find(m => m.key === selectedMilestone)?.logo || '/images/logo/dayonelogo-removebg-preview.png'} 
+                    alt={`${selectedMilestone} logo`}
+                    className="w-full h-full object-contain"
+                  />
                 </div>
-                <h3 className="text-xl font-bold text-center leading-tight">
-                  {t(`traction.companyMilestones.items.${selectedMilestone}.title`)}
-                </h3>
               </div>
               
               {/* Right side - White background with date and description */}
@@ -105,18 +97,20 @@ const Milestones: React.FC = () => {
           {/* Clickable milestone points */}
           <div className="relative flex justify-between items-center">
             {milestones.map((milestone, index) => {
-              const IconComponent = milestone.icon;
-              
               return (
                 <div key={milestone.key} className="relative flex flex-col items-center">
                   {/* Clickable milestone dot */}
                   <button
                     onClick={() => setSelectedMilestone(selectedMilestone === milestone.key ? null : milestone.key)}
-                    className={`w-12 h-12 ${milestone.color} rounded-full flex items-center justify-center text-white shadow-lg z-10 mb-4 hover:scale-110 transition-transform cursor-pointer ${
+                    className={`w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg z-10 mb-4 hover:scale-110 transition-transform cursor-pointer border-2 border-gray-200 ${
                       selectedMilestone === milestone.key ? 'ring-4 ring-blue-300 ring-offset-2' : ''
                     }`}
                   >
-                    <IconComponent className="w-6 h-6" />
+                    <img 
+                      src={milestone.favicon} 
+                      alt={`${milestone.key} favicon`}
+                      className="w-6 h-6 object-contain"
+                    />
                   </button>
                   
                   {/* Date label */}
@@ -137,26 +131,15 @@ const Milestones: React.FC = () => {
           {selectedMilestone && (
             <div className="col-span-full mb-8 overflow-hidden rounded-2xl shadow-lg max-w-sm mx-auto">
               <div className="flex flex-col">
-                {/* Top section - Dynamic colored background matching timeline icon */}
-                <div className={`p-6 text-white text-center h-48 flex flex-col justify-center ${
-                  (() => {
-                    const selectedMilestoneData = milestones.find(m => m.key === selectedMilestone);
-                    if (selectedMilestoneData?.key === 'project') return 'bg-blue-500'; // Blue for project
-                    if (selectedMilestoneData?.key === 'dayone') return 'bg-green-500'; // Green for dayone
-                    if (selectedMilestoneData?.key === 'webapp') return 'bg-purple-500'; // Purple for webapp
-                    if (selectedMilestoneData?.key === 'nativeapp') return 'bg-orange-500'; // Orange for nativeapp
-                    return 'bg-blue-500'; // Default fallback
-                  })()
-                }`}>
-                  <div className="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center mx-auto mb-3">
-                    {(() => {
-                      const IconComponent = milestones.find(m => m.key === selectedMilestone)?.icon || Globe;
-                      return <IconComponent className="w-8 h-8 text-white" />;
-                    })()}
+                {/* Top section - Logo area */}
+                <div className="p-6 text-center h-48 flex flex-col justify-center bg-white">
+                  <div className="h-48 flex items-center justify-center p-4">
+                    <img 
+                      src={milestones.find(m => m.key === selectedMilestone)?.logo || '/images/logo/dayonelogo-removebg-preview.png'} 
+                      alt={`${selectedMilestone} logo`}
+                      className="w-full h-full object-contain"
+                    />
                   </div>
-                  <h3 className="text-lg font-bold">
-                    {t(`traction.companyMilestones.items.${selectedMilestone}.title`)}
-                  </h3>
                 </div>
                 
                 {/* Bottom section - White background with date and description */}
@@ -183,8 +166,6 @@ const Milestones: React.FC = () => {
           )}
           
           {milestones.map((milestone) => {
-            const IconComponent = milestone.icon;
-            
             return (
               <button
                 key={milestone.key}
@@ -195,8 +176,12 @@ const Milestones: React.FC = () => {
                     : 'bg-gray-50 hover:bg-gray-100'
                 }`}
               >
-                <div className={`w-16 h-16 ${milestone.color} rounded-full flex items-center justify-center text-white mx-auto mb-4`}>
-                  <IconComponent className="w-8 h-8" />
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-gray-200">
+                  <img 
+                    src={milestone.favicon} 
+                    alt={`${milestone.key} favicon`}
+                    className="w-8 h-8 object-contain"
+                  />
                 </div>
                 <div className="text-sm font-semibold text-gray-600 mb-2">
                   {t(`traction.companyMilestones.items.${milestone.key}.date`)}
