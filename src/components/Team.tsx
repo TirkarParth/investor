@@ -2,22 +2,9 @@ import React from 'react';
 import { Users, Award, Code, Palette, TrendingUp } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
-// Function to detect mobile device and redirect to appropriate app store
-const redirectToAppStore = () => {
-  const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
-  
-  // Check if it's iOS
-  if (/iPad|iPhone|iPod/.test(userAgent)) {
-    window.open('https://apps.apple.com/de/app/tradefoox/id6477870055', '_blank');
-  }
-  // Check if it's Android
-  else if (/android/i.test(userAgent)) {
-    window.open('https://play.google.com/store/apps/details?id=app.tradefoox.mobile', '_blank');
-  }
-  // For desktop, open the website profile
-  else {
-    window.open('https://tradefoox.com/profile/aa200115-1bae-4915-b54f-5700ce5544f0', '_blank');
-  }
+// Function to open CEO profile
+const openCEOProfile = () => {
+  window.open('https://tradefoox.com/profile/aa200115-1bae-4915-b54f-5700ce5544f0', '_blank');
 };
 
 const Team: React.FC = () => {
@@ -42,7 +29,7 @@ const Team: React.FC = () => {
               <div className="block group hover:scale-105 transition-transform duration-200 cursor-pointer">
                 <div 
                   className="w-32 h-32 rounded-full overflow-hidden mx-auto mb-6"
-                  onClick={redirectToAppStore}
+                  onClick={openCEOProfile}
                 >
                   <img 
                     src={process.env.PUBLIC_URL + '/images/investors/ceo.jpeg'} 
@@ -70,6 +57,19 @@ const Team: React.FC = () => {
               <div className="flex items-center space-x-3">
                 <TrendingUp className="w-5 h-5 text-primary-600" />
                 <span className="text-gray-700">{t('team.founder.expertise.growth')}</span>
+              </div>
+              
+              {/* Mobile Profile Link */}
+              <div className="pt-4 border-t border-gray-200">
+                <button
+                  onClick={openCEOProfile}
+                  className="w-full bg-primary-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-primary-700 active:scale-95 transition-all duration-200 flex items-center justify-center space-x-2"
+                >
+                  <span>View CEO Profile</span>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </button>
               </div>
             </div>
           </div>
