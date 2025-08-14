@@ -126,6 +126,34 @@
         "description": "Integration im Watch Feed geplant"
       }
     },
+  "companyMilestones": {
+    "title": "Unternehmens-Meilensteine",
+    "subtitle": "Wichtige Meilensteine in der Unternehmensgeschichte",
+    "items": {
+      "project": {
+        "date": "August 2017",
+        "title": "Projekt und Auftragsvergabe",
+        "description": "Unternehmensgründung und Projektinitiierung",
+        "url": "https://projekt-auftragsvergabe.com/"
+      },
+      "dayone": {
+        "date": "Dezember 2020",
+        "title": "day one mediagroup",
+        "description": "Etablierung der day one mediagroup"
+      },
+      "webapp": {
+        "date": "Juli 2023",
+        "title": "TRADEFOOX Web-App",
+        "description": "Start der TRADEFOOX Web-Anwendung"
+      },
+      "nativeapp": {
+        "date": "Juli 2024",
+        "title": "TRADEFOOX Native-App",
+        "description": "Veröffentlichung der TRADEFOOX nativen mobilen Anwendungen"
+      }
+    },
+    "visitSite": "Website besuchen"
+  },
     "cta": {
       "title": "Bereit für Investitionen",
       "description": "Mit bewährter Traktion und einer skalierbaren Plattform beschleunigen wir das Wachstum – gemeinsam mit visionären Investmentpartnern. Mit TRADEFOOX schreiben Sie die nächste globale Erfolgsgeschichte. Es ist mehr als eine Investition: Sie gestalten den nächsten digitalen Giganten aus Europa mit."

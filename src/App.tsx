@@ -6,6 +6,7 @@ import Vision from './components/Vision';
 import Features from './components/Features';
 import GlobalScale from './components/GlobalScale';
 import Traction from './components/Traction';
+import Milestones from './components/Milestones';
 import Team from './components/Team';
 import Investment from './components/Investment';
 import SelectInvestors from './components/SelectInvestors';
@@ -93,6 +94,7 @@ function App() {
       <Features />
       <GlobalScale />
       <Traction />
+      <Milestones />
       <Team />
       <Investment />
       <SelectInvestors />
