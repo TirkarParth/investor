@@ -10,6 +10,7 @@ import Investment from './components/Investment';
 import SelectInvestors from './components/SelectInvestors';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import CookieConsent from './components/CookieConsent';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
       <SelectInvestors />
       <Contact />
       <Footer />
+      <CookieConsent />
     </div>
   );
 }
