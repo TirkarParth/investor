@@ -21,13 +21,13 @@ const Milestones: React.FC = () => {
     },
     {
       key: 'webapp',
-      logo: '/images/milestones/TF%20web%20Favicon.svg',
+      logo: '/images/milestones/tradefoox-logo.png',
       favicon: '/images/milestones/TF%20web%20Favicon.svg',
       color: 'bg-purple-500'
     },
     {
       key: 'nativeapp',
-      logo: '/images/milestones/TF%20app%20favicon.webp',
+      logo: '/images/milestones/tradefoox-logo.png',
       favicon: '/images/milestones/TF%20app%20favicon.webp',
       color: 'bg-orange-500'
     }
@@ -47,7 +47,16 @@ const Milestones: React.FC = () => {
           <div className="mb-16">
             <div className="flex rounded-2xl shadow-xl overflow-hidden transition-all duration-500 max-w-4xl mx-auto">
               {/* Left side - Logo area */}
-              <div className="p-6 flex flex-col items-center justify-center w-64 h-64 bg-white">
+              <div className={`p-6 flex flex-col items-center justify-center w-64 h-64 ${
+                (() => {
+                  const selectedMilestoneData = milestones.find(m => m.key === selectedMilestone);
+                  if (selectedMilestoneData?.key === 'project') return 'bg-blue-500/20'; // Transparent blue for Projekt
+                  if (selectedMilestoneData?.key === 'dayone') return 'bg-green-500/20'; // Transparent green for day one
+                  if (selectedMilestoneData?.key === 'webapp') return 'bg-red-500/20'; // Transparent red for TRADEFOOX Web-App
+                  if (selectedMilestoneData?.key === 'nativeapp') return 'bg-pink-500/20'; // Transparent pink for TRADEFOOX Native-App
+                  return 'bg-white'; // Default fallback
+                })()
+              }`}>
                 <div className="w-64 h-64 flex items-center justify-center p-4">
                   <img 
                     src={milestones.find(m => m.key === selectedMilestone)?.logo || '/images/logo/dayonelogo-removebg-preview.png'} 
@@ -102,7 +111,13 @@ const Milestones: React.FC = () => {
                   {/* Clickable milestone dot */}
                   <button
                     onClick={() => setSelectedMilestone(selectedMilestone === milestone.key ? null : milestone.key)}
-                    className={`w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg z-10 mb-4 hover:scale-110 transition-transform cursor-pointer border-2 border-gray-200 ${
+                    className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-10 mb-4 hover:scale-110 transition-transform cursor-pointer ${
+                      milestone.key === 'project' ? 'bg-blue-500/20 border-2 border-blue-500' :
+                      milestone.key === 'dayone' ? 'bg-green-500/20 border-2 border-green-500' :
+                      milestone.key === 'webapp' ? 'bg-red-500/20 border-2 border-red-500' : 
+                      milestone.key === 'nativeapp' ? 'bg-pink-500/20 border-2 border-pink-500' : 
+                      'bg-white border-2 border-gray-200'
+                    } ${
                       selectedMilestone === milestone.key ? 'ring-4 ring-blue-300 ring-offset-2' : ''
                     }`}
                   >
@@ -132,7 +147,13 @@ const Milestones: React.FC = () => {
             <div className="col-span-full mb-8 overflow-hidden rounded-2xl shadow-lg max-w-sm mx-auto">
               <div className="flex flex-col">
                 {/* Top section - Logo area */}
-                <div className="p-6 text-center h-48 flex flex-col justify-center bg-white">
+                <div className={`p-6 text-center h-48 flex flex-col justify-center ${
+                  selectedMilestone === 'project' ? 'bg-blue-500/20' :
+                  selectedMilestone === 'dayone' ? 'bg-green-500/20' :
+                  selectedMilestone === 'webapp' ? 'bg-red-500/20' : 
+                  selectedMilestone === 'nativeapp' ? 'bg-pink-500/20' : 
+                  'bg-white'
+                }`}>
                   <div className="h-48 flex items-center justify-center p-4">
                     <img 
                       src={milestones.find(m => m.key === selectedMilestone)?.logo || '/images/logo/dayonelogo-removebg-preview.png'} 
@@ -176,7 +197,13 @@ const Milestones: React.FC = () => {
                     : 'bg-gray-50 hover:bg-gray-100'
                 }`}
               >
-                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-gray-200">
+                <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
+                  milestone.key === 'project' ? 'bg-blue-500/20 border-2 border-blue-500' :
+                  milestone.key === 'dayone' ? 'bg-green-500/20 border-2 border-green-500' :
+                  milestone.key === 'webapp' ? 'bg-red-500/20 border-2 border-red-500' : 
+                  milestone.key === 'nativeapp' ? 'bg-pink-500/20 border-2 border-pink-500' : 
+                  'bg-white border-2 border-gray-200'
+                }`}>
                   <img 
                     src={milestone.favicon} 
                     alt={`${milestone.key} favicon`}
