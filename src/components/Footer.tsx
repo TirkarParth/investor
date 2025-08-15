@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe, Linkedin, Mail } from 'lucide-react';
+import { Linkedin, Mail } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const Footer: React.FC = () => {
@@ -12,9 +12,11 @@ const Footer: React.FC = () => {
           {/* Logo and Description */}
           <div className="md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
-                <Globe className="w-5 h-5 text-white" />
-              </div>
+              <img 
+                src="/images/milestones/TF%20app%20favicon.webp" 
+                alt="TRADEFOOX App Favicon" 
+                className="w-8 h-8 object-contain"
+              />
               <span className="text-xl font-bold">TRADEFOOX</span>
             </div>
             <p className="text-gray-300 mb-6 max-w-md">
