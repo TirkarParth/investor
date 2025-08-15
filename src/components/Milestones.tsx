@@ -124,7 +124,9 @@ const Milestones: React.FC = () => {
                     <img 
                       src={milestone.favicon} 
                       alt={`${milestone.key} favicon`}
-                      className="w-6 h-6 object-contain"
+                      className={`w-6 h-6 object-contain ${
+                        milestone.key === 'webapp' || milestone.key === 'nativeapp' ? 'rounded-full' : ''
+                      }`}
                     />
                   </button>
                   
@@ -207,7 +209,9 @@ const Milestones: React.FC = () => {
                   <img 
                     src={milestone.favicon} 
                     alt={`${milestone.key} favicon`}
-                    className="w-8 h-8 object-contain"
+                    className={`w-8 h-8 object-contain ${
+                      milestone.key === 'webapp' || milestone.key === 'nativeapp' ? 'rounded-full' : ''
+                    }`}
                   />
                 </div>
                 <div className="text-sm font-semibold text-gray-600 mb-2">
