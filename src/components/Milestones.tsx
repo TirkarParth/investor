@@ -114,8 +114,6 @@ const Milestones: React.FC = () => {
                     className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-10 mb-4 hover:scale-110 transition-transform cursor-pointer ${
                       milestone.key === 'project' ? 'bg-blue-500/20 border-2 border-blue-500' :
                       milestone.key === 'dayone' ? 'bg-green-500/20 border-2 border-green-500' :
-                      milestone.key === 'webapp' ? 'bg-red-500/20 border-2 border-red-500' : 
-                      milestone.key === 'nativeapp' ? 'bg-pink-500/20 border-2 border-pink-500' : 
                       'bg-white border-2 border-gray-200'
                     } ${
                       selectedMilestone === milestone.key ? 'ring-4 ring-blue-300 ring-offset-2' : ''
@@ -124,9 +122,9 @@ const Milestones: React.FC = () => {
                     <img 
                       src={milestone.favicon} 
                       alt={`${milestone.key} favicon`}
-                      className={`w-6 h-6 object-contain ${
-                        milestone.key === 'webapp' || milestone.key === 'nativeapp' ? 'rounded-full' : ''
-                      }`}
+                      className={`${
+                        milestone.key === 'webapp' || milestone.key === 'nativeapp' ? 'rounded-full' : 'w-6 h-6'
+                      } object-contain`}
                     />
                   </button>
                   
@@ -202,16 +200,14 @@ const Milestones: React.FC = () => {
                 <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
                   milestone.key === 'project' ? 'bg-blue-500/20 border-2 border-blue-500' :
                   milestone.key === 'dayone' ? 'bg-green-500/20 border-2 border-green-500' :
-                  milestone.key === 'webapp' ? 'bg-red-500/20 border-2 border-red-500' : 
-                  milestone.key === 'nativeapp' ? 'bg-pink-500/20 border-2 border-pink-500' : 
                   'bg-white border-2 border-gray-200'
                 }`}>
                   <img 
                     src={milestone.favicon} 
                     alt={`${milestone.key} favicon`}
-                    className={`w-8 h-8 object-contain ${
-                      milestone.key === 'webapp' || milestone.key === 'nativeapp' ? 'rounded-full' : ''
-                    }`}
+                    className={`${
+                      milestone.key === 'webapp' || milestone.key === 'nativeapp' ? 'w-16 h-16 rounded-full' : 'w-8 h-8'
+                    } object-contain`}
                   />
                 </div>
                 <div className="text-sm font-semibold text-gray-600 mb-2">
