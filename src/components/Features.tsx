@@ -22,8 +22,8 @@ const Features: React.FC = () => {
     },
     {
       icon: Video,
-      title: t('features.items.watchFeed.title'),
-      description: t('features.items.watchFeed.description'),
+      title: t('features.items.videoFeed.title'),
+      description: t('features.items.videoFeed.description'),
       color: 'bg-purple-100 text-purple-600',
       url: 'https://tradefoox.com/watch/für_dich'
     },

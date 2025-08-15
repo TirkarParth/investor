@@ -47,8 +47,8 @@
         "title": "Listings",
         "description": "Jobs, real estate, services, vehicles – like eBay classifieds"
       },
-      "watchFeed": {
-        "title": "Watch Feed",
+      "videoFeed": {
+        "title": "Video Feed",
         "description": "Short videos à la TikTok & YouTube Shorts – with creator monetization"
       },
       "newsFeed": {
