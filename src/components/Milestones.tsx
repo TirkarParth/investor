@@ -23,15 +23,30 @@ const Milestones: React.FC = () => {
       key: 'webapp',
       logo: '/images/milestones/tradefoox-logo.png',
       favicon: '/images/milestones/TF%20web%20Favicon.svg',
-      color: 'bg-purple-500'
+      color: 'bg-purple-500',
+      url: 'https://tradefoox.com/'
     },
     {
       key: 'nativeapp',
       logo: '/images/milestones/tradefoox-logo.png',
       favicon: '/images/milestones/TF%20app%20favicon.webp',
-      color: 'bg-orange-500'
+      color: 'bg-orange-500',
+      url: 'https://tradefoox.com/'
     }
   ];
+
+  // Function to get the appropriate app store link based on device
+  const getAppStoreLink = () => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    if (/iphone|ipad|ipod|mac/.test(userAgent)) {
+      return 'https://apps.apple.com/de/app/tradefoox/id6477870055';
+    } else if (/android/.test(userAgent)) {
+      return 'https://play.google.com/store/apps/details?id=app.tradefoox.mobile&pli=1';
+    } else {
+      // Default to Apple App Store for other devices
+      return 'https://apps.apple.com/de/app/tradefoox/id6477870055';
+    }
+  };
 
   return (
     <section id="milestones" className="section-padding bg-white">
@@ -77,15 +92,42 @@ const Milestones: React.FC = () => {
                 
                 {/* Visit Site button if URL exists */}
                 {milestones.find(m => m.key === selectedMilestone)?.url && (
-                  <div className="pt-4">
-                    <a
-                      href={milestones.find(m => m.key === selectedMilestone)?.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-sm"
-                    >
-                      {t('traction.companyMilestones.visitSite')}
-                    </a>
+                  <div className="pt-4 space-y-2">
+                    {/* Web App Link */}
+                    {selectedMilestone === 'webapp' && (
+                      <a
+                        href="https://tradefoox.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-sm mr-2"
+                      >
+                        {t('traction.companyMilestones.visitSite')}
+                      </a>
+                    )}
+                    
+                    {/* Native App Store Link */}
+                    {selectedMilestone === 'nativeapp' && (
+                      <a
+                        href={getAppStoreLink()}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center px-5 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold text-sm"
+                      >
+                        {t('traction.companyMilestones.downloadApp')}
+                      </a>
+                    )}
+                    
+                    {/* Other milestone URLs */}
+                    {selectedMilestone !== 'webapp' && selectedMilestone !== 'nativeapp' && (
+                      <a
+                        href={milestones.find(m => m.key === selectedMilestone)?.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-sm"
+                      >
+                        {t('traction.companyMilestones.visitSite')}
+                      </a>
+                    )}
                   </div>
                 )}
               </div>
@@ -172,14 +214,43 @@ const Milestones: React.FC = () => {
                     {t(`traction.companyMilestones.items.${selectedMilestone}.description`)}
                   </p>
                   {milestones.find(m => m.key === selectedMilestone)?.url && (
-                    <a
-                      href={milestones.find(m => m.key === selectedMilestone)?.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-sm"
-                    >
-                      {t('traction.companyMilestones.visitSite')}
-                    </a>
+                    <div className="pt-4 space-y-2">
+                      {/* Web App Link */}
+                      {selectedMilestone === 'webapp' && (
+                        <a
+                          href="https://tradefoox.com/"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-sm"
+                        >
+                          {t('traction.companyMilestones.visitSite')}
+                        </a>
+                      )}
+                      
+                      {/* Native App Store Link */}
+                      {selectedMilestone === 'nativeapp' && (
+                        <a
+                          href={getAppStoreLink()}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold text-sm"
+                        >
+                          {t('traction.companyMilestones.downloadApp')}
+                        </a>
+                      )}
+                      
+                      {/* Other milestone URLs */}
+                      {selectedMilestone !== 'webapp' && selectedMilestone !== 'nativeapp' && (
+                        <a
+                          href={milestones.find(m => m.key === selectedMilestone)?.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold text-sm"
+                        >
+                          {t('traction.companyMilestones.visitSite')}
+                        </a>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
