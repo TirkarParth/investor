@@ -38,6 +38,8 @@ module.exports = {
         'fade-in': 'fadeIn 0.5s ease-in-out',
         'slide-up': 'slideUp 0.5s ease-out',
         'float': 'float 6s ease-in-out infinite',
+        'marquee-l': 'marqueeLeft var(--marquee-duration, 40s) linear infinite',
+        'marquee-r': 'marqueeRight var(--marquee-duration, 40s) linear infinite',
       },
       keyframes: {
         fadeIn: {
@@ -51,6 +53,14 @@ module.exports = {
         float: {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-20px)' },
+        },
+        marqueeLeft: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        marqueeRight: {
+          '0%': { transform: 'translateX(-50%)' },
+          '100%': { transform: 'translateX(0)' },
         },
       },
     },
