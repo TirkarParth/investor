@@ -40,6 +40,7 @@ module.exports = {
         'float': 'float 6s ease-in-out infinite',
         'marquee-l': 'marqueeLeft var(--marquee-duration, 40s) linear infinite',
         'marquee-r': 'marqueeRight var(--marquee-duration, 40s) linear infinite',
+        'marquee-pause': 'marqueePause 0.001s paused',
       },
       keyframes: {
         fadeIn: {
@@ -61,6 +62,10 @@ module.exports = {
         marqueeRight: {
           '0%': { transform: 'translateX(-50%)' },
           '100%': { transform: 'translateX(0)' },
+        },
+        marqueePause: {
+          '0%': { opacity: '1' },
+          '100%': { opacity: '1' },
         },
       },
     },

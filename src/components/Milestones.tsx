@@ -206,16 +206,16 @@ const Milestones: React.FC = () => {
         </div>
 
         {/* Scrolling gallery below the timeline */}
-        <div className="mt-12 space-y-8 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] px-4 sm:px-6 md:px-8">
+        <div className="mt-12 space-y-6 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-x-hidden">
           {/* Row 1: right to left */}
           <div className="relative overflow-hidden">
-            <div className="flex w-[200%] animate-marquee-l" style={{ ['--marquee-duration' as any]: '45s' }}>
+            <div className="flex w-[200%] flex-nowrap animate-marquee-l will-change-transform" style={{ ['--marquee-duration' as any]: '45s' }}>
               {[0, 1].map((dup) => (
-                <div key={`top-dup-${dup}`} className="flex gap-8 md:gap-12 w-1/2 shrink-0 py-4">
+                                 <div key={`top-dup-${dup}`} className="flex gap-4 sm:gap-6 md:gap-8 w-1/2 shrink-0 py-3 sm:py-4">
                   {galleryImages.map((src, idx) => (
-                    <div key={`top-${dup}-${idx}`} className="min-w-[200px] md:min-w-[280px] lg:min-w-[320px] h-32 md:h-40 lg:h-48 bg-white rounded-xl overflow-hidden shadow-lg ring-1 ring-black/5 flex-shrink-0">
-                      <img src={src} alt={`milestone gallery ${idx + 1}`} className="w-full h-full object-cover" />
-                    </div>
+                                          <div key={`top-${dup}-${idx}`} className="min-w-[160px] h-28 sm:min-w-[200px] sm:h-32 md:min-w-[240px] md:h-36 lg:min-w-[300px] lg:h-44 bg-white rounded-xl overflow-hidden shadow-lg flex-shrink-0">
+                        <img src={src} alt={`milestone gallery ${idx + 1}`} className="w-full h-full object-contain p-2 sm:p-3" />
+                      </div>
                   ))}
                 </div>
               ))}
@@ -223,13 +223,13 @@ const Milestones: React.FC = () => {
           </div>
           {/* Row 2: left to right */}
           <div className="relative overflow-hidden">
-            <div className="flex w-[200%] animate-marquee-r" style={{ ['--marquee-duration' as any]: '50s' }}>
+            <div className="flex w-[200%] flex-nowrap animate-marquee-r will-change-transform" style={{ ['--marquee-duration' as any]: '50s' }} >
               {[0, 1].map((dup) => (
-                <div key={`bottom-dup-${dup}`} className="flex gap-8 md:gap-12 w-1/2 shrink-0 py-4">
+                                 <div key={`bottom-dup-${dup}`} className="flex gap-4 sm:gap-6 md:gap-8 w-1/2 shrink-0 py-3 sm:py-4">
                   {galleryImages.map((src, idx) => (
-                    <div key={`bottom-${dup}-${idx}`} className="min-w-[200px] md:min-w-[280px] lg:min-w-[320px] h-32 md:h-40 lg:h-48 bg-white rounded-xl overflow-hidden shadow-lg ring-1 ring-black/5 flex-shrink-0">
-                      <img src={src} alt={`milestone gallery ${idx + 1}`} className="w-full h-full object-cover" />
-                    </div>
+                                          <div key={`bottom-${dup}-${idx}`} className="min-w-[160px] h-28 sm:min-w-[200px] sm:h-32 md:min-w-[240px] md:h-36 lg:min-w-[300px] lg:h-44 bg-white rounded-xl overflow-hidden shadow-lg flex-shrink-0">
+                        <img src={src} alt={`milestone gallery ${idx + 1}`} className="w-full h-full object-contain p-2 sm:p-3" />
+                      </div>
                   ))}
                 </div>
               ))}
