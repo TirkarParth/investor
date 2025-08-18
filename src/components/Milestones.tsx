@@ -35,9 +35,28 @@ const Milestones: React.FC = () => {
     }
   ];
 
-  // Gallery images for marquee rows
+  // Gallery images for marquee rows (full set)
   const galleryImages = [
     '/images/milestones/m1.jpeg',
+    '/images/milestones/m2.jpeg',
+    '/images/milestones/m3.jpeg',
+    '/images/milestones/m4.jpeg',
+    '/images/milestones/m5.jpeg',
+    '/images/milestones/m6.jpeg',
+    '/images/milestones/m7.jpeg',
+  ];
+
+  // Dedicated sets for top and bottom rows (6 images each)
+  const topImages = [
+    '/images/milestones/m1.jpeg',
+    '/images/milestones/m2.jpeg',
+    '/images/milestones/m3.jpeg',
+    '/images/milestones/m4.jpeg',
+    '/images/milestones/m5.jpeg',
+    '/images/milestones/m6.jpeg',
+  ];
+
+  const bottomImages = [
     '/images/milestones/m2.jpeg',
     '/images/milestones/m3.jpeg',
     '/images/milestones/m4.jpeg',
@@ -207,29 +226,37 @@ const Milestones: React.FC = () => {
 
         {/* Scrolling gallery below the timeline */}
         <div className="mt-12 space-y-6 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-x-hidden">
-          {/* Row 1: right to left */}
+          {/* Row 1: right to left (m1 - m6) */}
           <div className="relative overflow-hidden">
-            <div className="flex w-[200%] flex-nowrap animate-marquee-l will-change-transform" style={{ ['--marquee-duration' as any]: '45s' }}>
-              {[0, 1].map((dup) => (
-                                 <div key={`top-dup-${dup}`} className="flex gap-4 sm:gap-6 md:gap-8 w-1/2 shrink-0 py-3 sm:py-4">
-                  {galleryImages.map((src, idx) => (
-                                          <div key={`top-${dup}-${idx}`} className="min-w-[160px] h-28 sm:min-w-[200px] sm:h-32 md:min-w-[240px] md:h-36 lg:min-w-[300px] lg:h-44 bg-white rounded-xl overflow-hidden shadow-lg flex-shrink-0">
-                        <img src={src} alt={`milestone gallery ${idx + 1}`} className="w-full h-full object-contain p-2 sm:p-3" />
+            <div className="flex animate-marquee-l will-change-transform" style={{ ['--marquee-duration' as any]: '45s' }}>
+                                          {[0, 1].map((dup) => (
+                <div key={`top-dup-${dup}`} className="flex shrink-0 py-4">
+                  {topImages.map((src, idx) => (
+                    <>
+                      <div key={`top-${dup}-${idx}`} className="flex-none w-[200px] md:w-[260px] lg:w-[300px] h-32 md:h-40 lg:h-48 bg-white rounded-xl shadow-lg">
+                        <img src={src} alt={`milestone gallery top ${idx + 1}`} className="w-full h-full object-contain p-2 sm:p-3" />
                       </div>
+                      {/* Add gap after each image except the last one */}
+                      {idx < topImages.length && <div className="flex-none w-6 md:w-6 lg:w-6"></div>}
+                    </>
                   ))}
                 </div>
               ))}
             </div>
           </div>
-          {/* Row 2: left to right */}
+          {/* Row 2: left to right (m2 - m7) */}
           <div className="relative overflow-hidden">
-            <div className="flex w-[200%] flex-nowrap animate-marquee-r will-change-transform" style={{ ['--marquee-duration' as any]: '50s' }} >
-              {[0, 1].map((dup) => (
-                                 <div key={`bottom-dup-${dup}`} className="flex gap-4 sm:gap-6 md:gap-8 w-1/2 shrink-0 py-3 sm:py-4">
-                  {galleryImages.map((src, idx) => (
-                                          <div key={`bottom-${dup}-${idx}`} className="min-w-[160px] h-28 sm:min-w-[200px] sm:h-32 md:min-w-[240px] md:h-36 lg:min-w-[300px] lg:h-44 bg-white rounded-xl overflow-hidden shadow-lg flex-shrink-0">
-                        <img src={src} alt={`milestone gallery ${idx + 1}`} className="w-full h-full object-contain p-2 sm:p-3" />
+            <div className="flex animate-marquee-r will-change-transform" style={{ ['--marquee-duration' as any]: '45s' }} >
+                            {[0, 1].map((dup) => (
+                <div key={`bottom-dup-${dup}`} className="flex shrink-0 py-4">
+                  {bottomImages.map((src, idx) => (
+                    <>
+                      <div key={`bottom-${dup}-${idx}`} className="flex-none w-[200px] md:w-[260px] lg:w-[300px] h-32 md:h-40 lg:h-48 bg-white rounded-xl shadow-lg">
+                        <img src={src} alt={`milestone gallery bottom ${idx + 1}`} className="w-full h-full object-contain p-2 sm:p-3" />
                       </div>
+                      {/* Add gap after each image except the last one */}
+                      {idx < bottomImages.length && <div className="flex-none w-6 md:w-6 lg:w-6"></div>}
+                    </>
                   ))}
                 </div>
               ))}
