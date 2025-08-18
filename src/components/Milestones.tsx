@@ -46,7 +46,7 @@ const Milestones: React.FC = () => {
     '/images/milestones/m7.jpeg',
   ];
 
-  // Dedicated sets for top and bottom rows (6 images each)
+  // Dedicated sets for top and bottom rows (7 images each)
   const topImages = [
     '/images/milestones/m1.jpeg',
     '/images/milestones/m2.jpeg',
@@ -54,9 +54,11 @@ const Milestones: React.FC = () => {
     '/images/milestones/m4.jpeg',
     '/images/milestones/m5.jpeg',
     '/images/milestones/m6.jpeg',
+    '/images/milestones/m7.jpeg',
   ];
 
   const bottomImages = [
+    '/images/milestones/m1.jpeg',
     '/images/milestones/m2.jpeg',
     '/images/milestones/m3.jpeg',
     '/images/milestones/m4.jpeg',
@@ -226,7 +228,7 @@ const Milestones: React.FC = () => {
 
         {/* Scrolling gallery below the timeline */}
         <div className="mt-12 space-y-6 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-x-hidden">
-          {/* Row 1: right to left (m1 - m6) */}
+          {/* Row 1: right to left (m1 - m7) */}
           <div className="relative overflow-hidden">
             <div className="flex animate-marquee-l will-change-transform" style={{ ['--marquee-duration' as any]: '45s' }}>
                                           {[0, 1].map((dup) => (
@@ -244,7 +246,7 @@ const Milestones: React.FC = () => {
               ))}
             </div>
           </div>
-          {/* Row 2: left to right (m2 - m7) */}
+          {/* Row 2: left to right (m1 - m7) */}
           <div className="relative overflow-hidden">
             <div className="flex animate-marquee-r will-change-transform" style={{ ['--marquee-duration' as any]: '45s' }} >
                             {[0, 1].map((dup) => (
