@@ -118,7 +118,7 @@ const Milestones: React.FC = () => {
                     {selectedMilestone === 'nativeapp' && (
                       <div className="flex flex-col items-center space-y-6 w-full">
                         {/* QR Code Section */}
-                        <div className="text-center mb-4">
+                        <div className="hidden lg:block text-center mb-4">
                           <p className="text-sm text-gray-600 mb-4 font-medium">
                             {t('traction.companyMilestones.scanQRCode')}
                           </p>
