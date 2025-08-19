@@ -271,7 +271,7 @@ const Milestones: React.FC = () => {
         </div>
 
         {/* QR Code and App Store Buttons - Centered below sliders */}
-        <div className="mt-16 text-center">
+        <div className="hidden lg:block mt-16 text-center">
           {/* QR Code Section */}
           <div className="mb-8">
             <p className="text-lg text-gray-600 mb-6 font-medium">
