@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { FileText, Play, Mail, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { getVideoQuality, getVideoSources } from '../utils/deviceDetection';
@@ -25,6 +26,13 @@ const Hero: React.FC = () => {
   const lastWheelTime = useRef<number>(0);
   const touchStartY = useRef<number>(0);
   const touchEndY = useRef<number>(0);
+
+  const subtitleTexts = useMemo(() => [
+    t('hero.subtitle'),
+    'We are shaping the future of European apps.',
+    'Our innovations help people connect through chats, news feeds, and video feeds.',
+    'We enable individuals and businesses to grow on a single platform like marketplace and listing.'
+  ], [t]);
 
   // Get video quality on mount and window resize
   useEffect(() => {
@@ -410,59 +418,76 @@ const Hero: React.FC = () => {
           </div> */}
 
           {/* Main Headline */}
-          <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 leading-tight text-white drop-shadow-2xl">
-            {t('hero.title')}{' '}
-            <span className="text-yellow-300 drop-shadow-2xl whitespace-nowrap">{t('hero.titleHighlight')}</span>
-          </h1>
+          {currentVideoIndex === 0 && (
+            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 leading-tight text-white drop-shadow-2xl">
+              {t('hero.title')}{' '}
+              <span className="text-yellow-300 drop-shadow-2xl whitespace-nowrap">{t('hero.titleHighlight')}</span>
+            </h1>
+          )}
 
           {/* Subtitle */}
-          <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed drop-shadow-2xl px-2">
-            {t('hero.subtitle')}
-          </p>
+          <div className="mb-8 sm:mb-12 max-w-3xl mx-auto">
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={currentVideoIndex}
+                initial={{ y: 24, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -24, opacity: 0 }}
+                transition={{ duration: 0.5 }}
+                className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white max-w-3xl mx-auto leading-relaxed drop-shadow-2xl px-2"
+              >
+                {subtitleTexts[currentVideoIndex]}
+              </motion.p>
+            </AnimatePresence>
+          </div>
 
           {/* Call to Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-12 sm:mb-16 w-full max-w-md sm:max-w-none mx-auto">
-            <a 
-              href="#contact" 
-              className="btn-primary flex items-center space-x-2 group w-full sm:w-auto justify-center px-4 py-3 text-sm sm:text-base"
-            >
-              <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>{t('hero.cta.pitchDeck')}</span>
-              <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
-            </a>
-            
-            <a 
-              href="#video" 
-              className="btn-secondary flex items-center space-x-2 group w-full sm:w-auto justify-center px-4 py-2 text-sm sm:text-base"
-            >
-              <Play className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>{t('hero.cta.watchVideo')}</span>
-            </a>
-            
-            <a 
-              href="#contact" 
-              className="btn-outline text-white border-white hover:bg-white hover:text-primary-600 flex items-center space-x-2 group w-full sm:w-auto justify-center px-4 py-3 text-sm sm:text-base"
-            >
-              <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
-              <span>{t('hero.cta.getInTouch')}</span>
-            </a>
-          </div>
+          {currentVideoIndex === 0 && (
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-12 sm:mb-16 w-full max-w-md sm:max-w-none mx-auto">
+              <a 
+                href="#contact" 
+                className="btn-primary flex items-center space-x-2 group w-full sm:w-auto justify-center px-4 py-3 text-sm sm:text-base"
+              >
+                <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>{t('hero.cta.pitchDeck')}</span>
+                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
+              </a>
+              
+              <a 
+                href="#video" 
+                className="btn-secondary flex items-center space-x-2 group w-full sm:w-auto justify-center px-4 py-2 text-sm sm:text-base"
+              >
+                <Play className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>{t('hero.cta.watchVideo')}</span>
+              </a>
+              
+              <a 
+                href="#contact" 
+                className="btn-outline text-white border-white hover:bg-white hover:text-primary-600 flex items-center space-x-2 group w-full sm:w-auto justify-center px-4 py-3 text-sm sm:text-base"
+              >
+                <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
+                <span>{t('hero.cta.getInTouch')}</span>
+              </a>
+            </div>
+          )}
 
           {/* Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 max-w-2xl mx-auto">
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-yellow-300 mb-1 sm:mb-2 drop-shadow-2xl">19</div>
-              <div className="text-sm sm:text-base text-white drop-shadow-2xl">{t('hero.stats.languages')}</div>
+          {currentVideoIndex === 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 max-w-2xl mx-auto">
+              <div className="text-center">
+                <div className="text-2xl sm:text-3xl font-bold text-yellow-300 mb-1 sm:mb-2 drop-shadow-2xl">19</div>
+                <div className="text-sm sm:text-base text-white drop-shadow-2xl">{t('hero.stats.languages')}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl sm:text-3xl font-bold text-yellow-300 mb-1 sm:mb-2 drop-shadow-2xl">5M+</div>
+                <div className="text-sm sm:text-base text-white drop-shadow-2xl">{t('hero.stats.users')}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl sm:text-3xl font-bold text-yellow-300 mb-1 sm:mb-2 drop-shadow-2xl">6</div>
+                <div className="text-sm sm:text-base text-white drop-shadow-2xl">{t('hero.stats.features')}</div>
+              </div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-yellow-300 mb-1 sm:mb-2 drop-shadow-2xl">5M+</div>
-              <div className="text-sm sm:text-base text-white drop-shadow-2xl">{t('hero.stats.users')}</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-yellow-300 mb-1 sm:mb-2 drop-shadow-2xl">6</div>
-              <div className="text-sm sm:text-base text-white drop-shadow-2xl">{t('hero.stats.features')}</div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </section>
