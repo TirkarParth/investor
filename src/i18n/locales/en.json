@@ -154,7 +154,8 @@
     },
     "visitSite": "Visit Site",
     "downloadApp": "Download App",
-    "nowFor": "Now for"
+    "nowFor": "Now for",
+    "scanQRCode": "Scan QR code to install the app"
   },
     "cta": {
       "title": "Ready for Investment",

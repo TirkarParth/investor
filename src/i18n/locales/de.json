@@ -154,7 +154,8 @@
     },
     "visitSite": "Website besuchen",
     "downloadApp": "App herunterladen",
-    "nowFor": "Jetzt für"
+    "nowFor": "Jetzt für",
+    "scanQRCode": "QR-Code scannen, um die App zu installieren"
   },
     "cta": {
       "title": "Bereit für Investitionen",
