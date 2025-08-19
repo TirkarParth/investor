@@ -34,18 +34,6 @@ const Milestones: React.FC = () => {
       url: 'https://tradefoox.com/'
     }
   ];
-
-  // Gallery images for marquee rows (full set)
-  const galleryImages = [
-    '/images/milestones/m1.jpeg',
-    '/images/milestones/m2.jpeg',
-    '/images/milestones/m3.jpeg',
-    '/images/milestones/m4.jpeg',
-    '/images/milestones/m5.jpeg',
-    '/images/milestones/m6.jpeg',
-    '/images/milestones/m7.jpeg',
-  ];
-
   // Dedicated sets for top and bottom rows (7 images each)
   const topImages = [
     '/images/milestones/m1.jpeg',
