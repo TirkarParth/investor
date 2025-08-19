@@ -235,8 +235,8 @@ const Milestones: React.FC = () => {
                 <div key={`top-dup-${dup}`} className="flex shrink-0 py-4">
                   {topImages.map((src, idx) => (
                     <>
-                      <div key={`top-${dup}-${idx}`} className="flex-none w-[280px] md:w-[360px] lg:w-[420px] h-40 md:h-52 lg:h-64 bg-white rounded-xl shadow-lg">
-                        <img src={src} alt={`milestone gallery top ${idx + 1}`} className="w-full h-full object-contain p-3 sm:p-4" />
+                      <div key={`top-${dup}-${idx}`} className="flex-none w-[280px] md:w-[360px] lg:w-[360px] h-40 md:h-44 lg:h-44 bg-white rounded-xl shadow-lg">
+                        <img src={src} alt={`milestone gallery top ${idx + 1}`} className="w-full h-full object-contain px-0.1 sm:px-1" />
                       </div>
                       {/* Add gap after each image except the last one */}
                       {idx < topImages.length && <div className="flex-none w-6 md:w-6 lg:w-6"></div>}
@@ -253,8 +253,8 @@ const Milestones: React.FC = () => {
                 <div key={`bottom-dup-${dup}`} className="flex shrink-0 py-4">
                   {bottomImages.map((src, idx) => (
                     <>
-                      <div key={`bottom-${dup}-${idx}`} className="flex-none w-[280px] md:w-[360px] lg:w-[420px] h-40 md:h-52 lg:h-64 bg-white rounded-xl shadow-lg">
-                        <img src={src} alt={`milestone gallery bottom ${idx + 1}`} className="w-full h-full object-contain p-3 sm:p-4" />
+                      <div key={`bottom-${dup}-${idx}`} className="flex-none w-[280px] md:w-[360px] lg:w-[360px] h-40 md:h-44 lg:h-44 bg-white rounded-xl shadow-lg">
+                        <img src={src} alt={`milestone gallery bottom ${idx + 1}`} className="w-full h-full object-contain px-0.1 sm:px-1" />
                       </div>
                       {/* Add gap after each image except the last one */}
                       {idx < bottomImages.length && <div className="flex-none w-6 md:w-6 lg:w-6"></div>}
