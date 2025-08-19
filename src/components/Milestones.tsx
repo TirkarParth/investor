@@ -204,21 +204,37 @@ const Milestones: React.FC = () => {
                   {/* Clickable milestone dot */}
                   <button
                     onClick={() => setSelectedMilestone(selectedMilestone === milestone.key ? null : milestone.key)}
-                    className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-10 mb-4 hover:scale-110 transition-transform cursor-pointer ${
-                      milestone.key === 'project' ? 'bg-blue-500/20 border-2 border-blue-500' :
-                      milestone.key === 'dayone' ? 'bg-green-500/20 border-2 border-green-500' :
-                      'bg-white border-2 border-gray-200'
-                    } ${
+                    className={`w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-10 mb-4 hover:scale-110 transition-transform cursor-pointer relative ${
                       selectedMilestone === milestone.key ? 'ring-4 ring-blue-300 ring-offset-2' : ''
                     }`}
                   >
-                    <img 
-                      src={milestone.favicon} 
-                      alt={`${milestone.key} favicon`}
-                      className={`${
-                        milestone.key === 'webapp' || milestone.key === 'nativeapp' ? 'rounded-full' : 'w-6 h-6'
-                      } object-contain`}
-                    />
+                    {/* White background circle to hide the timeline line */}
+                    <div className="absolute inset-0 w-12 h-12 rounded-full bg-white"></div>
+                    
+                    {/* Colored transparent background */}
+                    <div className={`absolute inset-1 w-10 h-10 rounded-full ${
+                      milestone.key === 'project' ? 'bg-blue-500/20' :
+                      milestone.key === 'dayone' ? 'bg-green-500/20' :
+                      'bg-white'
+                    }`}></div>
+                    
+                    {/* Border */}
+                    <div className={`absolute inset-0 w-12 h-12 rounded-full border-2 ${
+                      milestone.key === 'project' ? 'border-blue-500' :
+                      milestone.key === 'dayone' ? 'border-green-500' :
+                      'border-gray-200'
+                    }`}></div>
+                    
+                    {/* Icon content */}
+                    <div className="relative z-10">
+                      <img 
+                        src={milestone.favicon} 
+                        alt={`${milestone.key} favicon`}
+                        className={`${
+                          milestone.key === 'webapp' || milestone.key === 'nativeapp' ? 'rounded-full' : 'w-6 h-6'
+                        } object-contain`}
+                      />
+                    </div>
                   </button>
                   
                   {/* Date label */}
