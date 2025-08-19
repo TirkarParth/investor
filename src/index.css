@@ -44,4 +44,19 @@
   .card-hover {
     @apply transition-all duration-300 transform hover:scale-105 hover:shadow-2xl;
   }
+}
+
+@layer utilities {
+  /* Responsive marquee speeds */
+  @media (min-width: 768px) {
+    [data-desktop-speed] {
+      --marquee-duration: var(--desktop-speed);
+    }
+  }
+  
+  @media (max-width: 767px) {
+    [data-mobile-speed] {
+      --marquee-duration: var(--mobile-speed);
+    }
+  }
 } 
