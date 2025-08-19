@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { FileText, Play, Mail, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { getVideoQuality, getVideoSources } from '../utils/deviceDetection';
 
@@ -13,6 +11,30 @@ const getPosterImage = (videoIndex: number, quality: 'mobile' | 'desktop') => {
   return `${process.env.PUBLIC_URL}/images/video/poster-${videoNumber}.jpg`;
 };
 
+// Video-specific text content - Meta-style messaging
+const videoTexts = [
+  {
+    title: "Vision",
+    subtitle: "We are shaping the future of European apps.",
+    description: "Our vision is to revolutionize how Europeans connect, communicate, and grow through innovative technology solutions."
+  },
+  {
+    title: "Mission",
+    subtitle: "We build the technologies needed to connect people and drive growth.",
+    description: "We're committed to creating platforms that bring people together and enable sustainable business growth across Europe."
+  },
+  {
+    title: "What We Do",
+    subtitle: "Our innovations help people connect through chats, news feeds, and video feeds.",
+    description: "We enable individuals and businesses to grow on a single platform, fostering meaningful connections and opportunities."
+  },
+  {
+    title: "Our Approach",
+    subtitle: "We focus on technology, innovation, and meaningful connections.",
+    description: "By combining cutting-edge technology with human-centered design, we create solutions that truly matter to our users."
+  }
+];
+
 const Hero: React.FC = () => {
   const { t } = useTranslation();
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
@@ -22,17 +44,16 @@ const Hero: React.FC = () => {
   const [sectionUnlocked, setSectionUnlocked] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [videoQuality, setVideoQuality] = useState<'mobile' | 'desktop'>('desktop');
+  const [textAnimationKey, setTextAnimationKey] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [textPosition, setTextPosition] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const lastWheelTime = useRef<number>(0);
   const touchStartY = useRef<number>(0);
   const touchEndY = useRef<number>(0);
-
-  const subtitleTexts = useMemo(() => [
-    t('hero.subtitle'),
-    'We are shaping the future of European apps.',
-    'Our innovations help people connect through chats, news feeds, and video feeds.',
-    'We enable individuals and businesses to grow on a single platform like marketplace and listing.'
-  ], [t]);
+  const scrollDirection = useRef<'up' | 'down'>('down');
+  const isScrolling = useRef(false);
+  const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
 
   // Get video quality on mount and window resize
   useEffect(() => {
@@ -107,6 +128,9 @@ const Hero: React.FC = () => {
       if (currentVideoIndex < videos.length - 1) {
         setIsTransitioning(true);
         setCurrentVideoIndex(prev => prev + 1);
+        setTextAnimationKey(prev => prev + 1); // Trigger text animation
+        setScrollProgress(0); // Reset scroll progress
+        setTextPosition(0); // Reset text position
         
         // Reset transition state after animation completes
         setTimeout(() => {
@@ -120,6 +144,9 @@ const Hero: React.FC = () => {
       if (currentVideoIndex > 0) {
         setIsTransitioning(true);
         setCurrentVideoIndex(prev => prev - 1);
+        setTextAnimationKey(prev => prev + 1); // Trigger text animation
+        setScrollProgress(0); // Reset scroll progress
+        setTextPosition(0); // Reset text position
         
         // Reset transition state after animation completes
         setTimeout(() => {
@@ -147,6 +174,9 @@ const Hero: React.FC = () => {
     setVideosLoaded(new Array(4).fill(false));
     setAllVideosLoaded(true); // Keep this true to avoid loading screen
     setCurrentVideoIndex(0);
+    setTextAnimationKey(prev => prev + 1); // Reset text animation
+    setScrollProgress(0); // Reset scroll progress
+    setTextPosition(0); // Reset text position
   }, [videoQuality]);
 
   // Check if hero section is visible on the page
@@ -195,7 +225,7 @@ const Hero: React.FC = () => {
     console.error(`Video ${index} failed to load:`, videos[index], error);
   };
 
-  // Handle video navigation (wheel and touch events)
+  // Handle video navigation (wheel and touch events) with scroll-responsive text
   useEffect(() => {
     if (!allVideosLoaded || !isVisible) return;
 
@@ -232,14 +262,60 @@ const Hero: React.FC = () => {
       const timeSinceLastWheel = now - lastWheelTime.current;
       
       // Only process wheel events if enough time has passed (debounce)
-      if (timeSinceLastWheel < 300) {
+      if (timeSinceLastWheel < 50) {
         return;
       }
 
-      if (event.deltaY > 0) {
-        handleVideoNavigation('next');
-      } else if (event.deltaY < 0) {
-        handleVideoNavigation('prev');
+      // Determine scroll direction
+      const direction = event.deltaY > 0 ? 'down' : 'up';
+      scrollDirection.current = direction;
+
+      // Set scrolling state
+      isScrolling.current = true;
+      
+      // Clear previous timeout
+      if (scrollTimeout.current) {
+        clearTimeout(scrollTimeout.current);
+      }
+
+      // Set timeout to detect when scrolling stops
+      scrollTimeout.current = setTimeout(() => {
+        isScrolling.current = false;
+      }, 150);
+
+      // Calculate scroll progress and text position
+      const scrollAmount = Math.abs(event.deltaY);
+      const maxScroll = 100; // Maximum scroll amount for full transition
+      
+      if (direction === 'down') {
+        // Scrolling down - move text up
+        const newProgress = Math.min(scrollProgress + (scrollAmount / 10), maxScroll);
+        setScrollProgress(newProgress);
+        
+        // Calculate text position (move up as scroll increases)
+        const newPosition = -(newProgress / maxScroll) * 100; // Move up to -100vh
+        setTextPosition(newPosition);
+        
+        // Check if we should move to next video
+        if (newProgress >= maxScroll && currentVideoIndex < videos.length - 1) {
+          handleVideoNavigation('next');
+        } else if (newProgress >= maxScroll && currentVideoIndex === videos.length - 1) {
+          // We're at the last video, unlock the section
+          setSectionUnlocked(true);
+        }
+      } else if (direction === 'up') {
+        // Scrolling up - move text down
+        const newProgress = Math.max(scrollProgress - (scrollAmount / 10), 0);
+        setScrollProgress(newProgress);
+        
+        // Calculate text position (move down as scroll decreases)
+        const newPosition = -(newProgress / maxScroll) * 100; // Move down from -100vh to 0
+        setTextPosition(newPosition);
+        
+        // Check if we should move to previous video
+        if (newProgress <= 0 && currentVideoIndex > 0) {
+          handleVideoNavigation('prev');
+        }
       }
 
       lastWheelTime.current = now;
@@ -258,8 +334,11 @@ const Hero: React.FC = () => {
       if (section) {
         section.removeEventListener('wheel', handleWheel);
       }
+      if (scrollTimeout.current) {
+        clearTimeout(scrollTimeout.current);
+      }
     };
-  }, [videos.length, allVideosLoaded, currentVideoIndex, isTransitioning, sectionUnlocked, isVisible, handleVideoNavigation]);
+  }, [videos.length, allVideosLoaded, currentVideoIndex, isTransitioning, sectionUnlocked, isVisible, handleVideoNavigation, scrollProgress]);
 
   // Cleanup effect to ensure scroll is unlocked on unmount
   useEffect(() => {
@@ -309,8 +388,6 @@ const Hero: React.FC = () => {
         WebkitOverflowScrolling: 'touch'
       }}
     >
-
-
       {/* Background Videos */}
       <div 
         className="absolute inset-0 w-full h-full"
@@ -355,8 +432,6 @@ const Hero: React.FC = () => {
             ))}
           </div>
         </div>
-
-
 
         {/* Dedicated Touch Overlay for Mobile Swipe Detection */}
         {videoQuality === 'mobile' && !sectionUnlocked && (
@@ -405,89 +480,35 @@ const Hero: React.FC = () => {
             }}
           />
         )}
-
-
       </div>
 
-      {/* Content - with lower z-index to prevent touch event conflicts */}
-      <div className="container-custom relative z-10 h-full flex items-center justify-center px-4 pointer-events-none">
-        <div className="text-center max-w-4xl mx-auto w-full pointer-events-auto">
-          {/* Badge - Commented out since badge text was removed */}
-          {/* <div className="inline-flex items-center px-4 py-2 bg-black/30 backdrop-blur-sm rounded-full text-sm font-medium mb-8 text-white">
-            {t('hero.badge')}
-          </div> */}
-
-          {/* Main Headline */}
-          {currentVideoIndex === 0 && (
-            <h1 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-4 sm:mb-6 leading-tight text-white drop-shadow-2xl">
-              {t('hero.title')}{' '}
-              <span className="text-yellow-300 drop-shadow-2xl whitespace-nowrap">{t('hero.titleHighlight')}</span>
-            </h1>
-          )}
-
-          {/* Subtitle */}
-          <div className="mb-8 sm:mb-12 max-w-3xl mx-auto">
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={currentVideoIndex}
-                initial={{ y: 24, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -24, opacity: 0 }}
-                transition={{ duration: 0.5 }}
-                className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white max-w-3xl mx-auto leading-relaxed drop-shadow-2xl px-2"
-              >
-                {subtitleTexts[currentVideoIndex]}
-              </motion.p>
-            </AnimatePresence>
+      {/* Content - Scroll-responsive text overlay that spans entire screen */}
+      <div className="absolute inset-0 z-10 pointer-events-none">
+        {/* Text container that spans the entire screen height */}
+        <div 
+          className="relative w-full h-full"
+          style={{
+            transform: `translateY(${textPosition}vh)`,
+            transition: isScrolling.current ? 'none' : 'transform 0.3s ease-out'
+          }}
+        >
+          {/* Text positioned to be visible across the entire screen */}
+          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center px-4">
+            <div className="text-center max-w-5xl mx-auto w-full">
+              {/* Dynamic Video-Specific Text */}
+              <div key={textAnimationKey} className="overflow-hidden">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 sm:mb-8 text-white drop-shadow-2xl leading-tight">
+                  {videoTexts[currentVideoIndex].title}
+                </h2>
+                <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-medium mb-6 sm:mb-8 text-white/90 drop-shadow-2xl max-w-4xl mx-auto leading-relaxed">
+                  {videoTexts[currentVideoIndex].subtitle}
+                </p>
+                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-white/80 drop-shadow-2xl max-w-4xl mx-auto leading-relaxed">
+                  {videoTexts[currentVideoIndex].description}
+                </p>
+              </div>
+            </div>
           </div>
-
-          {/* Call to Action Buttons */}
-          {currentVideoIndex === 0 && (
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center mb-12 sm:mb-16 w-full max-w-md sm:max-w-none mx-auto">
-              <a 
-                href="#contact" 
-                className="btn-primary flex items-center space-x-2 group w-full sm:w-auto justify-center px-4 py-3 text-sm sm:text-base"
-              >
-                <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span>{t('hero.cta.pitchDeck')}</span>
-                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 group-hover:translate-x-1 transition-transform" />
-              </a>
-              
-              <a 
-                href="#video" 
-                className="btn-secondary flex items-center space-x-2 group w-full sm:w-auto justify-center px-4 py-2 text-sm sm:text-base"
-              >
-                <Play className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span>{t('hero.cta.watchVideo')}</span>
-              </a>
-              
-              <a 
-                href="#contact" 
-                className="btn-outline text-white border-white hover:bg-white hover:text-primary-600 flex items-center space-x-2 group w-full sm:w-auto justify-center px-4 py-3 text-sm sm:text-base"
-              >
-                <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
-                <span>{t('hero.cta.getInTouch')}</span>
-              </a>
-            </div>
-          )}
-
-          {/* Stats */}
-          {currentVideoIndex === 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 max-w-2xl mx-auto">
-              <div className="text-center">
-                <div className="text-2xl sm:text-3xl font-bold text-yellow-300 mb-1 sm:mb-2 drop-shadow-2xl">19</div>
-                <div className="text-sm sm:text-base text-white drop-shadow-2xl">{t('hero.stats.languages')}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl sm:text-3xl font-bold text-yellow-300 mb-1 sm:mb-2 drop-shadow-2xl">5M+</div>
-                <div className="text-sm sm:text-base text-white drop-shadow-2xl">{t('hero.stats.users')}</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl sm:text-3xl font-bold text-yellow-300 mb-1 sm:mb-2 drop-shadow-2xl">6</div>
-                <div className="text-sm sm:text-base text-white drop-shadow-2xl">{t('hero.stats.features')}</div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </section>
