@@ -234,7 +234,7 @@ const Milestones: React.FC = () => {
         <div className="mt-12 space-y-6 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-x-hidden">
           {/* Row 1: right to left (m1 - m7) */}
           <div className="relative overflow-hidden">
-            <div className="flex animate-marquee-l will-change-transform" style={{ ['--marquee-duration' as any]: '45s' }} data-mobile-speed="10s" data-desktop-speed="45s">
+            <div className="flex animate-marquee-l will-change-transform" style={{ ['--mobile-speed' as any]: '10s', ['--desktop-speed' as any]: '45s' }} data-mobile-speed="10s" data-desktop-speed="45s">
               {[0, 1, 2, 3].map((dup) => (
                 <div key={`top-dup-${dup}`} className="flex shrink-0 py-4">
                   {topImages.map((src, idx) => (
@@ -252,7 +252,7 @@ const Milestones: React.FC = () => {
           </div>
           {/* Row 2: left to right (m1 - m7) */}
           <div className="relative overflow-hidden">
-            <div className="flex animate-marquee-r will-change-transform" style={{ ['--marquee-duration' as any]: '45s' }} data-mobile-speed="10s" data-desktop-speed="45s">
+            <div className="flex animate-marquee-r will-change-transform" style={{ ['--mobile-speed' as any]: '10s', ['--desktop-speed' as any]: '45s' }} data-mobile-speed="10s" data-desktop-speed="45s">
               {[0, 1, 2, 3].map((dup) => (
                 <div key={`bottom-dup-${dup}`} className="flex shrink-0 py-4">
                   {bottomImages.map((src, idx) => (
