@@ -55,6 +55,18 @@ const Milestones: React.FC = () => {
     '/images/milestones/m7.jpeg',
   ];
 
+  // Mobile-specific image sets (3 images each)
+  const mobileTopImages = [
+    '/images/milestones/m1.jpeg',
+    '/images/milestones/m2.jpeg',
+    '/images/milestones/m3.jpeg',
+  ];
+
+  const mobileBottomImages = [
+    '/images/milestones/m5.jpeg',
+    '/images/milestones/m6.jpeg',
+    '/images/milestones/m7.jpeg',
+  ];
 
 
   return (
@@ -232,36 +244,73 @@ const Milestones: React.FC = () => {
 
         {/* Scrolling gallery below the timeline */}
         <div className="mt-12 space-y-6 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-x-hidden">
-          {/* Row 1: right to left (m1 - m7) */}
+          {/* Row 1: right to left */}
           <div className="relative overflow-hidden">
-            <div className="flex animate-marquee-l will-change-transform" style={{ ['--mobile-speed' as any]: '10s', ['--desktop-speed' as any]: '45s' }} data-mobile-speed="10s" data-desktop-speed="45s">
+            {/* Mobile view: m1 - m3 */}
+            <div className="flex md:hidden animate-marquee-l will-change-transform" style={{ ['--mobile-speed' as any]: '20s', ['--desktop-speed' as any]: '45s' }} data-mobile-speed="20s" data-desktop-speed="45s">
               {[0, 1, 2, 3].map((dup) => (
-                <div key={`top-dup-${dup}`} className="flex shrink-0 py-4">
-                  {topImages.map((src, idx) => (
-                    <React.Fragment key={`top-${dup}-${idx}`}>
-                      <div className="flex-none w-[280px] md:w-[360px] lg:w-[360px] h-38 md:h-40 lg:h-40 bg-white rounded-xl shadow-lg">
+                <div key={`mobile-top-dup-${dup}`} className="flex shrink-0 py-4">
+                  {mobileTopImages.map((src, idx) => (
+                    <React.Fragment key={`mobile-top-${dup}-${idx}`}>
+                      <div className="flex-none w-[280px] h-38 bg-white rounded-xl shadow-lg">
                         <img src={src} alt={`milestone gallery top ${idx + 1}`} className="w-full h-full object-contain px-0.1 sm:px-1" />
                       </div>
                       {/* Add gap after each image except the last one */}
-                      {idx < topImages.length - 1 && <div className="flex-none w-6 md:w-6 lg:w-6"></div>}
+                      {idx < mobileTopImages.length - 1 && <div className="flex-none w-6"></div>}
+                    </React.Fragment>
+                  ))}
+                </div>
+              ))}
+            </div>
+            
+            {/* Desktop view: m1 - m7 */}
+            <div className="hidden md:flex animate-marquee-l will-change-transform" style={{ ['--mobile-speed' as any]: '20s', ['--desktop-speed' as any]: '45s' }} data-mobile-speed="20s" data-desktop-speed="45s">
+              {[0, 1, 2, 3].map((dup) => (
+                <div key={`desktop-top-dup-${dup}`} className="flex shrink-0 py-4">
+                  {topImages.map((src, idx) => (
+                    <React.Fragment key={`desktop-top-${dup}-${idx}`}>
+                      <div className="flex-none w-[360px] lg:w-[360px] h-40 lg:h-40 bg-white rounded-xl shadow-lg">
+                        <img src={src} alt={`milestone gallery top ${idx + 1}`} className="w-full h-full object-contain px-0.1 sm:px-1" />
+                      </div>
+                      {/* Add gap after each image except the last one */}
+                      {idx < topImages.length - 1 && <div className="flex-none w-6"></div>}
                     </React.Fragment>
                   ))}
                 </div>
               ))}
             </div>
           </div>
-          {/* Row 2: left to right (m1 - m7) */}
+          
+          {/* Row 2: left to right */}
           <div className="relative overflow-hidden">
-            <div className="flex animate-marquee-r will-change-transform" style={{ ['--mobile-speed' as any]: '10s', ['--desktop-speed' as any]: '45s' }} data-mobile-speed="10s" data-desktop-speed="45s">
+            {/* Mobile view: m5 - m7 */}
+            <div className="flex md:hidden animate-marquee-r will-change-transform" style={{ ['--mobile-speed' as any]: '20s', ['--desktop-speed' as any]: '45s' }} data-mobile-speed="20s" data-desktop-speed="45s">
               {[0, 1, 2, 3].map((dup) => (
-                <div key={`bottom-dup-${dup}`} className="flex shrink-0 py-4">
-                  {bottomImages.map((src, idx) => (
-                    <React.Fragment key={`bottom-${dup}-${idx}`}>
-                      <div className="flex-none w-[280px] md:w-[360px] lg:w-[360px] h-38 md:h-40 lg:h-40 bg-white rounded-xl shadow-lg">
+                <div key={`mobile-bottom-dup-${dup}`} className="flex shrink-0 py-4">
+                  {mobileBottomImages.map((src, idx) => (
+                    <React.Fragment key={`mobile-bottom-${dup}-${idx}`}>
+                      <div className="flex-none w-[280px] h-38 bg-white rounded-xl shadow-lg">
                         <img src={src} alt={`milestone gallery bottom ${idx + 1}`} className="w-full h-full object-contain px-0.1 sm:px-1" />
                       </div>
                       {/* Add gap after each image except the last one */}
-                      {idx < bottomImages.length - 1 && <div className="flex-none w-6 md:w-6 lg:w-6"></div>}
+                      {idx < mobileBottomImages.length - 1 && <div className="flex-none w-6"></div>}
+                    </React.Fragment>
+                  ))}
+                </div>
+              ))}
+            </div>
+            
+            {/* Desktop view: m1 - m7 */}
+            <div className="hidden md:flex animate-marquee-r will-change-transform" style={{ ['--mobile-speed' as any]: '20s', ['--desktop-speed' as any]: '45s' }} data-mobile-speed="20s" data-desktop-speed="45s">
+              {[0, 1, 2, 3].map((dup) => (
+                <div key={`desktop-bottom-dup-${dup}`} className="flex shrink-0 py-4">
+                  {bottomImages.map((src, idx) => (
+                    <React.Fragment key={`desktop-bottom-${dup}-${idx}`}>
+                      <div className="flex-none w-[360px] lg:w-[360px] h-40 lg:h-40 bg-white rounded-xl shadow-lg">
+                        <img src={src} alt={`milestone gallery bottom ${idx + 1}`} className="w-full h-full object-contain px-0.1 sm:px-1" />
+                      </div>
+                      {/* Add gap after each image except the last one */}
+                      {idx < bottomImages.length - 1 && <div className="flex-none w-6"></div>}
                     </React.Fragment>
                   ))}
                 </div>
