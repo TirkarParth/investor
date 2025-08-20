@@ -59,4 +59,31 @@
       --marquee-duration: var(--mobile-speed);
     }
   }
+  
+  /* Infinite marquee animations */
+  @keyframes marquee-l {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+  
+  @keyframes marquee-r {
+    0% {
+      transform: translateX(-50%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+  
+  .animate-marquee-l {
+    animation: marquee-l var(--marquee-duration, 45s) linear infinite;
+  }
+  
+  .animate-marquee-r {
+    animation: marquee-r var(--marquee-duration, 45s) linear infinite;
+  }
 } 
