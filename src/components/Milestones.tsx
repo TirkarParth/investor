@@ -239,7 +239,7 @@ const Milestones: React.FC = () => {
                 <div key={`top-dup-${dup}`} className="flex shrink-0 py-4">
                   {topImages.map((src, idx) => (
                     <React.Fragment key={`top-${dup}-${idx}`}>
-                      <div className="flex-none w-[280px] md:w-[360px] lg:w-[360px] h-40 md:h-44 lg:h-44 bg-white rounded-xl shadow-lg">
+                      <div className="flex-none w-[280px] md:w-[360px] lg:w-[360px] h-38 md:h-40 lg:h-40 bg-white rounded-xl shadow-lg">
                         <img src={src} alt={`milestone gallery top ${idx + 1}`} className="w-full h-full object-contain px-0.1 sm:px-1" />
                       </div>
                       {/* Add gap after each image except the last one */}
@@ -257,7 +257,7 @@ const Milestones: React.FC = () => {
                 <div key={`bottom-dup-${dup}`} className="flex shrink-0 py-4">
                   {bottomImages.map((src, idx) => (
                     <React.Fragment key={`bottom-${dup}-${idx}`}>
-                      <div className="flex-none w-[280px] md:w-[360px] lg:w-[360px] h-40 md:h-44 lg:h-44 bg-white rounded-xl shadow-lg">
+                      <div className="flex-none w-[280px] md:w-[360px] lg:w-[360px] h-38 md:h-40 lg:h-40 bg-white rounded-xl shadow-lg">
                         <img src={src} alt={`milestone gallery bottom ${idx + 1}`} className="w-full h-full object-contain px-0.1 sm:px-1" />
                       </div>
                       {/* Add gap after each image except the last one */}
