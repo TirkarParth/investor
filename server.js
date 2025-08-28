@@ -42,35 +42,6 @@ const saveFilesDatabase = () => {
   }
 };
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-const upload = multer({ 
-  storage: storage,
-  limits: {
-    fileSize: 50 * 1024 * 1024, // 50MB limit
-  },
-  fileFilter: (req, file, cb) => {
-    // Allow only specific file types
-    const allowedTypes = ['.pdf', '.ppt', '.pptx', '.doc', '.docx'];
-    const fileExt = path.extname(file.originalname).toLowerCase();
-    
-    if (allowedTypes.includes(fileExt)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Invalid file type. Only PDF, PPT, PPTX, DOC, DOCX files are allowed.'));
-    }
-  }
-});
-
 // Admin authentication middleware
 const authenticateAdmin = (req, res, next) => {
   const adminToken = req.headers.authorization || req.body.adminToken;
@@ -102,7 +73,8 @@ app.get('/api/files', (req, res) => {
       accessCount: file.accessCount,
       lastAccessed: file.lastAccessed,
       serverPath: file.serverPath,
-      secureToken: file.secureToken
+      secureToken: file.secureToken,
+      fileUrl: file.fileUrl
     }));
     
     res.json(files);
@@ -112,11 +84,13 @@ app.get('/api/files', (req, res) => {
   }
 });
 
-// Upload file
-app.post('/api/upload', authenticateAdmin, upload.single('file'), (req, res) => {
+// Add external file (no file upload, just metadata)
+app.post('/api/files', authenticateAdmin, (req, res) => {
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
+    const { name, fileUrl, adminToken } = req.body;
+    
+    if (!name || !fileUrl) {
+      return res.status(400).json({ error: 'File name and URL are required' });
     }
 
     const fileId = 'pitch_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -124,11 +98,11 @@ app.post('/api/upload', authenticateAdmin, upload.single('file'), (req, res) => 
     
     const newFile = {
       id: fileId,
-      name: req.file.originalname,
-      size: req.file.size,
+      name: name,
+      size: 0, // Unknown size for external files
       uploadDate: new Date().toISOString(),
       accessCount: 0,
-      serverPath: req.file.filename,
+      fileUrl: fileUrl,
       secureToken: secureToken
     };
 
@@ -139,13 +113,13 @@ app.post('/api/upload', authenticateAdmin, upload.single('file'), (req, res) => 
     res.json({
       success: true,
       fileId: newFile.id,
-      serverPath: newFile.serverPath,
-      secureToken: newFile.secureToken
+      secureToken: newFile.secureToken,
+      message: 'External file added successfully'
     });
 
   } catch (error) {
-    console.error('Error uploading file:', error);
-    res.status(500).json({ error: 'Upload failed' });
+    console.error('Error adding external file:', error);
+    res.status(500).json({ error: 'Failed to add file' });
   }
 });
 
@@ -189,10 +163,12 @@ app.get('/api/download/:fileId', (req, res) => {
       return res.status(401).json({ error: 'Invalid token' });
     }
 
+    // Return file metadata
     res.json({
       name: file.name,
-      type: path.extname(file.name).toLowerCase() === '.pdf' ? 'application/pdf' : 'application/octet-stream',
+      type: file.fileUrl ? 'external' : (path.extname(file.name).toLowerCase() === '.pdf' ? 'application/pdf' : 'application/octet-stream'),
       serverPath: file.serverPath,
+      fileUrl: file.fileUrl,
       size: file.size
     });
 
@@ -202,7 +178,7 @@ app.get('/api/download/:fileId', (req, res) => {
   }
 });
 
-// Download file
+// Download file (for local files only)
 app.get('/api/download/:fileId/download', (req, res) => {
   try {
     const { fileId } = req.params;
@@ -222,6 +198,16 @@ app.get('/api/download/:fileId/download', (req, res) => {
     const token = authorization.replace('Bearer ', '');
     if (token !== file.secureToken) {
       return res.status(401).json({ error: 'Invalid token' });
+    }
+
+    // For external files, redirect to the URL
+    if (file.fileUrl) {
+      return res.redirect(file.fileUrl);
+    }
+
+    // For local files, check if they exist on server
+    if (!file.serverPath) {
+      return res.status(404).json({ error: 'File not available for download' });
     }
 
     const filePath = path.join(uploadDir, file.serverPath);
@@ -257,10 +243,12 @@ app.delete('/api/files/:fileId', authenticateAdmin, (req, res) => {
 
     const file = filesDatabase[fileIndex];
     
-    // Remove file from disk
-    const filePath = path.join(uploadDir, file.serverPath);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    // Remove file from disk if it's a local file
+    if (file.serverPath && !file.fileUrl) {
+      const filePath = path.join(uploadDir, file.serverPath);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
     }
 
     // Remove from database
@@ -280,7 +268,9 @@ app.get('/health', (req, res) => {
   res.json({ 
     status: 'healthy', 
     timestamp: new Date().toISOString(),
-    filesCount: filesDatabase.length
+    filesCount: filesDatabase.length,
+    externalFiles: filesDatabase.filter(f => f.fileUrl).length,
+    localFiles: filesDatabase.filter(f => !f.fileUrl).length
   });
 });
 
@@ -303,6 +293,7 @@ app.listen(PORT, () => {
   console.log(`Upload directory: ${uploadDir}`);
   console.log(`Files database: ${filesDbPath}`);
   console.log(`Health check: http://localhost:${PORT}/health`);
+  console.log(`Mode: External file management (no uploads)`);
 });
 
 module.exports = app;
