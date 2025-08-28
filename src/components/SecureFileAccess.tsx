@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Download, AlertTriangle, CheckCircle, FileText, Server } from 'lucide-react';
+import { Download, AlertTriangle, CheckCircle, FileText, Server, ExternalLink } from 'lucide-react';
 
 interface SecureFileAccessProps {
   fileId: string;
@@ -8,9 +8,10 @@ interface SecureFileAccessProps {
 
 interface FileData {
   name: string;
-  data: number[];
-  type: string;
+  data?: number[];
+  type?: string;
   serverPath?: string;
+  fileUrl?: string; // External file URL
 }
 
 const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken }) => {
@@ -18,6 +19,7 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [downloadStarted, setDownloadStarted] = useState(false);
+  const [isExternalFile, setIsExternalFile] = useState(false);
 
   // Server configuration
   const SERVER_CONFIG = {
@@ -33,6 +35,7 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
       
       if (serverFileData) {
         setFileData(serverFileData);
+        setIsExternalFile(!!serverFileData.fileUrl);
         setIsLoading(false);
         return;
       }
@@ -61,6 +64,7 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
       }
 
       setFileData(parsedData);
+      setIsExternalFile(!!parsedData.fileUrl);
       setIsLoading(false);
     } catch (err) {
       setError('Error loading file data');
@@ -89,7 +93,8 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
             name: serverFileData.name,
             data: serverFileData.data,
             type: serverFileData.type,
-            serverPath: serverFileData.serverPath
+            serverPath: serverFileData.serverPath,
+            fileUrl: serverFileData.fileUrl
           };
         }
       }
@@ -116,48 +121,61 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
     return token.includes(fileId) || token.length > 30;
   };
 
-  const handleDownload = async () => {
+  const handleAccessFile = async () => {
     if (!fileData) return;
 
     try {
       setDownloadStarted(true);
       
-      // Try to download from server first
-      if (fileData.serverPath && window.location.hostname === 'dayone-mediagroup.com') {
-        const downloadSuccess = await downloadFromServer(fileId, secureToken, fileData.name);
-        if (downloadSuccess) {
-          // Update access count
-          updateAccessCount();
-          setTimeout(() => setDownloadStarted(false), 2000);
-          return;
+      if (isExternalFile && fileData.fileUrl) {
+        // For external files, redirect to the actual file URL
+        window.open(fileData.fileUrl, '_blank');
+        
+        // Update access count
+        updateAccessCount();
+        
+        setTimeout(() => {
+          setDownloadStarted(false);
+        }, 2000);
+        
+      } else if (fileData.data) {
+        // For local files, try to download from server first
+        if (fileData.serverPath && window.location.hostname === 'dayone-mediagroup.com') {
+          const downloadSuccess = await downloadFromServer(fileId, secureToken, fileData.name);
+          if (downloadSuccess) {
+            // Update access count
+            updateAccessCount();
+            setTimeout(() => setDownloadStarted(false), 2000);
+            return;
+          }
         }
+        
+        // Fallback to local download
+        const blob = new Blob([new Uint8Array(fileData.data)], { type: fileData.type || 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        
+        // Create download link
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileData.name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up
+        URL.revokeObjectURL(url);
+        
+        // Update access count
+        updateAccessCount();
+        
+        // Show success message
+        setTimeout(() => {
+          setDownloadStarted(false);
+        }, 2000);
       }
       
-      // Fallback to local download
-      const blob = new Blob([new Uint8Array(fileData.data)], { type: fileData.type });
-      const url = URL.createObjectURL(blob);
-      
-      // Create download link
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = fileData.name;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      // Clean up
-      URL.revokeObjectURL(url);
-      
-      // Update access count
-      updateAccessCount();
-      
-      // Show success message
-      setTimeout(() => {
-        setDownloadStarted(false);
-      }, 2000);
-      
     } catch (err) {
-      setError('Error downloading file');
+      setError('Error accessing file');
       setDownloadStarted(false);
     }
   };
@@ -265,9 +283,15 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex items-center justify-center p-4">
       <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 max-w-lg w-full border border-white/20">
         <div className="text-center mb-8">
-          <FileText className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
+          {isExternalFile ? (
+            <ExternalLink className="w-16 h-16 text-blue-400 mx-auto mb-4" />
+          ) : (
+            <FileText className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
+          )}
           <h1 className="text-2xl font-bold text-white mb-2">Secure File Access</h1>
-          <p className="text-gray-300">Your file is ready for download</p>
+          <p className="text-gray-300">
+            {isExternalFile ? 'Your file is ready to access' : 'Your file is ready for download'}
+          </p>
         </div>
 
         {/* File Information */}
@@ -280,33 +304,63 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
               <span className="text-white font-medium">{fileData.name}</span>
             </div>
             
-            <div className="flex justify-between">
-              <span className="text-gray-400">File Type:</span>
-              <span className="text-white">{fileData.type || 'Unknown'}</span>
-            </div>
+            {!isExternalFile && (
+              <>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">File Type:</span>
+                  <span className="text-white">{fileData.type || 'Unknown'}</span>
+                </div>
+                
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Size:</span>
+                  <span className="text-white">
+                    {fileData.data ? formatFileSize(fileData.data.length) : 'Unknown'}
+                  </span>
+                </div>
+              </>
+            )}
             
-            <div className="flex justify-between">
-              <span className="text-gray-400">Size:</span>
-              <span className="text-white">{formatFileSize(fileData.data.length)}</span>
-            </div>
+            {isExternalFile && (
+              <div className="flex justify-between">
+                <span className="text-gray-400">File Location:</span>
+                <span className="text-blue-400">External Source</span>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Download Button */}
+        {/* Access Button */}
         <div className="text-center">
           {downloadStarted ? (
             <div className="bg-green-500/20 border border-green-500/30 rounded-lg p-4">
               <CheckCircle className="w-8 h-8 text-green-400 mx-auto mb-2" />
-              <p className="text-green-300 font-medium">Download Started!</p>
-              <p className="text-green-400 text-sm">Check your downloads folder</p>
+              <p className="text-green-300 font-medium">
+                {isExternalFile ? 'File Opened!' : 'Download Started!'}
+              </p>
+              <p className="text-green-400 text-sm">
+                {isExternalFile ? 'Check your browser tabs' : 'Check your downloads folder'}
+              </p>
             </div>
           ) : (
             <button
-              onClick={handleDownload}
-              className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-semibold py-4 px-8 rounded-lg transition-colors duration-200 flex items-center space-x-3 mx-auto"
+              onClick={handleAccessFile}
+              className={`font-semibold py-4 px-8 rounded-lg transition-colors duration-200 flex items-center space-x-3 mx-auto ${
+                isExternalFile 
+                  ? 'bg-blue-400 hover:bg-blue-500 text-white' 
+                  : 'bg-yellow-400 hover:bg-yellow-500 text-gray-900'
+              }`}
             >
-              <Download className="w-6 h-6" />
-              <span>Download File</span>
+              {isExternalFile ? (
+                <>
+                  <ExternalLink className="w-6 h-6" />
+                  <span>Open File</span>
+                </>
+              ) : (
+                <>
+                  <Download className="w-6 h-6" />
+                  <span>Download File</span>
+                </>
+              )}
             </button>
           )}
         </div>
