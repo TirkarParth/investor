@@ -46,7 +46,7 @@ print_status "Copying server files..."
 cp server.js "$LOCAL_DIR/"
 cp server-package.json "$LOCAL_DIR/package.json"
 
-# Create uploads directory
+# Create uploads directory (for any local files that might exist)
 mkdir -p "$LOCAL_DIR/uploads"
 
 # Create .htaccess for security (hide uploads directory)
@@ -130,6 +130,16 @@ cat > "$LOCAL_DIR/README.md" << 'EOF'
 
 This server provides secure access to pitch deck files for TRADEFOOX investors.
 
+## 🎯 New Approach: External File Management
+
+**No more file uploads!** This server now manages sharing links for files that are already uploaded elsewhere:
+
+- Google Drive
+- Dropbox
+- OneDrive
+- Your own hosting
+- Any public file hosting service
+
 ## Setup
 
 1. Install Node.js (v16 or higher)
@@ -138,23 +148,30 @@ This server provides secure access to pitch deck files for TRADEFOOX investors.
 
 ## API Endpoints
 
-- `GET /api/files` - List all files
-- `POST /api/upload` - Upload new file (admin only)
+- `GET /api/files` - List all managed files
+- `POST /api/files` - Add external file (admin only)
 - `GET /api/download/:fileId` - Get file metadata
-- `GET /api/download/:fileId/download` - Download file
+- `GET /api/download/:fileId/download` - Access file (redirects to external URL)
 - `DELETE /api/files/:fileId` - Delete file (admin only)
+
+## How It Works
+
+1. **Admin adds file**: Provides name + URL to external file
+2. **Server generates**: Secure access token and sharing link
+3. **Investor clicks link**: Server validates token and redirects to actual file
+4. **No storage needed**: Files remain on external services
 
 ## Security
 
-- Admin token required for uploads/deletions
+- Admin token required for file management
 - Secure tokens for file access
-- File type validation
-- Size limits (50MB max)
+- No file storage on this server
+- Access tracking and logging
 
 ## Files
 
-- `uploads/` - Stored files
-- `files-db.json` - File database
+- `uploads/` - Empty (no local files)
+- `files-db.json` - File metadata database
 - `logs/` - Server logs
 EOF
 
@@ -170,18 +187,18 @@ else
     echo "❌ Server is not responding"
 fi
 
-# Check if uploads directory exists
-if [ -d "uploads" ]; then
-    echo "✅ Uploads directory exists"
-else
-    echo "❌ Uploads directory missing"
-fi
-
 # Check if package.json exists
 if [ -f "package.json" ]; then
     echo "✅ Package.json exists"
 else
     echo "❌ Package.json missing"
+fi
+
+# Check if files database exists
+if [ -f "files-db.json" ]; then
+    echo "✅ Files database exists"
+else
+    echo "❌ Files database missing"
 fi
 
 echo "Deployment verification complete."
@@ -247,3 +264,12 @@ print_status "2. Start: pm2 start ecosystem.config.js"
 print_status "3. Monitor: pm2 monit"
 print_status ""
 print_status "Verify deployment: ./verify-deployment.sh"
+print_status ""
+print_status "🎯 New Workflow:"
+print_status "1. Upload files to Google Drive/Dropbox/etc."
+print_status "2. Add file metadata to this server"
+print_status "3. Generate secure sharing links"
+print_status "4. Share links with investors"
+print_status "5. Server redirects users to actual files"
+print_status ""
+print_status "No more 'Access Denied' errors! 🚀"
