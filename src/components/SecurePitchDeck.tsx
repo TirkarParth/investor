@@ -30,17 +30,31 @@ const SecurePitchDeck: React.FC = () => {
         // Try to get files from shared storage (sessionStorage for same domain)
         const savedFiles = sessionStorage.getItem('pitchDeckFiles');
         if (savedFiles) {
-          setFiles(JSON.parse(savedFiles));
+          const parsedFiles = JSON.parse(savedFiles);
+          // Convert date strings back to Date objects
+          const filesWithDates = parsedFiles.map((file: any) => ({
+            ...file,
+            uploadDate: file.uploadDate ? new Date(file.uploadDate) : new Date(),
+            lastAccessed: file.lastAccessed ? new Date(file.lastAccessed) : undefined
+          }));
+          setFiles(filesWithDates);
         }
         
         // Also check localStorage as fallback
         const localFiles = localStorage.getItem('pitchDeckFiles');
         if (localFiles) {
           const parsedLocalFiles = JSON.parse(localFiles);
+          // Convert date strings back to Date objects
+          const localFilesWithDates = parsedLocalFiles.map((file: any) => ({
+            ...file,
+            uploadDate: file.uploadDate ? new Date(file.uploadDate) : new Date(),
+            lastAccessed: file.lastAccessed ? new Date(file.lastAccessed) : undefined
+          }));
+          
           // Merge with session storage files
           setFiles(prev => {
             const merged = [...prev];
-            parsedLocalFiles.forEach((localFile: any) => {
+            localFilesWithDates.forEach((localFile: any) => {
               if (!merged.find(f => f.id === localFile.id)) {
                 merged.push(localFile);
               }
@@ -59,7 +73,14 @@ const SecurePitchDeck: React.FC = () => {
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'pitchDeckFiles' && e.newValue) {
         try {
-          setFiles(JSON.parse(e.newValue));
+          const parsedFiles = JSON.parse(e.newValue);
+          // Convert date strings back to Date objects
+          const filesWithDates = parsedFiles.map((file: any) => ({
+            ...file,
+            uploadDate: file.uploadDate ? new Date(file.uploadDate) : new Date(),
+            lastAccessed: file.lastAccessed ? new Date(file.lastAccessed) : undefined
+          }));
+          setFiles(filesWithDates);
         } catch (error) {
           console.error('Error parsing storage change:', error);
         }
@@ -228,14 +249,35 @@ const SecurePitchDeck: React.FC = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
+  const formatDate = (date: Date | string | undefined) => {
+    try {
+      // Handle different date formats safely
+      let dateObj: Date;
+      
+      if (typeof date === 'string') {
+        dateObj = new Date(date);
+      } else if (date instanceof Date) {
+        dateObj = date;
+      } else {
+        return 'Unknown date';
+      }
+      
+      // Check if date is valid
+      if (isNaN(dateObj.getTime())) {
+        return 'Invalid date';
+      }
+      
+      return new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }).format(dateObj);
+    } catch (error) {
+      console.error('Error formatting date:', error, date);
+      return 'Invalid date';
+    }
   };
 
   const generateSecureLink = (fileId: string) => {
@@ -335,9 +377,16 @@ const SecurePitchDeck: React.FC = () => {
         }
         
         if (globalFiles.length > 0) {
+          // Convert date strings back to Date objects
+          const globalFilesWithDates = globalFiles.map((file: any) => ({
+            ...file,
+            uploadDate: file.uploadDate ? new Date(file.uploadDate) : new Date(),
+            lastAccessed: file.lastAccessed ? new Date(file.lastAccessed) : undefined
+          }));
+          
           setFiles(prev => {
             const merged = [...prev];
-            globalFiles.forEach((globalFile: PitchDeckFile) => {
+            globalFilesWithDates.forEach((globalFile: PitchDeckFile) => {
               if (!merged.find(f => f.id === globalFile.id)) {
                 merged.push(globalFile);
               }
