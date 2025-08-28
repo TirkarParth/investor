@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Download, AlertTriangle, CheckCircle, FileText, Server, ExternalLink } from 'lucide-react';
+import { Download, AlertTriangle, CheckCircle, FileText, Server, ExternalLink, Eye } from 'lucide-react';
 
 interface SecureFileAccessProps {
   fileId: string;
@@ -12,6 +12,7 @@ interface FileData {
   type?: string;
   serverPath?: string;
   fileUrl?: string; // External file URL
+  isLocalFile?: boolean; // Indicates if it's a local PDF file
 }
 
 const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken }) => {
@@ -20,6 +21,8 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
   const [error, setError] = useState<string | null>(null);
   const [downloadStarted, setDownloadStarted] = useState(false);
   const [isExternalFile, setIsExternalFile] = useState(false);
+  const [isLocalFile, setIsLocalFile] = useState(false);
+  const [showPDFViewer, setShowPDFViewer] = useState(false);
 
   // Server configuration
   const SERVER_CONFIG = {
@@ -36,6 +39,7 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
       if (serverFileData) {
         setFileData(serverFileData);
         setIsExternalFile(!!serverFileData.fileUrl);
+        setIsLocalFile(!!serverFileData.isLocalFile);
         setIsLoading(false);
         return;
       }
@@ -65,6 +69,7 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
 
       setFileData(parsedData);
       setIsExternalFile(!!parsedData.fileUrl);
+      setIsLocalFile(!!parsedData.isLocalFile);
       setIsLoading(false);
     } catch (err) {
       setError('Error loading file data');
@@ -94,7 +99,8 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
             data: serverFileData.data,
             type: serverFileData.type,
             serverPath: serverFileData.serverPath,
-            fileUrl: serverFileData.fileUrl
+            fileUrl: serverFileData.fileUrl,
+            isLocalFile: serverFileData.isLocalFile
           };
         }
       }
@@ -127,7 +133,18 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
     try {
       setDownloadStarted(true);
       
-      if (isExternalFile && fileData.fileUrl) {
+      if (isLocalFile && fileData.fileUrl) {
+        // For local PDF files, show PDF viewer
+        setShowPDFViewer(true);
+        
+        // Update access count
+        updateAccessCount();
+        
+        setTimeout(() => {
+          setDownloadStarted(false);
+        }, 2000);
+        
+      } else if (isExternalFile && fileData.fileUrl) {
         // For external files, redirect to the actual file URL
         window.open(fileData.fileUrl, '_blank');
         
@@ -241,6 +258,54 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
     }
   };
 
+  // PDF Viewer Component
+  const PDFViewer = () => {
+    if (!fileData?.fileUrl) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg w-full h-full max-w-6xl max-h-[90vh] flex flex-col">
+          {/* Header */}
+          <div className="bg-gray-100 px-6 py-4 rounded-t-lg flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-gray-800">{fileData.name}</h2>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => {
+                  // Download the PDF
+                  const link = document.createElement('a');
+                  link.href = fileData.fileUrl!;
+                  link.download = fileData.name;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                }}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2"
+              >
+                <Download className="w-4 h-4" />
+                <span>Download</span>
+              </button>
+              <button
+                onClick={() => setShowPDFViewer(false)}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+          
+          {/* PDF Content */}
+          <div className="flex-1 bg-gray-50 rounded-b-lg overflow-hidden">
+            <iframe
+              src={`${fileData.fileUrl}#toolbar=1&navpanes=1&scrollbar=1`}
+              className="w-full h-full border-0"
+              title={fileData.name}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex items-center justify-center p-4">
@@ -279,18 +344,27 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
     );
   }
 
+  // Show PDF viewer if requested
+  if (showPDFViewer) {
+    return <PDFViewer />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 flex items-center justify-center p-4">
       <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 max-w-lg w-full border border-white/20">
         <div className="text-center mb-8">
-          {isExternalFile ? (
+          {isLocalFile ? (
+            <FileText className="w-16 h-16 text-green-400 mx-auto mb-4" />
+          ) : isExternalFile ? (
             <ExternalLink className="w-16 h-16 text-blue-400 mx-auto mb-4" />
           ) : (
             <FileText className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
           )}
           <h1 className="text-2xl font-bold text-white mb-2">Secure File Access</h1>
           <p className="text-gray-300">
-            {isExternalFile ? 'Your file is ready to access' : 'Your file is ready for download'}
+            {isLocalFile ? 'Your PDF is ready to view' : 
+             isExternalFile ? 'Your file is ready to access' : 
+             'Your file is ready for download'}
           </p>
         </div>
 
@@ -304,7 +378,7 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
               <span className="text-white font-medium">{fileData.name}</span>
             </div>
             
-            {!isExternalFile && (
+            {!isExternalFile && !isLocalFile && (
               <>
                 <div className="flex justify-between">
                   <span className="text-gray-400">File Type:</span>
@@ -320,7 +394,14 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
               </>
             )}
             
-            {isExternalFile && (
+            {isLocalFile && (
+              <div className="flex justify-between">
+                <span className="text-gray-400">File Location:</span>
+                <span className="text-green-400">Local PDF</span>
+              </div>
+            )}
+            
+            {isExternalFile && !isLocalFile && (
               <div className="flex justify-between">
                 <span className="text-gray-400">File Location:</span>
                 <span className="text-blue-400">External Source</span>
@@ -335,22 +416,33 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
             <div className="bg-green-500/20 border border-green-500/30 rounded-lg p-4">
               <CheckCircle className="w-8 h-8 text-green-400 mx-auto mb-2" />
               <p className="text-green-300 font-medium">
-                {isExternalFile ? 'File Opened!' : 'Download Started!'}
+                {isLocalFile ? 'PDF Viewer Opening!' : 
+                 isExternalFile ? 'File Opened!' : 
+                 'Download Started!'}
               </p>
               <p className="text-green-400 text-sm">
-                {isExternalFile ? 'Check your browser tabs' : 'Check your downloads folder'}
+                {isLocalFile ? 'PDF will display in browser' : 
+                 isExternalFile ? 'Check your browser tabs' : 
+                 'Check your downloads folder'}
               </p>
             </div>
           ) : (
             <button
               onClick={handleAccessFile}
               className={`font-semibold py-4 px-8 rounded-lg transition-colors duration-200 flex items-center space-x-3 mx-auto ${
-                isExternalFile 
-                  ? 'bg-blue-400 hover:bg-blue-500 text-white' 
-                  : 'bg-yellow-400 hover:bg-yellow-500 text-gray-900'
+                isLocalFile 
+                  ? 'bg-green-400 hover:bg-green-500 text-white' 
+                  : isExternalFile 
+                    ? 'bg-blue-400 hover:bg-blue-500 text-white' 
+                    : 'bg-yellow-400 hover:bg-yellow-500 text-gray-900'
               }`}
             >
-              {isExternalFile ? (
+              {isLocalFile ? (
+                <>
+                  <Eye className="w-6 h-6" />
+                  <span>View PDF</span>
+                </>
+              ) : isExternalFile ? (
                 <>
                   <ExternalLink className="w-6 h-6" />
                   <span>Open File</span>

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Download, Trash2, Eye, EyeOff, Lock, Unlock, Server, Link, Copy } from 'lucide-react';
+import { Download, Trash2, Eye, EyeOff, Lock, Unlock, Server, Link, Copy, FileText, FolderOpen } from 'lucide-react';
 
 interface PitchDeckFile {
   id: string;
@@ -11,6 +11,7 @@ interface PitchDeckFile {
   serverPath?: string;
   secureToken?: string;
   fileUrl?: string; // Direct file URL for already uploaded files
+  isLocalFile?: boolean; // Indicates if it's a local PDF file
 }
 
 const SecurePitchDeck: React.FC = () => {
@@ -32,6 +33,11 @@ const SecurePitchDeck: React.FC = () => {
     apiEndpoint: '/api/pitch-deck',
     filesEndpoint: '/api/files'
   };
+
+  // Available local PDF files (manually specified)
+  const availableLocalPDFs = [
+    'Pich Deck English.pdf'
+  ];
 
   // Load files from server on component mount
   useEffect(() => {
@@ -161,7 +167,8 @@ const SecurePitchDeck: React.FC = () => {
       uploadDate: new Date(),
       accessCount: 0,
       fileUrl: newFileUrl.trim(),
-      secureToken: generateSecureToken()
+      secureToken: generateSecureToken(),
+      isLocalFile: false
     };
 
     // Add to files list
@@ -203,18 +210,19 @@ const SecurePitchDeck: React.FC = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            files: filesList.map(file => ({
-              id: file.id,
-              name: file.name,
-              size: file.size,
-              uploadDate: file.uploadDate.toISOString(),
-              accessCount: file.accessCount,
-              fileUrl: file.fileUrl,
-              secureToken: file.secureToken
-            })),
-            adminToken: 'TRADEFOOX_SECURE_2024'
-          }),
+                      body: JSON.stringify({
+              files: filesList.map(file => ({
+                id: file.id,
+                name: file.name,
+                size: file.size,
+                uploadDate: file.uploadDate.toISOString(),
+                accessCount: file.accessCount,
+                fileUrl: file.fileUrl,
+                secureToken: file.secureToken,
+                isLocalFile: file.isLocalFile
+              })),
+              adminToken: 'TRADEFOOX_SECURE_2024'
+            }),
         });
         
         if (!response.ok) {
@@ -224,6 +232,45 @@ const SecurePitchDeck: React.FC = () => {
     } catch (error) {
       console.error('Error updating server files list:', error);
     }
+  };
+
+  const addLocalPDF = (fileName: string) => {
+    const fileUrl = `/images/pdf/${fileName}`;
+    const newFile: PitchDeckFile = {
+      id: generateSecureId(),
+      name: fileName.replace('.pdf', '').replace(/_/g, ' '),
+      size: 0, // Unknown size for local files
+      uploadDate: new Date(),
+      accessCount: 0,
+      fileUrl: fileUrl,
+      secureToken: generateSecureToken(),
+      isLocalFile: true
+    };
+
+    // Add to files list
+    setFiles(prev => [...prev, newFile]);
+    
+    // Save to storage
+    const fileMetadata = {
+      id: newFile.id,
+      name: newFile.name,
+      size: newFile.size,
+      uploadDate: newFile.uploadDate.toISOString(),
+      accessCount: newFile.accessCount,
+      fileUrl: newFile.fileUrl,
+      secureToken: newFile.secureToken,
+      isLocalFile: newFile.isLocalFile
+    };
+
+    localStorage.setItem(`pitchDeck_${newFile.id}`, JSON.stringify(fileMetadata));
+    sessionStorage.setItem(`pitchDeck_${newFile.id}`, JSON.stringify(fileMetadata));
+
+    // Update server files list
+    updateServerFilesList([...files, newFile]);
+
+    setMessage(`Local PDF "${newFile.name}" added successfully`);
+    setMessageType('success');
+    setTimeout(() => setMessage(''), 3000);
   };
 
   // Check if admin password is correct
@@ -446,10 +493,10 @@ const SecurePitchDeck: React.FC = () => {
         {/* Header */}
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6 border border-white/20">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Pitch Deck Management</h1>
-              <p className="text-gray-300">Manage sharing links for already uploaded pitch deck files</p>
-            </div>
+                          <div>
+                <h1 className="text-3xl font-bold text-white mb-2">Pitch Deck Management</h1>
+                <p className="text-gray-300">Manage sharing links for pitch deck files (local PDFs and external files)</p>
+              </div>
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => window.location.href = '/'}
@@ -469,9 +516,9 @@ const SecurePitchDeck: React.FC = () => {
           </div>
         </div>
 
-        {/* Add Existing File Section */}
+        {/* Add External File Section */}
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6 border border-white/20">
-          <h2 className="text-xl font-semibold text-white mb-4">Add Existing File</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">Add External File</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
@@ -502,12 +549,35 @@ const SecurePitchDeck: React.FC = () => {
             className="bg-yellow-400 hover:bg-yellow-500 disabled:bg-gray-500 text-gray-900 font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center space-x-2"
           >
             <Link className="w-5 h-5" />
-            <span>Add File</span>
+            <span>Add External File</span>
           </button>
           
           <p className="text-gray-400 text-sm mt-2">
             Add files that are already uploaded elsewhere (Google Drive, Dropbox, etc.) to generate secure sharing links.
           </p>
+        </div>
+
+        {/* Local PDF Files Section */}
+        <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6 border border-white/20">
+          <h2 className="text-xl font-semibold text-white mb-4 flex items-center">
+            <FolderOpen className="w-6 h-6 mr-2 text-blue-400" />
+            Local PDF Files
+          </h2>
+          <p className="text-gray-300 text-sm mb-4">
+            Add local PDF files that are hosted on your server.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {availableLocalPDFs.map((fileName, index) => (
+              <button
+                key={index}
+                onClick={() => addLocalPDF(fileName)}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-lg text-left flex items-center justify-between"
+              >
+                <span>{fileName}</span>
+                <FileText className="w-5 h-5" />
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Files List */}
@@ -538,6 +608,9 @@ const SecurePitchDeck: React.FC = () => {
                         )}
                         {file.fileUrl && (
                           <span className="text-blue-400">External File</span>
+                        )}
+                        {file.isLocalFile && (
+                          <span className="text-green-400">Local File</span>
                         )}
                       </div>
                     </div>

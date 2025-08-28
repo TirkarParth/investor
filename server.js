@@ -74,7 +74,8 @@ app.get('/api/files', (req, res) => {
       lastAccessed: file.lastAccessed,
       serverPath: file.serverPath,
       secureToken: file.secureToken,
-      fileUrl: file.fileUrl
+      fileUrl: file.fileUrl,
+      isLocalFile: file.isLocalFile || false
     }));
     
     res.json(files);
@@ -87,7 +88,7 @@ app.get('/api/files', (req, res) => {
 // Add external file (no file upload, just metadata)
 app.post('/api/files', authenticateAdmin, (req, res) => {
   try {
-    const { name, fileUrl, adminToken } = req.body;
+    const { name, fileUrl, adminToken, isLocalFile } = req.body;
     
     if (!name || !fileUrl) {
       return res.status(400).json({ error: 'File name and URL are required' });
@@ -103,7 +104,8 @@ app.post('/api/files', authenticateAdmin, (req, res) => {
       uploadDate: new Date().toISOString(),
       accessCount: 0,
       fileUrl: fileUrl,
-      secureToken: secureToken
+      secureToken: secureToken,
+      isLocalFile: isLocalFile || false
     };
 
     // Add to database
@@ -114,11 +116,11 @@ app.post('/api/files', authenticateAdmin, (req, res) => {
       success: true,
       fileId: newFile.id,
       secureToken: newFile.secureToken,
-      message: 'External file added successfully'
+      message: isLocalFile ? 'Local PDF added successfully' : 'External file added successfully'
     });
 
   } catch (error) {
-    console.error('Error adding external file:', error);
+    console.error('Error adding file:', error);
     res.status(500).json({ error: 'Failed to add file' });
   }
 });
@@ -166,9 +168,10 @@ app.get('/api/download/:fileId', (req, res) => {
     // Return file metadata
     res.json({
       name: file.name,
-      type: file.fileUrl ? 'external' : (path.extname(file.name).toLowerCase() === '.pdf' ? 'application/pdf' : 'application/octet-stream'),
+      type: file.isLocalFile ? 'application/pdf' : (file.fileUrl ? 'external' : 'application/octet-stream'),
       serverPath: file.serverPath,
       fileUrl: file.fileUrl,
+      isLocalFile: file.isLocalFile || false,
       size: file.size
     });
 
@@ -201,8 +204,25 @@ app.get('/api/download/:fileId/download', (req, res) => {
     }
 
     // For external files, redirect to the URL
-    if (file.fileUrl) {
+    if (file.fileUrl && !file.isLocalFile) {
       return res.redirect(file.fileUrl);
+    }
+
+    // For local PDF files, serve them directly
+    if (file.isLocalFile && file.fileUrl) {
+      // Extract the file path from the URL
+      const filePath = path.join(__dirname, 'public', file.fileUrl);
+      
+      if (fs.existsSync(filePath)) {
+        // Set appropriate headers for PDF viewing
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `inline; filename="${file.name}"`);
+        
+        // Stream the PDF file
+        const fileStream = fs.createReadStream(filePath);
+        fileStream.pipe(res);
+        return;
+      }
     }
 
     // For local files, check if they exist on server
@@ -269,8 +289,9 @@ app.get('/health', (req, res) => {
     status: 'healthy', 
     timestamp: new Date().toISOString(),
     filesCount: filesDatabase.length,
-    externalFiles: filesDatabase.filter(f => f.fileUrl).length,
-    localFiles: filesDatabase.filter(f => !f.fileUrl).length
+    externalFiles: filesDatabase.filter(f => f.fileUrl && !f.isLocalFile).length,
+    localFiles: filesDatabase.filter(f => f.isLocalFile).length,
+    serverFiles: filesDatabase.filter(f => !f.fileUrl).length
   });
 });
 
@@ -293,7 +314,7 @@ app.listen(PORT, () => {
   console.log(`Upload directory: ${uploadDir}`);
   console.log(`Files database: ${filesDbPath}`);
   console.log(`Health check: http://localhost:${PORT}/health`);
-  console.log(`Mode: External file management (no uploads)`);
+  console.log(`Mode: External file management + Local PDF support`);
 });
 
 module.exports = app;
