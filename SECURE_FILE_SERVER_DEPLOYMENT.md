@@ -13,10 +13,26 @@ This guide will help you deploy the secure file server to your ALL-INKL.COM host
 - No centralized file management system
 
 **Solution:** Deploy a secure file server that:
-- Stores files on your FTP server
+- **Manages external file URLs** (Google Drive, Dropbox, etc.)
 - Provides secure API endpoints for file access
 - Manages file permissions and access tokens
-- Allows all users to access uploaded files
+- Allows all users to access files via secure links
+- **No file storage needed** - files remain on external services
+
+## 🎯 New Approach: External File Management
+
+**Key Change:** Instead of uploading files to your server, you now:
+1. **Upload files elsewhere** (Google Drive, Dropbox, OneDrive, etc.)
+2. **Add file metadata** to this server (name + URL)
+3. **Generate secure links** for investors
+4. **Server redirects** users to actual files
+
+**Benefits:**
+- ✅ No server storage needed
+- ✅ No file size limits
+- ✅ Use existing cloud services
+- ✅ Instant access for all users
+- ✅ Professional sharing experience
 
 ## 📋 Prerequisites
 
@@ -24,6 +40,7 @@ This guide will help you deploy the secure file server to your ALL-INKL.COM host
 2. **Node.js support** on your hosting (check with your provider)
 3. **FTP credentials** (already configured in your GitHub Actions)
 4. **Domain access** to `dayone-mediagroup.com`
+5. **External file hosting** (Google Drive, Dropbox, etc.)
 
 ## 🛠️ Deployment Steps
 
@@ -134,7 +151,9 @@ Expected response:
 {
   "status": "healthy",
   "timestamp": "2024-01-XX...",
-  "filesCount": 0
+  "filesCount": 0,
+  "externalFiles": 0,
+  "localFiles": 0
 }
 ```
 
@@ -162,22 +181,25 @@ Configure your hosting provider to forward port 3001 to your domain.
 
 The server includes several security measures:
 
-1. **File Type Validation**: Only allows PDF, PPT, PPTX, DOC, DOCX files
-2. **Size Limits**: Maximum 50MB per file
-3. **Admin Authentication**: Required for uploads/deletions
-4. **Secure Tokens**: Unique access tokens for each file
-5. **Directory Protection**: Uploads directory is hidden from direct access
+1. **Admin Authentication**: Required for file management
+2. **Secure Tokens**: Unique access tokens for each file
+3. **No File Storage**: Files remain on external services
+4. **Access Tracking**: Monitor who accesses what and when
+5. **Token Validation**: Secure link generation and validation
 
 ## 📱 Testing the System
 
-### 1. Test File Upload
+### 1. Test Adding External File
 
 ```bash
 # Test admin authentication
-curl -X POST http://localhost:3001/api/upload \
-  -H "Content-Type: multipart/form-data" \
-  -F "file=@test-file.pdf" \
-  -F "adminToken=TRADEFOOX_SECURE_2024"
+curl -X POST http://localhost:3001/api/files \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Test Pitch Deck",
+    "fileUrl": "https://drive.google.com/file/d/example/view",
+    "adminToken": "TRADEFOOX_SECURE_2024"
+  }'
 ```
 
 ### 2. Test File Access
@@ -186,7 +208,7 @@ curl -X POST http://localhost:3001/api/upload \
 # Get file list
 curl http://localhost:3001/api/files
 
-# Test file download (replace with actual fileId and token)
+# Test file access (replace with actual fileId and token)
 curl http://localhost:3001/api/download/FILE_ID \
   -H "Authorization: Bearer SECURE_TOKEN"
 ```
@@ -195,10 +217,10 @@ curl http://localhost:3001/api/download/FILE_ID \
 
 The React frontend has been updated to:
 
-1. **Upload files to server** instead of local storage
-2. **Fetch files from server** when available
-3. **Fallback to local storage** for development
-4. **Use secure tokens** for file access
+1. **Add external files** instead of uploading
+2. **Fetch file metadata** from server
+3. **Generate secure links** for sharing
+4. **Handle external redirects** to actual files
 
 ## 🚨 Troubleshooting
 
@@ -215,17 +237,17 @@ netstat -tulpn | grep :3001
 tail -f logs/err.log
 ```
 
-### Files Not Uploading
+### Files Not Accessible
 
 ```bash
-# Check uploads directory permissions
-ls -la uploads/
+# Check if server is running
+curl http://localhost:3001/health
 
-# Check server logs
-tail -f logs/out.log
+# Check files database
+cat files-db.json
 
-# Test API endpoint
-curl -X GET http://localhost:3001/api/files
+# Test API endpoints
+curl http://localhost:3001/api/files
 ```
 
 ### Access Denied Errors
@@ -233,7 +255,7 @@ curl -X GET http://localhost:3001/api/files
 1. **Check if server is running**: `curl http://localhost:3001/health`
 2. **Verify file exists**: Check `files-db.json`
 3. **Check token validity**: Verify secure token in database
-4. **Check file permissions**: Ensure files are readable
+4. **Check external URL**: Ensure file URL is accessible
 
 ### Port Already in Use
 
@@ -290,22 +312,22 @@ git pull origin main
 pm2 restart tradefoox-secure-server
 ```
 
-### Backup Files
+### Backup Database
 
 ```bash
-# Backup uploads directory
-tar -czf uploads-backup-$(date +%Y%m%d).tar.gz uploads/
-
-# Backup database
+# Backup files database
 cp files-db.json files-db-backup-$(date +%Y%m%d).json
+
+# Backup to external location
+scp files-db.json user@backup-server:/backups/
 ```
 
 ## 📈 Performance Optimization
 
-1. **File Compression**: Consider compressing large files
-2. **CDN Integration**: Use CloudFlare or similar for file delivery
-3. **Database Optimization**: For large file counts, consider using a proper database
-4. **Caching**: Implement Redis for session management
+1. **No File Storage**: Server only manages metadata
+2. **Fast Redirects**: Instant file access via external URLs
+3. **Minimal Resources**: Lightweight Node.js server
+4. **CDN Integration**: Use CloudFlare for additional performance
 
 ## 🔐 Production Security Checklist
 
@@ -330,23 +352,48 @@ If you encounter issues:
 
 After successful deployment:
 
-✅ **Files are stored on server** instead of browser storage  
-✅ **All users can access uploaded files** via secure links  
+✅ **No file uploads needed** - use existing cloud services  
+✅ **All users can access files** via secure links  
 ✅ **No more "Access Denied" errors** for valid links  
 ✅ **Centralized file management** for admins  
 ✅ **Secure file access** with proper authentication  
 ✅ **Professional investor experience** maintained  
+✅ **Instant file access** via external redirects  
 
 ## 🚀 Next Steps
 
 1. **Deploy the server** using the script above
-2. **Test file uploads** and downloads
-3. **Share secure links** with investors
-4. **Monitor usage** and access patterns
-5. **Scale as needed** for growing investor base
+2. **Upload files to cloud services** (Google Drive, Dropbox, etc.)
+3. **Add file metadata** to the server
+4. **Generate secure sharing links**
+5. **Share links with investors**
+6. **Monitor usage** and access patterns
+
+## 🔄 Workflow Example
+
+### For Each Pitch Deck:
+
+1. **Upload to Google Drive**
+   - Create shareable link
+   - Set appropriate permissions
+
+2. **Add to Server**
+   - File name: "TRADEFOOX Series A Pitch Deck"
+   - File URL: "https://drive.google.com/file/d/.../view"
+
+3. **Generate Secure Link**
+   - Server creates: `https://dayone-mediagroup.com/#/pitch-deck-access/TOKEN/FILE_ID`
+
+4. **Share with Investors**
+   - Send secure link via email
+   - Link works for all users immediately
+
+5. **Track Access**
+   - Monitor who accessed what
+   - Track access counts and timestamps
 
 ---
 
 **Built with ❤️ for TRADEFOOX investors**
 
-*This deployment will resolve your current access issues and provide a robust, scalable solution for secure file sharing.*
+*This deployment will resolve your current access issues and provide a robust, scalable solution for secure file sharing without the need for server storage.*
