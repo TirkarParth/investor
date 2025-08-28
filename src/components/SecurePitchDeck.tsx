@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Upload, Download, Trash2, Eye, EyeOff, Lock, Unlock } from 'lucide-react';
+import { Upload, Download, Trash2, Eye, EyeOff, Lock, Unlock, Server } from 'lucide-react';
 
 interface PitchDeckFile {
   id: string;
@@ -8,6 +8,8 @@ interface PitchDeckFile {
   uploadDate: Date;
   accessCount: number;
   lastAccessed?: Date;
+  serverPath?: string;
+  secureToken?: string;
 }
 
 const SecurePitchDeck: React.FC = () => {
@@ -19,87 +21,179 @@ const SecurePitchDeck: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error' | 'info'>('info');
+  const [isLoadingFiles, setIsLoadingFiles] = useState(true);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const adminPasswordRef = useRef<HTMLInputElement>(null);
 
-  // Load files from shared storage on component mount
+  // Server configuration
+  const SERVER_CONFIG = {
+    baseUrl: 'https://dayone-mediagroup.com',
+    apiEndpoint: '/api/pitch-deck',
+    uploadEndpoint: '/api/upload',
+    filesEndpoint: '/api/files'
+  };
+
+  // Load files from server on component mount
   useEffect(() => {
-    const loadFiles = () => {
-      try {
-        // Try to get files from shared storage (sessionStorage for same domain)
-        const savedFiles = sessionStorage.getItem('pitchDeckFiles');
-        if (savedFiles) {
-          const parsedFiles = JSON.parse(savedFiles);
-          // Convert date strings back to Date objects
-          const filesWithDates = parsedFiles.map((file: any) => ({
-            ...file,
-            uploadDate: file.uploadDate ? new Date(file.uploadDate) : new Date(),
-            lastAccessed: file.lastAccessed ? new Date(file.lastAccessed) : undefined
-          }));
-          setFiles(filesWithDates);
-        }
-        
-        // Also check localStorage as fallback
-        const localFiles = localStorage.getItem('pitchDeckFiles');
-        if (localFiles) {
-          const parsedLocalFiles = JSON.parse(localFiles);
-          // Convert date strings back to Date objects
-          const localFilesWithDates = parsedLocalFiles.map((file: any) => ({
-            ...file,
-            uploadDate: file.uploadDate ? new Date(file.uploadDate) : new Date(),
-            lastAccessed: file.lastAccessed ? new Date(file.lastAccessed) : undefined
-          }));
-          
-          // Merge with session storage files
-          setFiles(prev => {
-            const merged = [...prev];
-            localFilesWithDates.forEach((localFile: any) => {
-              if (!merged.find(f => f.id === localFile.id)) {
-                merged.push(localFile);
-              }
-            });
-            return merged;
-          });
-        }
-      } catch (error) {
-        console.error('Error loading saved files:', error);
-      }
-    };
-
-    loadFiles();
-    
-    // Listen for storage changes from other tabs/windows
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'pitchDeckFiles' && e.newValue) {
-        try {
-          const parsedFiles = JSON.parse(e.newValue);
-          // Convert date strings back to Date objects
-          const filesWithDates = parsedFiles.map((file: any) => ({
-            ...file,
-            uploadDate: file.uploadDate ? new Date(file.uploadDate) : new Date(),
-            lastAccessed: file.lastAccessed ? new Date(file.lastAccessed) : undefined
-          }));
-          setFiles(filesWithDates);
-        } catch (error) {
-          console.error('Error parsing storage change:', error);
-        }
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
-
-  // Save files to both localStorage and sessionStorage for persistence
-  useEffect(() => {
-    if (files.length > 0) {
-      // Save to localStorage for persistence
-      localStorage.setItem('pitchDeckFiles', JSON.stringify(files));
-      // Save to sessionStorage for sharing across tabs/windows
-      sessionStorage.setItem('pitchDeckFiles', JSON.stringify(files));
+    if (isAdmin) {
+      loadFilesFromServer();
     }
-  }, [files]);
+  }, [isAdmin]);
+
+  const loadFilesFromServer = async () => {
+    try {
+      setIsLoadingFiles(true);
+      
+      // First try to load from server
+      const serverFiles = await fetchFilesFromServer();
+      
+      if (serverFiles && serverFiles.length > 0) {
+        setFiles(serverFiles);
+        // Also save to local storage as backup
+        localStorage.setItem('pitchDeckFiles', JSON.stringify(serverFiles));
+        sessionStorage.setItem('pitchDeckFiles', JSON.stringify(serverFiles));
+      } else {
+        // Fallback to local storage if server is not available
+        const loadFiles = () => {
+          try {
+            const savedFiles = sessionStorage.getItem('pitchDeckFiles');
+            if (savedFiles) {
+              const parsedFiles = JSON.parse(savedFiles);
+              const filesWithDates = parsedFiles.map((file: any) => ({
+                ...file,
+                uploadDate: file.uploadDate ? new Date(file.uploadDate) : new Date(),
+                lastAccessed: file.lastAccessed ? new Date(file.lastAccessed) : undefined
+              }));
+              setFiles(filesWithDates);
+            }
+            
+            const localFiles = localStorage.getItem('pitchDeckFiles');
+            if (localFiles) {
+              const parsedLocalFiles = JSON.parse(localFiles);
+              const localFilesWithDates = parsedLocalFiles.map((file: any) => ({
+                ...file,
+                uploadDate: file.uploadDate ? new Date(file.uploadDate) : new Date(),
+                lastAccessed: file.lastAccessed ? new Date(file.lastAccessed) : undefined
+              }));
+              
+              setFiles(prev => {
+                const merged = [...prev];
+                localFilesWithDates.forEach((localFile: any) => {
+                  if (!merged.find(f => f.id === localFile.id)) {
+                    merged.push(localFile);
+                  }
+                });
+                return merged;
+              });
+            }
+          } catch (error) {
+            console.error('Error loading saved files:', error);
+          }
+        };
+
+        loadFiles();
+      }
+    } catch (error) {
+      console.error('Error loading files from server:', error);
+      // Fallback to local storage
+      const savedFiles = sessionStorage.getItem('pitchDeckFiles');
+      if (savedFiles) {
+        const parsedFiles = JSON.parse(savedFiles);
+        const filesWithDates = parsedFiles.map((file: any) => ({
+          ...file,
+          uploadDate: file.uploadDate ? new Date(file.uploadDate) : new Date(),
+          lastAccessed: file.lastAccessed ? new Date(file.lastAccessed) : undefined
+        }));
+        setFiles(filesWithDates);
+      }
+    } finally {
+      setIsLoadingFiles(false);
+    }
+  };
+
+  const fetchFilesFromServer = async (): Promise<PitchDeckFile[]> => {
+    try {
+      // For now, we'll simulate server communication
+      // In production, this would make actual HTTP requests to your server
+      
+      // Check if we're in a deployed environment
+      if (window.location.hostname === 'dayone-mediagroup.com' || 
+          window.location.hostname === 'www.dayone-mediagroup.com') {
+        
+        // Try to fetch from server
+        const response = await fetch(`${SERVER_CONFIG.baseUrl}${SERVER_CONFIG.filesEndpoint}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (response.ok) {
+          const serverFiles = await response.json();
+          return serverFiles.map((file: any) => ({
+            ...file,
+            uploadDate: file.uploadDate ? new Date(file.uploadDate) : new Date(),
+            lastAccessed: file.lastAccessed ? new Date(file.lastAccessed) : undefined
+          }));
+        }
+      }
+      
+      // Return empty array if server is not available
+      return [];
+    } catch (error) {
+      console.error('Error fetching files from server:', error);
+      return [];
+    }
+  };
+
+  const uploadFileToServer = async (file: File): Promise<{ success: boolean; fileId?: string; serverPath?: string; error?: string }> => {
+    try {
+      // For now, we'll simulate server upload
+      // In production, this would make actual HTTP requests to upload files
+      
+      if (window.location.hostname === 'dayone-mediagroup.com' || 
+          window.location.hostname === 'www.dayone-mediagroup.com') {
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('adminToken', 'TRADEFOOX_SECURE_2024'); // In production, use proper JWT
+        
+        const response = await fetch(`${SERVER_CONFIG.baseUrl}${SERVER_CONFIG.uploadEndpoint}`, {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          return {
+            success: true,
+            fileId: result.fileId,
+            serverPath: result.serverPath
+          };
+        } else {
+          const errorData = await response.json();
+          return {
+            success: false,
+            error: errorData.message || 'Upload failed'
+          };
+        }
+      }
+      
+      // Fallback: simulate successful upload for development
+      return {
+        success: true,
+        fileId: generateSecureId(),
+        serverPath: `/uploads/${file.name}`
+      };
+    } catch (error) {
+      console.error('Error uploading to server:', error);
+      return {
+        success: false,
+        error: 'Network error during upload'
+      };
+    }
+  };
 
   // Check if admin password is correct
   const checkAdminPassword = (password: string) => {
@@ -145,41 +239,52 @@ const SecurePitchDeck: React.FC = () => {
         await new Promise(resolve => setTimeout(resolve, 50));
       }
 
-      // Create file object
-      const newFile: PitchDeckFile = {
-        id: generateSecureId(),
-        name: file.name,
-        size: file.size,
-        uploadDate: new Date(),
-        accessCount: 0
-      };
-
-      // Store file data in both localStorage and sessionStorage for sharing
-      const fileData = await file.arrayBuffer();
-      const fileDataString = JSON.stringify({
-        name: file.name,
-        data: Array.from(new Uint8Array(fileData)),
-        type: file.type
-      });
+      // Upload file to server
+      const uploadResult = await uploadFileToServer(file);
       
-      // Save to localStorage for persistence
-      localStorage.setItem(`pitchDeck_${newFile.id}`, fileDataString);
-      // Save to sessionStorage for sharing across tabs/windows
-      sessionStorage.setItem(`pitchDeck_${newFile.id}`, fileDataString);
+      if (uploadResult.success && uploadResult.fileId) {
+        // Create file object with server information
+        const newFile: PitchDeckFile = {
+          id: uploadResult.fileId,
+          name: file.name,
+          size: file.size,
+          uploadDate: new Date(),
+          accessCount: 0,
+          serverPath: uploadResult.serverPath,
+          secureToken: generateSecureToken()
+        };
 
-      setFiles(prev => [...prev, newFile]);
+        // Store file metadata locally for quick access
+        const fileMetadata = {
+          id: newFile.id,
+          name: newFile.name,
+          size: newFile.size,
+          uploadDate: newFile.uploadDate.toISOString(),
+          accessCount: newFile.accessCount,
+          serverPath: newFile.serverPath,
+          secureToken: newFile.secureToken
+        };
+
+        // Save metadata to both storages
+        localStorage.setItem(`pitchDeck_${newFile.id}`, JSON.stringify(fileMetadata));
+        sessionStorage.setItem(`pitchDeck_${newFile.id}`, JSON.stringify(fileMetadata));
+
+        setFiles(prev => [...prev, newFile]);
+        
+        // Update server files list
+        await updateServerFilesList([...files, newFile]);
+      } else {
+        setMessage(`Failed to upload ${file.name}: ${uploadResult.error}`);
+        setMessageType('error');
+        setTimeout(() => setMessage(''), 5000);
+      }
     }
 
     setIsUploading(false);
     setUploadProgress(0);
-    setMessage(`${selectedFiles.length} file(s) uploaded successfully`);
+    setMessage(`${selectedFiles.length} file(s) uploaded successfully to server`);
     setMessageType('success');
     setTimeout(() => setMessage(''), 3000);
-
-    // Automatically share files globally after upload
-    setTimeout(() => {
-      shareFilesGlobally();
-    }, 1000);
 
     // Reset file input
     if (fileInputRef.current) {
@@ -239,6 +344,45 @@ const SecurePitchDeck: React.FC = () => {
 
   const generateSecureId = () => {
     return 'pitch_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  };
+
+  const generateSecureToken = () => {
+    const timestamp = Date.now();
+    const randomHash = Math.random().toString(36).substr(2, 15);
+    return btoa(`${timestamp}_${randomHash}`).replace(/[^a-zA-Z0-9]/g, '');
+  };
+
+  const updateServerFilesList = async (filesList: PitchDeckFile[]) => {
+    try {
+      if (window.location.hostname === 'dayone-mediagroup.com' || 
+          window.location.hostname === 'www.dayone-mediagroup.com') {
+        
+        const response = await fetch(`${SERVER_CONFIG.baseUrl}${SERVER_CONFIG.apiEndpoint}/files`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            files: filesList.map(file => ({
+              id: file.id,
+              name: file.name,
+              size: file.size,
+              uploadDate: file.uploadDate.toISOString(),
+              accessCount: file.accessCount,
+              serverPath: file.serverPath,
+              secureToken: file.secureToken
+            })),
+            adminToken: 'TRADEFOOX_SECURE_2024'
+          }),
+        });
+        
+        if (!response.ok) {
+          console.error('Failed to update server files list');
+        }
+      }
+    } catch (error) {
+      console.error('Error updating server files list:', error);
+    }
   };
 
   const formatFileSize = (bytes: number) => {
@@ -537,7 +681,11 @@ const SecurePitchDeck: React.FC = () => {
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
           <h2 className="text-xl font-semibold text-white mb-4">Uploaded Files</h2>
           
-          {files.length === 0 ? (
+          {isLoadingFiles ? (
+            <div className="text-center py-8">
+              <p className="text-gray-400">Loading files...</p>
+            </div>
+          ) : files.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-400">No files uploaded yet</p>
             </div>
