@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -13,8 +13,46 @@ import SelectInvestors from './components/SelectInvestors';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import CookieConsent from './components/CookieConsent';
+import SecureAccess from './components/SecureAccess';
 
 function App() {
+  const [currentRoute, setCurrentRoute] = useState<'main' | 'secure'>('main');
+
+  useEffect(() => {
+    // Check if we're on a secure route
+    const path = window.location.pathname;
+    console.log('Current path:', path);
+    
+    if (path.includes('/admin') || path.includes('/pitch-deck-access/')) {
+      console.log('Setting route to secure');
+      setCurrentRoute('secure');
+    } else {
+      console.log('Setting route to main');
+      setCurrentRoute('main');
+    }
+  }, []);
+
+  // Handle route changes
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      
+      if (path.includes('/admin') || path.includes('/pitch-deck-access/')) {
+        setCurrentRoute('secure');
+      } else {
+        setCurrentRoute('main');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // If we're on a secure route, show the secure access component
+  if (currentRoute === 'secure') {
+    return <SecureAccess />;
+  }
+
   return (
     <div className="min-h-screen bg-white">
       <Helmet>
