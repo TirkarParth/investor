@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Download, AlertTriangle, CheckCircle, FileText } from 'lucide-react';
 
 interface SecureFileAccessProps {
@@ -12,15 +12,15 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
   const [error, setError] = useState<string | null>(null);
   const [downloadStarted, setDownloadStarted] = useState(false);
 
-  useEffect(() => {
-    // Validate the secure token and retrieve file data
-    validateAndLoadFile();
-  }, [fileId, secureToken]);
-
-  const validateAndLoadFile = () => {
+  const validateAndLoadFile = useCallback(() => {
     try {
-      // Check if the file exists in localStorage
-      const storedFileData = localStorage.getItem(`pitchDeck_${fileId}`);
+      // Check if the file exists in either localStorage or sessionStorage
+      let storedFileData = localStorage.getItem(`pitchDeck_${fileId}`);
+      
+      if (!storedFileData) {
+        // Try sessionStorage as fallback
+        storedFileData = sessionStorage.getItem(`pitchDeck_${fileId}`);
+      }
       
       if (!storedFileData) {
         setError('File not found or access denied');
@@ -45,7 +45,12 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
       setError('Error loading file data');
       setIsLoading(false);
     }
-  };
+  }, [fileId, secureToken]);
+
+  useEffect(() => {
+    // Validate the secure token and retrieve file data
+    validateAndLoadFile();
+  }, [validateAndLoadFile]);
 
   const isValidToken = (token: string, fileId: string): boolean => {
     // Basic token validation
@@ -93,23 +98,29 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
 
   const updateAccessCount = () => {
     try {
-      // Get the current files list
-      const savedFiles = localStorage.getItem('pitchDeckFiles');
-      if (savedFiles) {
-        const files = JSON.parse(savedFiles);
-        const updatedFiles = files.map((file: any) => 
-          file.id === fileId 
-            ? { 
-                ...file, 
-                accessCount: (file.accessCount || 0) + 1, 
-                lastAccessed: new Date().toISOString() 
-              }
-            : file
-        );
-        
-        // Save updated files list
-        localStorage.setItem('pitchDeckFiles', JSON.stringify(updatedFiles));
-      }
+      // Update access count in both localStorage and sessionStorage
+      const updateStorage = (storage: Storage) => {
+        const savedFiles = storage.getItem('pitchDeckFiles');
+        if (savedFiles) {
+          const files = JSON.parse(savedFiles);
+          const updatedFiles = files.map((file: any) => 
+            file.id === fileId 
+              ? { 
+                  ...file, 
+                  accessCount: (file.accessCount || 0) + 1, 
+                  lastAccessed: new Date().toISOString() 
+                }
+              : file
+          );
+          
+          // Save updated files list
+          storage.setItem('pitchDeckFiles', JSON.stringify(updatedFiles));
+        }
+      };
+
+      // Update both storages
+      updateStorage(localStorage);
+      updateStorage(sessionStorage);
     } catch (err) {
       console.error('Error updating access count:', err);
     }

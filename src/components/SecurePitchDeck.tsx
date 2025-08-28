@@ -23,21 +23,61 @@ const SecurePitchDeck: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const adminPasswordRef = useRef<HTMLInputElement>(null);
 
-  // Load files from localStorage on component mount
+  // Load files from shared storage on component mount
   useEffect(() => {
-    const savedFiles = localStorage.getItem('pitchDeckFiles');
-    if (savedFiles) {
+    const loadFiles = () => {
       try {
-        setFiles(JSON.parse(savedFiles));
+        // Try to get files from shared storage (sessionStorage for same domain)
+        const savedFiles = sessionStorage.getItem('pitchDeckFiles');
+        if (savedFiles) {
+          setFiles(JSON.parse(savedFiles));
+        }
+        
+        // Also check localStorage as fallback
+        const localFiles = localStorage.getItem('pitchDeckFiles');
+        if (localFiles) {
+          const parsedLocalFiles = JSON.parse(localFiles);
+          // Merge with session storage files
+          setFiles(prev => {
+            const merged = [...prev];
+            parsedLocalFiles.forEach((localFile: any) => {
+              if (!merged.find(f => f.id === localFile.id)) {
+                merged.push(localFile);
+              }
+            });
+            return merged;
+          });
+        }
       } catch (error) {
         console.error('Error loading saved files:', error);
       }
-    }
+    };
+
+    loadFiles();
+    
+    // Listen for storage changes from other tabs/windows
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'pitchDeckFiles' && e.newValue) {
+        try {
+          setFiles(JSON.parse(e.newValue));
+        } catch (error) {
+          console.error('Error parsing storage change:', error);
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
-  // Save files to localStorage whenever files change
+  // Save files to both localStorage and sessionStorage for persistence
   useEffect(() => {
-    localStorage.setItem('pitchDeckFiles', JSON.stringify(files));
+    if (files.length > 0) {
+      // Save to localStorage for persistence
+      localStorage.setItem('pitchDeckFiles', JSON.stringify(files));
+      // Save to sessionStorage for sharing across tabs/windows
+      sessionStorage.setItem('pitchDeckFiles', JSON.stringify(files));
+    }
   }, [files]);
 
   // Check if admin password is correct
@@ -93,13 +133,18 @@ const SecurePitchDeck: React.FC = () => {
         accessCount: 0
       };
 
-      // Store file data (in production, this would upload to a server)
+      // Store file data in both localStorage and sessionStorage for sharing
       const fileData = await file.arrayBuffer();
-      localStorage.setItem(`pitchDeck_${newFile.id}`, JSON.stringify({
+      const fileDataString = JSON.stringify({
         name: file.name,
         data: Array.from(new Uint8Array(fileData)),
         type: file.type
-      }));
+      });
+      
+      // Save to localStorage for persistence
+      localStorage.setItem(`pitchDeck_${newFile.id}`, fileDataString);
+      // Save to sessionStorage for sharing across tabs/windows
+      sessionStorage.setItem(`pitchDeck_${newFile.id}`, fileDataString);
 
       setFiles(prev => [...prev, newFile]);
     }
@@ -109,6 +154,11 @@ const SecurePitchDeck: React.FC = () => {
     setMessage(`${selectedFiles.length} file(s) uploaded successfully`);
     setMessageType('success');
     setTimeout(() => setMessage(''), 3000);
+
+    // Automatically share files globally after upload
+    setTimeout(() => {
+      shareFilesGlobally();
+    }, 1000);
 
     // Reset file input
     if (fileInputRef.current) {
@@ -153,8 +203,9 @@ const SecurePitchDeck: React.FC = () => {
 
   const handleFileDelete = (fileId: string) => {
     if (window.confirm('Are you sure you want to delete this file?')) {
-      // Remove file data
+      // Remove file data from both storages
       localStorage.removeItem(`pitchDeck_${fileId}`);
+      sessionStorage.removeItem(`pitchDeck_${fileId}`);
       
       // Remove from files list
       setFiles(prev => prev.filter(file => file.id !== fileId));
@@ -199,14 +250,7 @@ const SecurePitchDeck: React.FC = () => {
     return baseUrl + securePath;
   };
 
-  const generateSecureToken = (fileId: string) => {
-    // Generate a complex, non-guessable token
-    const timestamp = Date.now();
-    const randomHash = Math.random().toString(36).substr(2, 15);
-    const secureToken = btoa(`${fileId}_${timestamp}_${randomHash}`).replace(/[^a-zA-Z0-9]/g, '');
-    
-    return secureToken;
-  };
+
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
@@ -219,6 +263,95 @@ const SecurePitchDeck: React.FC = () => {
       setTimeout(() => setMessage(''), 3000);
     });
   };
+
+  // Function to share files across all users on the same domain
+  const shareFilesGlobally = () => {
+    try {
+      // Create a global file sharing mechanism
+      const globalFileKey = 'TRADEFOOX_GLOBAL_FILES';
+      
+      // Get existing global files
+      let globalFiles: PitchDeckFile[] = [];
+      try {
+        const existingGlobal = localStorage.getItem(globalFileKey);
+        if (existingGlobal) {
+          globalFiles = JSON.parse(existingGlobal);
+        }
+      } catch (error) {
+        console.error('Error reading global files:', error);
+      }
+      
+      // Add current files to global list
+      files.forEach(file => {
+        const existingIndex = globalFiles.findIndex((f: PitchDeckFile) => f.id === file.id);
+        if (existingIndex >= 0) {
+          globalFiles[existingIndex] = file;
+        } else {
+          globalFiles.push(file);
+        }
+      });
+      
+      // Save to global storage
+      localStorage.setItem(globalFileKey, JSON.stringify(globalFiles));
+      
+      // Also save to sessionStorage for immediate sharing
+      sessionStorage.setItem(globalFileKey, JSON.stringify(globalFiles));
+      
+      console.log('Files shared globally:', globalFiles.length);
+      setMessage('Files shared globally with all users');
+      setMessageType('success');
+      setTimeout(() => setMessage(''), 3000);
+    } catch (error) {
+      console.error('Error sharing files globally:', error);
+      setMessage('Error sharing files globally');
+      setMessageType('error');
+      setTimeout(() => setMessage(''), 3000);
+    }
+  };
+
+  // Load global files on component mount
+  useEffect(() => {
+    const loadGlobalFiles = () => {
+      try {
+        const globalFileKey = 'TRADEFOOX_GLOBAL_FILES';
+        
+        // Try to get global files from both storages
+        let globalFiles: PitchDeckFile[] = [];
+        
+        const localGlobal = localStorage.getItem(globalFileKey);
+        if (localGlobal) {
+          globalFiles = JSON.parse(localGlobal);
+        }
+        
+        const sessionGlobal = sessionStorage.getItem(globalFileKey);
+        if (sessionGlobal) {
+          const sessionFiles = JSON.parse(sessionGlobal);
+          // Merge with local files
+          globalFiles = [...globalFiles, ...sessionFiles];
+          // Remove duplicates
+          globalFiles = globalFiles.filter((file: PitchDeckFile, index: number, self: PitchDeckFile[]) => 
+            index === self.findIndex((f: PitchDeckFile) => f.id === file.id)
+          );
+        }
+        
+        if (globalFiles.length > 0) {
+          setFiles(prev => {
+            const merged = [...prev];
+            globalFiles.forEach((globalFile: PitchDeckFile) => {
+              if (!merged.find(f => f.id === globalFile.id)) {
+                merged.push(globalFile);
+              }
+            });
+            return merged;
+          });
+        }
+      } catch (error) {
+        console.error('Error loading global files:', error);
+      }
+    };
+
+    loadGlobalFiles();
+  }, []);
 
   if (!isAdmin) {
     return (
@@ -303,7 +436,18 @@ const SecurePitchDeck: React.FC = () => {
 
         {/* Upload Section */}
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6 border border-white/20">
-          <h2 className="text-xl font-semibold text-white mb-4">Upload New Files</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-white">Upload New Files</h2>
+            {files.length > 0 && (
+              <button
+                onClick={shareFilesGlobally}
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2"
+                title="Share all files globally with other users"
+              >
+                <span>🌐 Share Globally</span>
+              </button>
+            )}
+          </div>
           
           <div className="border-2 border-dashed border-white/30 rounded-lg p-8 text-center">
             <Upload className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
@@ -368,7 +512,6 @@ const SecurePitchDeck: React.FC = () => {
                     <div className="flex items-center space-x-2">
                                              <button
                          onClick={() => {
-                           const secureToken = generateSecureToken(file.id);
                            const secureLink = generateSecureLink(file.id);
                            copyToClipboard(secureLink);
                          }}
