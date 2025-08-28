@@ -1,24 +1,46 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Download, AlertTriangle, CheckCircle, FileText } from 'lucide-react';
+import { Download, AlertTriangle, CheckCircle, FileText, Server } from 'lucide-react';
 
 interface SecureFileAccessProps {
   fileId: string;
   secureToken: string;
 }
 
+interface FileData {
+  name: string;
+  data: number[];
+  type: string;
+  serverPath?: string;
+}
+
 const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken }) => {
-  const [fileData, setFileData] = useState<any>(null);
+  const [fileData, setFileData] = useState<FileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [downloadStarted, setDownloadStarted] = useState(false);
 
-  const validateAndLoadFile = useCallback(() => {
+  // Server configuration
+  const SERVER_CONFIG = {
+    baseUrl: 'https://dayone-mediagroup.com',
+    apiEndpoint: '/api/pitch-deck',
+    downloadEndpoint: '/api/download'
+  };
+
+  const validateAndLoadFile = useCallback(async () => {
     try {
-      // Check if the file exists in either localStorage or sessionStorage
+      // First try to get file from server
+      const serverFileData = await fetchFileFromServer(fileId, secureToken);
+      
+      if (serverFileData) {
+        setFileData(serverFileData);
+        setIsLoading(false);
+        return;
+      }
+
+      // Fallback to local storage if server is not available
       let storedFileData = localStorage.getItem(`pitchDeck_${fileId}`);
       
       if (!storedFileData) {
-        // Try sessionStorage as fallback
         storedFileData = sessionStorage.getItem(`pitchDeck_${fileId}`);
       }
       
@@ -32,7 +54,6 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
       const parsedData = JSON.parse(storedFileData);
       
       // Basic validation of the secure token
-      // In production, this would validate against a server-side token
       if (!isValidToken(secureToken, fileId)) {
         setError('Invalid or expired access token');
         setIsLoading(false);
@@ -46,6 +67,40 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
       setIsLoading(false);
     }
   }, [fileId, secureToken]);
+
+  const fetchFileFromServer = async (fileId: string, secureToken: string): Promise<FileData | null> => {
+    try {
+      // Check if we're in a deployed environment
+      if (window.location.hostname === 'dayone-mediagroup.com' || 
+          window.location.hostname === 'www.dayone-mediagroup.com') {
+        
+        // Try to fetch file from server
+        const response = await fetch(`${SERVER_CONFIG.baseUrl}${SERVER_CONFIG.downloadEndpoint}/${fileId}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${secureToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        if (response.ok) {
+          const serverFileData = await response.json();
+          return {
+            name: serverFileData.name,
+            data: serverFileData.data,
+            type: serverFileData.type,
+            serverPath: serverFileData.serverPath
+          };
+        }
+      }
+      
+      // Return null if server is not available
+      return null;
+    } catch (error) {
+      console.error('Error fetching file from server:', error);
+      return null;
+    }
+  };
 
   useEffect(() => {
     // Validate the secure token and retrieve file data
@@ -67,7 +122,18 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
     try {
       setDownloadStarted(true);
       
-      // Create blob from file data
+      // Try to download from server first
+      if (fileData.serverPath && window.location.hostname === 'dayone-mediagroup.com') {
+        const downloadSuccess = await downloadFromServer(fileId, secureToken, fileData.name);
+        if (downloadSuccess) {
+          // Update access count
+          updateAccessCount();
+          setTimeout(() => setDownloadStarted(false), 2000);
+          return;
+        }
+      }
+      
+      // Fallback to local download
       const blob = new Blob([new Uint8Array(fileData.data)], { type: fileData.type });
       const url = URL.createObjectURL(blob);
       
@@ -82,7 +148,7 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
       // Clean up
       URL.revokeObjectURL(url);
       
-      // Update access count in the main files list
+      // Update access count
       updateAccessCount();
       
       // Show success message
@@ -93,6 +159,37 @@ const SecureFileAccess: React.FC<SecureFileAccessProps> = ({ fileId, secureToken
     } catch (err) {
       setError('Error downloading file');
       setDownloadStarted(false);
+    }
+  };
+
+  const downloadFromServer = async (fileId: string, secureToken: string, fileName: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`${SERVER_CONFIG.baseUrl}${SERVER_CONFIG.downloadEndpoint}/${fileId}/download`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${secureToken}`,
+        },
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        URL.revokeObjectURL(url);
+        return true;
+      }
+      
+      return false;
+    } catch (error) {
+      console.error('Error downloading from server:', error);
+      return false;
     }
   };
 
