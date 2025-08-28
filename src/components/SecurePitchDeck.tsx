@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Upload, Download, Trash2, Eye, EyeOff, Lock, Unlock, Server } from 'lucide-react';
+import { Download, Trash2, Eye, EyeOff, Lock, Unlock, Server, Link, Copy } from 'lucide-react';
 
 interface PitchDeckFile {
   id: string;
@@ -10,6 +10,7 @@ interface PitchDeckFile {
   lastAccessed?: Date;
   serverPath?: string;
   secureToken?: string;
+  fileUrl?: string; // Direct file URL for already uploaded files
 }
 
 const SecurePitchDeck: React.FC = () => {
@@ -17,20 +18,18 @@ const SecurePitchDeck: React.FC = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [isUploading, setIsUploading] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error' | 'info'>('info');
   const [isLoadingFiles, setIsLoadingFiles] = useState(true);
+  const [newFileUrl, setNewFileUrl] = useState('');
+  const [newFileName, setNewFileName] = useState('');
   
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const adminPasswordRef = useRef<HTMLInputElement>(null);
 
   // Server configuration
   const SERVER_CONFIG = {
     baseUrl: 'https://dayone-mediagroup.com',
     apiEndpoint: '/api/pitch-deck',
-    uploadEndpoint: '/api/upload',
     filesEndpoint: '/api/files'
   };
 
@@ -147,51 +146,83 @@ const SecurePitchDeck: React.FC = () => {
     }
   };
 
-  const uploadFileToServer = async (file: File): Promise<{ success: boolean; fileId?: string; serverPath?: string; error?: string }> => {
+  const addExistingFile = () => {
+    if (!newFileUrl.trim() || !newFileName.trim()) {
+      setMessage('Please provide both file name and URL');
+      setMessageType('error');
+      setTimeout(() => setMessage(''), 3000);
+      return;
+    }
+
+    const newFile: PitchDeckFile = {
+      id: generateSecureId(),
+      name: newFileName.trim(),
+      size: 0, // Unknown size for external files
+      uploadDate: new Date(),
+      accessCount: 0,
+      fileUrl: newFileUrl.trim(),
+      secureToken: generateSecureToken()
+    };
+
+    // Add to files list
+    setFiles(prev => [...prev, newFile]);
+    
+    // Save to storage
+    const fileMetadata = {
+      id: newFile.id,
+      name: newFile.name,
+      size: newFile.size,
+      uploadDate: newFile.uploadDate.toISOString(),
+      accessCount: newFile.accessCount,
+      fileUrl: newFile.fileUrl,
+      secureToken: newFile.secureToken
+    };
+
+    localStorage.setItem(`pitchDeck_${newFile.id}`, JSON.stringify(fileMetadata));
+    sessionStorage.setItem(`pitchDeck_${newFile.id}`, JSON.stringify(fileMetadata));
+
+    // Update server files list
+    updateServerFilesList([...files, newFile]);
+
+    // Clear form
+    setNewFileUrl('');
+    setNewFileName('');
+    
+    setMessage('File added successfully');
+    setMessageType('success');
+    setTimeout(() => setMessage(''), 3000);
+  };
+
+  const updateServerFilesList = async (filesList: PitchDeckFile[]) => {
     try {
-      // For now, we'll simulate server upload
-      // In production, this would make actual HTTP requests to upload files
-      
       if (window.location.hostname === 'dayone-mediagroup.com' || 
           window.location.hostname === 'www.dayone-mediagroup.com') {
         
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('adminToken', 'TRADEFOOX_SECURE_2024'); // In production, use proper JWT
-        
-        const response = await fetch(`${SERVER_CONFIG.baseUrl}${SERVER_CONFIG.uploadEndpoint}`, {
+        const response = await fetch(`${SERVER_CONFIG.baseUrl}${SERVER_CONFIG.apiEndpoint}/files`, {
           method: 'POST',
-          body: formData,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            files: filesList.map(file => ({
+              id: file.id,
+              name: file.name,
+              size: file.size,
+              uploadDate: file.uploadDate.toISOString(),
+              accessCount: file.accessCount,
+              fileUrl: file.fileUrl,
+              secureToken: file.secureToken
+            })),
+            adminToken: 'TRADEFOOX_SECURE_2024'
+          }),
         });
         
-        if (response.ok) {
-          const result = await response.json();
-          return {
-            success: true,
-            fileId: result.fileId,
-            serverPath: result.serverPath
-          };
-        } else {
-          const errorData = await response.json();
-          return {
-            success: false,
-            error: errorData.message || 'Upload failed'
-          };
+        if (!response.ok) {
+          console.error('Failed to update server files list');
         }
       }
-      
-      // Fallback: simulate successful upload for development
-      return {
-        success: true,
-        fileId: generateSecureId(),
-        serverPath: `/uploads/${file.name}`
-      };
     } catch (error) {
-      console.error('Error uploading to server:', error);
-      return {
-        success: false,
-        error: 'Network error during upload'
-      };
+      console.error('Error updating server files list:', error);
     }
   };
 
@@ -223,92 +254,34 @@ const SecurePitchDeck: React.FC = () => {
     }
   };
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = event.target.files;
-    if (!selectedFiles || selectedFiles.length === 0) return;
-
-    setIsUploading(true);
-    setUploadProgress(0);
-
-    for (let i = 0; i < selectedFiles.length; i++) {
-      const file = selectedFiles[i];
-      
-      // Simulate upload progress
-      for (let progress = 0; progress <= 100; progress += 10) {
-        setUploadProgress(progress);
-        await new Promise(resolve => setTimeout(resolve, 50));
-      }
-
-      // Upload file to server
-      const uploadResult = await uploadFileToServer(file);
-      
-      if (uploadResult.success && uploadResult.fileId) {
-        // Create file object with server information
-        const newFile: PitchDeckFile = {
-          id: uploadResult.fileId,
-          name: file.name,
-          size: file.size,
-          uploadDate: new Date(),
-          accessCount: 0,
-          serverPath: uploadResult.serverPath,
-          secureToken: generateSecureToken()
-        };
-
-        // Store file metadata locally for quick access
-        const fileMetadata = {
-          id: newFile.id,
-          name: newFile.name,
-          size: newFile.size,
-          uploadDate: newFile.uploadDate.toISOString(),
-          accessCount: newFile.accessCount,
-          serverPath: newFile.serverPath,
-          secureToken: newFile.secureToken
-        };
-
-        // Save metadata to both storages
-        localStorage.setItem(`pitchDeck_${newFile.id}`, JSON.stringify(fileMetadata));
-        sessionStorage.setItem(`pitchDeck_${newFile.id}`, JSON.stringify(fileMetadata));
-
-        setFiles(prev => [...prev, newFile]);
-        
-        // Update server files list
-        await updateServerFilesList([...files, newFile]);
-      } else {
-        setMessage(`Failed to upload ${file.name}: ${uploadResult.error}`);
-        setMessageType('error');
-        setTimeout(() => setMessage(''), 5000);
-      }
-    }
-
-    setIsUploading(false);
-    setUploadProgress(0);
-    setMessage(`${selectedFiles.length} file(s) uploaded successfully to server`);
-    setMessageType('success');
-    setTimeout(() => setMessage(''), 3000);
-
-    // Reset file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
   const handleFileDownload = (fileId: string) => {
     const fileData = localStorage.getItem(`pitchDeck_${fileId}`);
     if (!fileData) return;
 
     try {
-      const { name, data, type } = JSON.parse(fileData);
-      const blob = new Blob([new Uint8Array(data)], { type });
-      const url = URL.createObjectURL(blob);
+      const { name, fileUrl } = JSON.parse(fileData);
       
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = name;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      URL.revokeObjectURL(url);
+      if (fileUrl) {
+        // For external files, open in new tab
+        window.open(fileUrl, '_blank');
+      } else {
+        // Fallback to local download if available
+        const localFileData = localStorage.getItem(`pitchDeck_${fileId}`);
+        if (localFileData) {
+          const { data, type } = JSON.parse(localFileData);
+          const blob = new Blob([new Uint8Array(data)], { type });
+          const url = URL.createObjectURL(blob);
+          
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = name;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          
+          URL.revokeObjectURL(url);
+        }
+      }
 
       // Update access count and last accessed
       setFiles(prev => prev.map(file => 
@@ -317,11 +290,11 @@ const SecurePitchDeck: React.FC = () => {
           : file
       ));
 
-      setMessage('File downloaded successfully');
+      setMessage('File accessed successfully');
       setMessageType('success');
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
-      setMessage('Error downloading file');
+      setMessage('Error accessing file');
       setMessageType('error');
       setTimeout(() => setMessage(''), 3000);
     }
@@ -352,41 +325,8 @@ const SecurePitchDeck: React.FC = () => {
     return btoa(`${timestamp}_${randomHash}`).replace(/[^a-zA-Z0-9]/g, '');
   };
 
-  const updateServerFilesList = async (filesList: PitchDeckFile[]) => {
-    try {
-      if (window.location.hostname === 'dayone-mediagroup.com' || 
-          window.location.hostname === 'www.dayone-mediagroup.com') {
-        
-        const response = await fetch(`${SERVER_CONFIG.baseUrl}${SERVER_CONFIG.apiEndpoint}/files`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            files: filesList.map(file => ({
-              id: file.id,
-              name: file.name,
-              size: file.size,
-              uploadDate: file.uploadDate.toISOString(),
-              accessCount: file.accessCount,
-              serverPath: file.serverPath,
-              secureToken: file.secureToken
-            })),
-            adminToken: 'TRADEFOOX_SECURE_2024'
-          }),
-        });
-        
-        if (!response.ok) {
-          console.error('Failed to update server files list');
-        }
-      }
-    } catch (error) {
-      console.error('Error updating server files list:', error);
-    }
-  };
-
   const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return 'Unknown size';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -436,8 +376,6 @@ const SecurePitchDeck: React.FC = () => {
     return baseUrl + securePath;
   };
 
-
-
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
       setMessage('Link copied to clipboard');
@@ -449,102 +387,6 @@ const SecurePitchDeck: React.FC = () => {
       setTimeout(() => setMessage(''), 3000);
     });
   };
-
-  // Function to share files across all users on the same domain
-  const shareFilesGlobally = () => {
-    try {
-      // Create a global file sharing mechanism
-      const globalFileKey = 'TRADEFOOX_GLOBAL_FILES';
-      
-      // Get existing global files
-      let globalFiles: PitchDeckFile[] = [];
-      try {
-        const existingGlobal = localStorage.getItem(globalFileKey);
-        if (existingGlobal) {
-          globalFiles = JSON.parse(existingGlobal);
-        }
-      } catch (error) {
-        console.error('Error reading global files:', error);
-      }
-      
-      // Add current files to global list
-      files.forEach(file => {
-        const existingIndex = globalFiles.findIndex((f: PitchDeckFile) => f.id === file.id);
-        if (existingIndex >= 0) {
-          globalFiles[existingIndex] = file;
-        } else {
-          globalFiles.push(file);
-        }
-      });
-      
-      // Save to global storage
-      localStorage.setItem(globalFileKey, JSON.stringify(globalFiles));
-      
-      // Also save to sessionStorage for immediate sharing
-      sessionStorage.setItem(globalFileKey, JSON.stringify(globalFiles));
-      
-      console.log('Files shared globally:', globalFiles.length);
-      setMessage('Files shared globally with all users');
-      setMessageType('success');
-      setTimeout(() => setMessage(''), 3000);
-    } catch (error) {
-      console.error('Error sharing files globally:', error);
-      setMessage('Error sharing files globally');
-      setMessageType('error');
-      setTimeout(() => setMessage(''), 3000);
-    }
-  };
-
-  // Load global files on component mount
-  useEffect(() => {
-    const loadGlobalFiles = () => {
-      try {
-        const globalFileKey = 'TRADEFOOX_GLOBAL_FILES';
-        
-        // Try to get global files from both storages
-        let globalFiles: PitchDeckFile[] = [];
-        
-        const localGlobal = localStorage.getItem(globalFileKey);
-        if (localGlobal) {
-          globalFiles = JSON.parse(localGlobal);
-        }
-        
-        const sessionGlobal = sessionStorage.getItem(globalFileKey);
-        if (sessionGlobal) {
-          const sessionFiles = JSON.parse(sessionGlobal);
-          // Merge with local files
-          globalFiles = [...globalFiles, ...sessionFiles];
-          // Remove duplicates
-          globalFiles = globalFiles.filter((file: PitchDeckFile, index: number, self: PitchDeckFile[]) => 
-            index === self.findIndex((f: PitchDeckFile) => f.id === file.id)
-          );
-        }
-        
-        if (globalFiles.length > 0) {
-          // Convert date strings back to Date objects
-          const globalFilesWithDates = globalFiles.map((file: any) => ({
-            ...file,
-            uploadDate: file.uploadDate ? new Date(file.uploadDate) : new Date(),
-            lastAccessed: file.lastAccessed ? new Date(file.lastAccessed) : undefined
-          }));
-          
-          setFiles(prev => {
-            const merged = [...prev];
-            globalFilesWithDates.forEach((globalFile: PitchDeckFile) => {
-              if (!merged.find(f => f.id === globalFile.id)) {
-                merged.push(globalFile);
-              }
-            });
-            return merged;
-          });
-        }
-      } catch (error) {
-        console.error('Error loading global files:', error);
-      }
-    };
-
-    loadGlobalFiles();
-  }, []);
 
   if (!isAdmin) {
     return (
@@ -606,7 +448,7 @@ const SecurePitchDeck: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-white mb-2">Pitch Deck Management</h1>
-              <p className="text-gray-300">Secure upload and access management for investor materials</p>
+              <p className="text-gray-300">Manage sharing links for already uploaded pitch deck files</p>
             </div>
             <div className="flex items-center space-x-2">
               <button
@@ -627,59 +469,50 @@ const SecurePitchDeck: React.FC = () => {
           </div>
         </div>
 
-        {/* Upload Section */}
+        {/* Add Existing File Section */}
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6 border border-white/20">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-white">Upload New Files</h2>
-            {files.length > 0 && (
-              <button
-                onClick={shareFilesGlobally}
-                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2"
-                title="Share all files globally with other users"
-              >
-                <span>🌐 Share Globally</span>
-              </button>
-            )}
+          <h2 className="text-xl font-semibold text-white mb-4">Add Existing File</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-gray-300 text-sm font-medium mb-2">File Name</label>
+              <input
+                type="text"
+                value={newFileName}
+                onChange={(e) => setNewFileName(e.target.value)}
+                placeholder="e.g., TRADEFOOX Series A Pitch Deck"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-300 text-sm font-medium mb-2">File URL</label>
+              <input
+                type="url"
+                value={newFileUrl}
+                onChange={(e) => setNewFileUrl(e.target.value)}
+                placeholder="https://example.com/file.pdf"
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent"
+              />
+            </div>
           </div>
           
-          <div className="border-2 border-dashed border-white/30 rounded-lg p-8 text-center">
-            <Upload className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
-            <p className="text-gray-300 mb-4">Drag and drop files here or click to browse</p>
-            
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              accept=".pdf,.ppt,.pptx,.doc,.docx"
-              onChange={handleFileUpload}
-              className="hidden"
-            />
-            
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading}
-              className="bg-yellow-400 hover:bg-yellow-500 disabled:bg-gray-500 text-gray-900 font-semibold py-3 px-6 rounded-lg transition-colors duration-200"
-            >
-              {isUploading ? 'Uploading...' : 'Select Files'}
-            </button>
-
-            {isUploading && (
-              <div className="mt-4">
-                <div className="w-full bg-gray-700 rounded-full h-2">
-                  <div 
-                    className="bg-yellow-400 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${uploadProgress}%` }}
-                  ></div>
-                </div>
-                <p className="text-gray-300 mt-2">{uploadProgress}%</p>
-              </div>
-            )}
-          </div>
+          <button
+            onClick={addExistingFile}
+            disabled={!newFileName.trim() || !newFileUrl.trim()}
+            className="bg-yellow-400 hover:bg-yellow-500 disabled:bg-gray-500 text-gray-900 font-semibold py-3 px-6 rounded-lg transition-colors duration-200 flex items-center space-x-2"
+          >
+            <Link className="w-5 h-5" />
+            <span>Add File</span>
+          </button>
+          
+          <p className="text-gray-400 text-sm mt-2">
+            Add files that are already uploaded elsewhere (Google Drive, Dropbox, etc.) to generate secure sharing links.
+          </p>
         </div>
 
         {/* Files List */}
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-          <h2 className="text-xl font-semibold text-white mb-4">Uploaded Files</h2>
+          <h2 className="text-xl font-semibold text-white mb-4">Managed Files</h2>
           
           {isLoadingFiles ? (
             <div className="text-center py-8">
@@ -687,7 +520,7 @@ const SecurePitchDeck: React.FC = () => {
             </div>
           ) : files.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-400">No files uploaded yet</p>
+              <p className="text-gray-400">No files added yet. Add your first file above.</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -698,34 +531,37 @@ const SecurePitchDeck: React.FC = () => {
                       <h3 className="text-white font-medium">{file.name}</h3>
                       <div className="flex items-center space-x-4 text-sm text-gray-400 mt-1">
                         <span>{formatFileSize(file.size)}</span>
-                        <span>Uploaded: {formatDate(file.uploadDate)}</span>
-                        <span>Downloads: {file.accessCount}</span>
+                        <span>Added: {formatDate(file.uploadDate)}</span>
+                        <span>Accesses: {file.accessCount}</span>
                         {file.lastAccessed && (
                           <span>Last: {formatDate(file.lastAccessed)}</span>
+                        )}
+                        {file.fileUrl && (
+                          <span className="text-blue-400">External File</span>
                         )}
                       </div>
                     </div>
                     
                     <div className="flex items-center space-x-2">
-                                             <button
-                         onClick={() => {
-                           const secureLink = generateSecureLink(file.id);
-                           copyToClipboard(secureLink);
-                         }}
-                         className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2"
-                         title="Copy secure link"
-                       >
-                         <Eye className="w-4 h-4" />
-                         <span>Copy Link</span>
-                       </button>
+                      <button
+                        onClick={() => {
+                          const secureLink = generateSecureLink(file.id);
+                          copyToClipboard(secureLink);
+                        }}
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2"
+                        title="Copy secure link"
+                      >
+                        <Copy className="w-4 h-4" />
+                        <span>Copy Link</span>
+                      </button>
                       
                       <button
                         onClick={() => handleFileDownload(file.id)}
                         className="bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2"
-                        title="Download file"
+                        title="Access file"
                       >
-                        <Download className="w-4 h-4" />
-                        <span>Download</span>
+                        <Eye className="w-4 h-4" />
+                        <span>Access</span>
                       </button>
                       
                       <button
