@@ -19,11 +19,16 @@ function App() {
   const [currentRoute, setCurrentRoute] = useState<'main' | 'secure'>('main');
 
   useEffect(() => {
-    // Check if we're on a secure route
-    const path = window.location.pathname;
-    console.log('Current path:', path);
-    
-    if (path.includes('/admin') || path.includes('/pitch-deck-access/')) {
+    // Support both pathname and hash-based routing for static hosting
+    const getRouteSegment = () => {
+      const hash = window.location.hash || '';
+      const path = window.location.pathname || '';
+      return hash.startsWith('#') ? hash.slice(1) : path;
+    };
+
+    const route = getRouteSegment();
+    console.log('Current route segment:', route);
+    if (route.includes('/admin') || route.includes('/pitch-deck-access/')) {
       console.log('Setting route to secure');
       setCurrentRoute('secure');
     } else {
@@ -35,9 +40,10 @@ function App() {
   // Handle route changes
   useEffect(() => {
     const handlePopState = () => {
-      const path = window.location.pathname;
-      
-      if (path.includes('/admin') || path.includes('/pitch-deck-access/')) {
+      const hash = window.location.hash || '';
+      const path = window.location.pathname || '';
+      const route = hash.startsWith('#') ? hash.slice(1) : path;
+      if (route.includes('/admin') || route.includes('/pitch-deck-access/')) {
         setCurrentRoute('secure');
       } else {
         setCurrentRoute('main');

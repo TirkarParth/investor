@@ -194,7 +194,7 @@ const SecurePitchDeck: React.FC = () => {
     const secureToken = btoa(`${fileId}_${timestamp}_${randomHash}`).replace(/[^a-zA-Z0-9]/g, '');
     
     const baseUrl = window.location.origin;
-    const securePath = `/pitch-deck-access/${secureToken}/${fileId}`;
+    const securePath = `/#/pitch-deck-access/${secureToken}/${fileId}`;
     
     return baseUrl + securePath;
   };

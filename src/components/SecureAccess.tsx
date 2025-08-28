@@ -7,9 +7,9 @@ const SecureAccess: React.FC = () => {
   const [routeParams, setRouteParams] = useState<{ fileId?: string; secureToken?: string }>({});
 
   useEffect(() => {
-    // Parse the current URL to determine the route
-    const path = window.location.pathname;
-    
+    // Parse the current URL (hash-first for static hosting)
+    const hash = window.location.hash || '';
+    const path = hash.startsWith('#') ? hash.slice(1) : window.location.pathname;
     if (path.includes('/pitch-deck-access/')) {
       // Extract parameters from secure file access URL
       const pathParts = path.split('/');
@@ -35,8 +35,8 @@ const SecureAccess: React.FC = () => {
   // Handle browser back/forward navigation
   useEffect(() => {
     const handlePopState = () => {
-      const path = window.location.pathname;
-      
+      const hash = window.location.hash || '';
+      const path = hash.startsWith('#') ? hash.slice(1) : window.location.pathname;
       if (path.includes('/pitch-deck-access/')) {
         const pathParts = path.split('/');
         if (pathParts.length >= 4) {
@@ -53,12 +53,17 @@ const SecureAccess: React.FC = () => {
     };
 
     window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
+    window.addEventListener('hashchange', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('hashchange', handlePopState);
+    };
   }, []);
 
   // Function to navigate to admin panel
   const navigateToAdmin = () => {
-    window.history.pushState({}, '', '/admin');
+    // Use hash to avoid server routing config
+    window.location.hash = '/admin';
     setCurrentRoute('admin');
     setRouteParams({});
   };
@@ -66,14 +71,14 @@ const SecureAccess: React.FC = () => {
   // Function to navigate to file access
   const navigateToFileAccess = (fileId: string, secureToken: string) => {
     const path = `/pitch-deck-access/${secureToken}/${fileId}`;
-    window.history.pushState({}, '', path);
+    window.location.hash = path;
     setCurrentRoute('file-access');
     setRouteParams({ fileId, secureToken });
   };
 
   // Function to navigate back to main site
   const navigateToMain = () => {
-    window.history.pushState({}, '', '/');
+    window.location.hash = '/';
     setCurrentRoute('admin');
     setRouteParams({});
   };

@@ -48,10 +48,9 @@
     </div>
 
     <script>
-        // Redirect to the React app with admin route
+        // Redirect to the React app with admin route (hash-based to work on static hosts)
         setTimeout(() => {
-            // Redirect to the admin route in the React app
-            window.location.href = '/admin';
+            window.location.href = '/#/admin';
         }, 1500);
     </script>
 </body>
