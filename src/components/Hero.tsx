@@ -298,8 +298,15 @@ const Hero: React.FC = () => {
       }
       setScrollProgress(newProgress);
 
-      // Map progress (0 → 100) to position (100vh → -100vh)
-      const newPosition = 100 - (newProgress / maxScroll) * 200;
+      // Map progress to position with clamping for first and last text
+      let newPosition = 100 - (newProgress / maxScroll) * 200;
+      if (currentVideoIndex === 0) {
+        // First text: clamp between 0 (middle) and -100 (top)
+        newPosition = Math.max(Math.min(newPosition, 0), -100);
+      } else if (currentVideoIndex === videos.length - 1) {
+        // Last text: clamp between 100 (bottom) and 0 (middle)
+        newPosition = Math.max(Math.min(newPosition, 100), 0);
+      }
       setTextPosition(newPosition);
 
       // Navigation logic at ends
