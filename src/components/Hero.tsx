@@ -322,7 +322,15 @@ const Hero: React.FC = () => {
         setScrollProgress(maxScroll);
         setTextPosition(-100);
       } else if (newProgress >= maxScroll && currentVideoIndex === videos.length - 1) {
+        // At last video, unlock section and scroll to next section
         setSectionUnlocked(true);
+        // Add a small delay to ensure smooth transition
+        setTimeout(() => {
+          const nextSection = sectionRef.current?.nextElementSibling;
+          if (nextSection) {
+            nextSection.scrollIntoView({ behavior: 'smooth' });
+          }
+        }, 100);
       }
 
       lastWheelTime.current = now;
@@ -440,8 +448,8 @@ const Hero: React.FC = () => {
           </div>
         </div>
 
-        {/* Dedicated Touch Overlay for Mobile Swipe Detection */}
-        {videoQuality === 'mobile' && !sectionUnlocked && (
+        {/* Dedicated Touch Overlay for Mobile Progressive Scrolling */}
+        {videoQuality === 'mobile' && (
           <div 
             className="absolute inset-0 z-30"
             style={{
@@ -451,39 +459,99 @@ const Hero: React.FC = () => {
             onTouchStart={(e) => {
               const touch = e.touches[0];
               touchStartY.current = touch.clientY;
-              touchEndY.current = touch.clientY; // Reset end position
+              touchEndY.current = touch.clientY;
+              
+              // Reset scroll state for new touch
+              if (scrollTimeout.current) {
+                clearTimeout(scrollTimeout.current);
+              }
+              isScrolling.current = true;
             }}
             onTouchMove={(e) => {
               e.preventDefault();
-              // Update end position during move for better accuracy
               const touch = e.touches[0];
-              touchEndY.current = touch.clientY;
+              const currentY = touch.clientY;
+              const touchDiff = touchStartY.current - currentY;
+              
+              // Calculate scroll progress based on touch movement
+              const maxTouchDistance = 100; // Reduced for more responsive feel
+              const scrollAmount = Math.abs(touchDiff);
+              const normalizedScroll = Math.min(scrollAmount / maxTouchDistance, 1);
+              
+              // Map touch movement to scroll progress (more responsive, less smooth)
+              let newProgress = scrollProgress;
+              if (touchDiff > 0) {
+                // Swiping up - increase progress (very responsive)
+                newProgress = Math.min(scrollProgress + (normalizedScroll * 3), 100);
+              } else {
+                // Swiping down - decrease progress (very responsive)
+                newProgress = Math.max(scrollProgress - (normalizedScroll * 3), 0);
+              }
+              
+              setScrollProgress(newProgress);
+              
+              // Update text position based on scroll progress
+              let newPosition = 100 - (newProgress / 100) * 200;
+              if (currentVideoIndex === 0) {
+                // First text: clamp between 0 (middle) and -100 (top)
+                newPosition = Math.max(Math.min(newPosition, 0), -100);
+              } else if (currentVideoIndex === videos.length - 1) {
+                // Last text: clamp between 100 (bottom) and 0 (middle)
+                newPosition = Math.max(Math.min(newPosition, 100), 0);
+              }
+              setTextPosition(newPosition);
+              
+              // Update touch end position for final calculation
+              touchEndY.current = currentY;
             }}
             onTouchEnd={(e) => {
               const touch = e.changedTouches[0];
-              touchEndY.current = touch.clientY;
-              const touchDiff = touchStartY.current - touchEndY.current;
-              const minSwipeDistance = 50;
+              const touchDiff = touchStartY.current - touch.clientY;
+              const minSwipeDistance = 0.2; // Very responsive threshold
               
-              console.log('Touch detected:', {
+              console.log('Touch scroll completed:', {
                 start: touchStartY.current,
-                end: touchEndY.current,
+                end: touch.clientY,
                 diff: touchDiff,
-                threshold: minSwipeDistance
+                finalProgress: scrollProgress,
+                currentVideo: currentVideoIndex,
+                sectionUnlocked
               });
               
-              // Handle video navigation based on swipe direction
-              if (Math.abs(touchDiff) >= minSwipeDistance) {
-                if (touchDiff > 0) {
-                  // Swipe up - go to next video
-                  console.log('Swipe UP detected - going to next video');
-                  handleVideoNavigation('next');
-                } else {
-                  // Swipe down - go to previous video
-                  console.log('Swipe DOWN detected - going to previous video');
-                  handleVideoNavigation('prev');
-                }
+              // Handle navigation based on final scroll progress
+              if (scrollProgress >= 100 && currentVideoIndex < videos.length - 1) {
+                // Progress reached 100% - go to next video
+                console.log('Progress 100% - going to next video');
+                handleVideoNavigation('next');
+                setScrollProgress(0);
+                setTextPosition(100);
+              } else if (scrollProgress <= 0 && currentVideoIndex > 0) {
+                // Progress reached 0% - go to previous video
+                console.log('Progress 0% - going to previous video');
+                handleVideoNavigation('prev');
+                setScrollProgress(100);
+                setTextPosition(-100);
+              } else if (scrollProgress >= 100 && currentVideoIndex === videos.length - 1) {
+                // At last video with 100% progress - unlock section
+                console.log('Last video at 100% - unlocking section for mobile');
+                setSectionUnlocked(true);
+                setScrollProgress(0);
+                setTextPosition(0);
+                
+                // Smooth scroll to next section
+                setTimeout(() => {
+                  const nextSection = sectionRef.current?.nextElementSibling;
+                  if (nextSection) {
+                    nextSection.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }, 100);
               }
+              
+              // Reset scrolling state
+              isScrolling.current = false;
+              scrollTimeout.current = setTimeout(() => {
+                isScrolling.current = false;
+              }, 150);
             }}
           />
         )}
@@ -496,7 +564,7 @@ const Hero: React.FC = () => {
           className="relative w-full h-full"
           style={{
             transform: `translateY(${textPosition}vh)`,
-            transition: isScrolling.current ? 'none' : 'transform 0.3s ease-out'
+            transition: isScrolling.current ? 'none' : 'transform 0.1s linear'
           }}
         >
           {/* Text positioned to be visible across the entire screen */}
@@ -513,6 +581,8 @@ const Hero: React.FC = () => {
                 <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-white/80 drop-shadow-2xl max-w-4xl mx-auto leading-relaxed">
                   {videoTexts[currentVideoIndex].description}
                 </p>
+                
+                
               </div>
             </div>
           </div>
