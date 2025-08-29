@@ -289,32 +289,28 @@ const Hero: React.FC = () => {
   const scrollAmount = Math.abs(event.deltaY);
   const maxScroll = 100; // Maximum scroll amount for full transition
 
+      // Unified scroll logic for up and down
+      let newProgress = scrollProgress;
       if (direction === 'down') {
-        // Scrolling down - move text from bottom (100) → top (-100)
-        const newProgress = Math.min(scrollProgress + (scrollAmount / 10), maxScroll);
-        setScrollProgress(newProgress);
+        newProgress = Math.min(scrollProgress + (scrollAmount / 10), maxScroll);
+      } else {
+        newProgress = Math.max(scrollProgress - (scrollAmount / 10), 0);
+      }
+      setScrollProgress(newProgress);
 
-        // Map progress (0 → 100) to position (100vh → -100vh)
-        const newPosition = 100 - (newProgress / maxScroll) * 200;
-        setTextPosition(newPosition);
+      // Map progress (0 → 100) to position (100vh → -100vh)
+      const newPosition = 100 - (newProgress / maxScroll) * 200;
+      setTextPosition(newPosition);
 
-        if (newProgress >= maxScroll && currentVideoIndex < videos.length - 1) {
-          handleVideoNavigation('next');
-        } else if (newProgress >= maxScroll && currentVideoIndex === videos.length - 1) {
-          setSectionUnlocked(true);
-        }
-      } else if (direction === 'up') {
-        // Scrolling up - move text from top (-100) → bottom (100)
-        const newProgress = Math.min(scrollProgress + (scrollAmount / 10), maxScroll);
-        setScrollProgress(newProgress);
-
-        // Map progress (0 → 100) to position (-100vh → 100vh)
-        const newPosition = -100 + (newProgress / maxScroll) * 200;
-        setTextPosition(newPosition);
-
-        if (newProgress >= maxScroll && currentVideoIndex > 0) {
-          handleVideoNavigation('prev');
-        }
+      // Navigation logic at ends
+      if (newProgress >= maxScroll && currentVideoIndex < videos.length - 1) {
+        handleVideoNavigation('next');
+        setScrollProgress(0);
+      } else if (newProgress <= 0 && currentVideoIndex > 0) {
+        handleVideoNavigation('prev');
+        setScrollProgress(maxScroll);
+      } else if (newProgress >= maxScroll && currentVideoIndex === videos.length - 1) {
+        setSectionUnlocked(true);
       }
 
       lastWheelTime.current = now;
