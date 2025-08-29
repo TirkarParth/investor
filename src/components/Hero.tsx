@@ -15,8 +15,8 @@ const getPosterImage = (videoIndex: number, quality: 'mobile' | 'desktop') => {
 const videoTexts = [
   {
     title: "Vision",
-    subtitle: "We are shaping the future of European apps.",
-    description: "Our vision is to revolutionize how Europeans connect, communicate, and grow through innovative technology solutions."
+    subtitle: "Invest in the European answer to super apps.",
+    description: "With strong investors by our side, TRADEFOOX will become the next global success story – standing shoulder to shoulder with TikTok, Amazon, and Meta. Together, we will inspire the world and set new standards for digital super apps."
   },
   {
     title: "Mission",
