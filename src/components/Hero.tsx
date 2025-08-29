@@ -295,8 +295,7 @@ const Hero: React.FC = () => {
         setScrollProgress(newProgress);
 
         // Map progress (0 → 100) to position (100vh → -100vh)
-        const newPosition = 100 - (newProgress / maxScroll) * 200; 
-        // 0 progress → 100vh, full progress → -100vh
+        const newPosition = 100 - (newProgress / maxScroll) * 200;
         setTextPosition(newPosition);
 
         if (newProgress >= maxScroll && currentVideoIndex < videos.length - 1) {
@@ -306,15 +305,14 @@ const Hero: React.FC = () => {
         }
       } else if (direction === 'up') {
         // Scrolling up - move text from top (-100) → bottom (100)
-        const newProgress = Math.max(scrollProgress - (scrollAmount / 10), 0);
+        const newProgress = Math.min(scrollProgress + (scrollAmount / 10), maxScroll);
         setScrollProgress(newProgress);
 
-        // Map progress (100 → 0) to position (-100vh → 100vh)
-        const newPosition = -100 + ((newProgress / maxScroll) * 200);
-        // Full progress → -100vh, reset progress → 100vh
+        // Map progress (0 → 100) to position (-100vh → 100vh)
+        const newPosition = -100 + (newProgress / maxScroll) * 200;
         setTextPosition(newPosition);
 
-        if (newProgress <= 0 && currentVideoIndex > 0) {
+        if (newProgress >= maxScroll && currentVideoIndex > 0) {
           handleVideoNavigation('prev');
         }
       }
