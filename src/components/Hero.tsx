@@ -36,7 +36,6 @@ const videoTexts = [
 ];
 
 const Hero: React.FC = () => {
-  const { t } = useTranslation();
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [videosLoaded, setVideosLoaded] = useState<boolean[]>(new Array(4).fill(false));
   const [allVideosLoaded, setAllVideosLoaded] = useState(false);

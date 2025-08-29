@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Download, AlertTriangle, CheckCircle, FileText, Server, ExternalLink, Eye } from 'lucide-react';
+import { Download, AlertTriangle, CheckCircle, FileText, ExternalLink, Eye } from 'lucide-react';
 
 interface SecureFileAccessProps {
   fileId: string;

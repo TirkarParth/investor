@@ -76,12 +76,7 @@ const SecureAccess: React.FC = () => {
     setRouteParams({ fileId, secureToken });
   };
 
-  // Function to navigate back to main site
-  const navigateToMain = () => {
-    window.location.hash = '/';
-    setCurrentRoute('admin');
-    setRouteParams({});
-  };
+
 
   // Expose navigation functions globally for the SecurePitchDeck component
   useEffect(() => {
@@ -92,7 +87,7 @@ const SecureAccess: React.FC = () => {
       delete (window as any).navigateToFileAccess;
       delete (window as any).navigateToAdmin;
     };
-  }, []);
+  }, [navigateToFileAccess, navigateToAdmin]);
 
   if (currentRoute === null) {
     // Loading state

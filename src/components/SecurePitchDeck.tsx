@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Download, Trash2, Eye, EyeOff, Lock, Unlock, Server, Link, Copy, FileText, FolderOpen } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { Trash2, Eye, EyeOff, Lock, Unlock, Link, Copy, FileText, FolderOpen } from 'lucide-react';
 
 interface PitchDeckFile {
   id: string;
@@ -46,7 +46,7 @@ const SecurePitchDeck: React.FC = () => {
     }
   }, [isAdmin]);
 
-  const loadFilesFromServer = async () => {
+  const loadFilesFromServer = useCallback(async () => {
     try {
       setIsLoadingFiles(true);
       
@@ -115,7 +115,7 @@ const SecurePitchDeck: React.FC = () => {
     } finally {
       setIsLoadingFiles(false);
     }
-  };
+  }, []);
 
   const fetchFilesFromServer = async (): Promise<PitchDeckFile[]> => {
     try {
