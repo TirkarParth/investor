@@ -283,36 +283,37 @@ const Hero: React.FC = () => {
         isScrolling.current = false;
       }, 150);
 
-      // Calculate scroll progress and text position
-      const scrollAmount = Math.abs(event.deltaY);
-      const maxScroll = 100; // Maximum scroll amount for full transition
-      
+
+
+  // Calculate scroll progress and text position
+  const scrollAmount = Math.abs(event.deltaY);
+  const maxScroll = 100; // Maximum scroll amount for full transition
+
       if (direction === 'down') {
-        // Scrolling down - move text up
+        // Scrolling down - move text from bottom (100) → top (-100)
         const newProgress = Math.min(scrollProgress + (scrollAmount / 10), maxScroll);
         setScrollProgress(newProgress);
-        
-        // Calculate text position (move up as scroll increases)
-        const newPosition = -(newProgress / maxScroll) * 100; // Move up to -100vh
+
+        // Map progress (0 → 100) to position (100vh → -100vh)
+        const newPosition = 100 - (newProgress / maxScroll) * 200; 
+        // 0 progress → 100vh, full progress → -100vh
         setTextPosition(newPosition);
-        
-        // Check if we should move to next video
+
         if (newProgress >= maxScroll && currentVideoIndex < videos.length - 1) {
           handleVideoNavigation('next');
         } else if (newProgress >= maxScroll && currentVideoIndex === videos.length - 1) {
-          // We're at the last video, unlock the section
           setSectionUnlocked(true);
         }
       } else if (direction === 'up') {
-        // Scrolling up - move text down
+        // Scrolling up - move text from top (-100) → bottom (100)
         const newProgress = Math.max(scrollProgress - (scrollAmount / 10), 0);
         setScrollProgress(newProgress);
-        
-        // Calculate text position (move down as scroll decreases)
-        const newPosition = -(newProgress / maxScroll) * 100; // Move down from -100vh to 0
+
+        // Map progress (100 → 0) to position (-100vh → 100vh)
+        const newPosition = -100 + ((newProgress / maxScroll) * 200);
+        // Full progress → -100vh, reset progress → 100vh
         setTextPosition(newPosition);
-        
-        // Check if we should move to previous video
+
         if (newProgress <= 0 && currentVideoIndex > 0) {
           handleVideoNavigation('prev');
         }
