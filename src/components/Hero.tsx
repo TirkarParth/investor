@@ -304,11 +304,15 @@ const Hero: React.FC = () => {
 
       // Navigation logic at ends
       if (newProgress >= maxScroll && currentVideoIndex < videos.length - 1) {
+        // Move to next video, reset progress and set text to start below (100vh)
         handleVideoNavigation('next');
         setScrollProgress(0);
+        setTextPosition(100);
       } else if (newProgress <= 0 && currentVideoIndex > 0) {
+        // Move to previous video, reset progress and set text to start above (-100vh)
         handleVideoNavigation('prev');
         setScrollProgress(maxScroll);
+        setTextPosition(-100);
       } else if (newProgress >= maxScroll && currentVideoIndex === videos.length - 1) {
         setSectionUnlocked(true);
       }
