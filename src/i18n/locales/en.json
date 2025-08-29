@@ -13,6 +13,26 @@
       "languages": "Languages",
       "users": "Active Users",
       "features": "Core Features"
+    },
+    "vision": {
+      "title": "Vision",
+      "subtitle": "Invest in the European answer to super apps.",
+      "description": "With strong investors by our side, TRADEFOOX will become the next global success story – standing shoulder to shoulder with TikTok, Amazon, and Meta. Together, we will inspire the world and set new standards for digital super apps."
+    },
+    "mission": {
+      "title": "Mission",
+      "subtitle": "We build the technologies needed to connect people and drive growth.",
+      "description": "We're committed to creating platforms that bring people together and enable sustainable business growth across Europe."
+    },
+    "whatWeDo": {
+      "title": "What We Do",
+      "subtitle": "Our innovations help people connect through chats, news feeds, and video feeds.",
+      "description": "We enable individuals and businesses to grow on a single platform, fostering meaningful connections and opportunities."
+    },
+    "ourApproach": {
+      "title": "Our Approach",
+      "subtitle": "We focus on technology, innovation, and meaningful connections.",
+      "description": "By combining cutting-edge technology with human-centered design, we create solutions that truly matter to our users."
     }
   },
   "vision": {

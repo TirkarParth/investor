@@ -12,30 +12,32 @@ const getPosterImage = (videoIndex: number, quality: 'mobile' | 'desktop') => {
 };
 
 // Video-specific text content - Meta-style messaging
-const videoTexts = [
-  {
-    title: "Vision",
-    subtitle: "Invest in the European answer to super apps.",
-    description: "With strong investors by our side, TRADEFOOX will become the next global success story – standing shoulder to shoulder with TikTok, Amazon, and Meta. Together, we will inspire the world and set new standards for digital super apps."
-  },
-  {
-    title: "Mission",
-    subtitle: "We build the technologies needed to connect people and drive growth.",
-    description: "We're committed to creating platforms that bring people together and enable sustainable business growth across Europe."
-  },
-  {
-    title: "What We Do",
-    subtitle: "Our innovations help people connect through chats, news feeds, and video feeds.",
-    description: "We enable individuals and businesses to grow on a single platform, fostering meaningful connections and opportunities."
-  },
-  {
-    title: "Our Approach",
-    subtitle: "We focus on technology, innovation, and meaningful connections.",
-    description: "By combining cutting-edge technology with human-centered design, we create solutions that truly matter to our users."
-  }
-];
-
 const Hero: React.FC = () => {
+  const { t } = useTranslation();
+
+  const videoTexts = [
+    {
+      title: t('hero.vision.title'),
+      subtitle: t('hero.vision.subtitle'),
+      description: t('hero.vision.description')
+    },
+    {
+      title: t('hero.mission.title'),
+      subtitle: t('hero.mission.subtitle'),
+      description: t('hero.mission.description')
+    },
+    {
+      title: t('hero.whatWeDo.title'),
+      subtitle: t('hero.whatWeDo.subtitle'),
+      description: t('hero.whatWeDo.description')
+    },
+    {
+      title: t('hero.ourApproach.title'),
+      subtitle: t('hero.ourApproach.subtitle'),
+      description: t('hero.ourApproach.description')
+    }
+  ];
+
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [videosLoaded, setVideosLoaded] = useState<boolean[]>(new Array(4).fill(false));
   const [allVideosLoaded, setAllVideosLoaded] = useState(false);
