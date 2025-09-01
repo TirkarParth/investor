@@ -481,11 +481,11 @@ const Hero: React.FC = () => {
               // Map touch movement to scroll progress (more responsive, less smooth)
               let newProgress = scrollProgress;
               if (touchDiff > 0) {
-                // Swiping up - increase progress (very responsive)
-                newProgress = Math.min(scrollProgress + (normalizedScroll * 3), 100);
+                // Swiping up - increase progress (slower for mobile)
+                newProgress = Math.min(scrollProgress + (normalizedScroll * 1.25), 100);
               } else {
-                // Swiping down - decrease progress (very responsive)
-                newProgress = Math.max(scrollProgress - (normalizedScroll * 3), 0);
+                // Swiping down - decrease progress (slower for mobile)
+                newProgress = Math.max(scrollProgress - (normalizedScroll * 1.25), 0);
               }
               
               setScrollProgress(newProgress);
@@ -507,7 +507,6 @@ const Hero: React.FC = () => {
             onTouchEnd={(e) => {
               const touch = e.changedTouches[0];
               const touchDiff = touchStartY.current - touch.clientY;
-              const minSwipeDistance = 0.2; // Very responsive threshold
               
               console.log('Touch scroll completed:', {
                 start: touchStartY.current,
