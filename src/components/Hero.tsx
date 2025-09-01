@@ -507,7 +507,6 @@ const Hero: React.FC = () => {
             onTouchEnd={(e) => {
               const touch = e.changedTouches[0];
               const touchDiff = touchStartY.current - touch.clientY;
-              const minSwipeDistance = 0.2; // Very responsive threshold
               
               console.log('Touch scroll completed:', {
                 start: touchStartY.current,
