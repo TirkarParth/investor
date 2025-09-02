@@ -482,10 +482,10 @@ const Hero: React.FC = () => {
               let newProgress = scrollProgress;
               if (touchDiff > 0) {
                 // Swiping up - increase progress (slower for mobile)
-                newProgress = Math.min(scrollProgress + (normalizedScroll * 2), 100);
+                newProgress = Math.min(scrollProgress + (normalizedScroll * 3), 100);
               } else {
                 // Swiping down - decrease progress (slower for mobile)
-                newProgress = Math.max(scrollProgress - (normalizedScroll * 2), 0);
+                newProgress = Math.max(scrollProgress - (normalizedScroll * 3), 0);
               }
               
               setScrollProgress(newProgress);
