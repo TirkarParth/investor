@@ -243,7 +243,7 @@ const Milestones: React.FC = () => {
         </div>
 
         {/* Scrolling gallery below the timeline */}
-        <div className="mt-12 space-y-6 w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-x-hidden">
+  <div className="mt-12 space-y-6 w-full max-w-[100vw] relative overflow-x-hidden">
           {/* Row 1: right to left */}
           <div className="relative overflow-hidden">
             {/* Mobile view: m1 - m3 */}
