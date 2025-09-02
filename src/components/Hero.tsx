@@ -45,9 +45,8 @@ const Hero: React.FC = () => {
   const [sectionUnlocked, setSectionUnlocked] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [videoQuality, setVideoQuality] = useState<'mobile' | 'desktop'>('desktop');
-  const [textAnimationKey, setTextAnimationKey] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [textPosition, setTextPosition] = useState(0);
+  const [activeVideoIndex, setActiveVideoIndex] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const lastWheelTime = useRef<number>(0);
   const touchStartY = useRef<number>(0);
@@ -129,9 +128,8 @@ const Hero: React.FC = () => {
       if (currentVideoIndex < videos.length - 1) {
         setIsTransitioning(true);
         setCurrentVideoIndex(prev => prev + 1);
-        setTextAnimationKey(prev => prev + 1); // Trigger text animation
-        setScrollProgress(0); // Reset scroll progress
-        setTextPosition(0); // Reset text position
+        setActiveVideoIndex(prev => Math.min(prev + 1, videos.length - 1));
+        setScrollProgress(0); // Reset scroll progress for next section
         
         // Reset transition state after animation completes
         setTimeout(() => {
@@ -145,9 +143,8 @@ const Hero: React.FC = () => {
       if (currentVideoIndex > 0) {
         setIsTransitioning(true);
         setCurrentVideoIndex(prev => prev - 1);
-        setTextAnimationKey(prev => prev + 1); // Trigger text animation
-        setScrollProgress(0); // Reset scroll progress
-        setTextPosition(0); // Reset text position
+        setActiveVideoIndex(prev => Math.max(prev - 1, 0));
+        setScrollProgress(100); // Set to full progress for previous section
         
         // Reset transition state after animation completes
         setTimeout(() => {
@@ -175,9 +172,7 @@ const Hero: React.FC = () => {
     setVideosLoaded(new Array(4).fill(false));
     setAllVideosLoaded(true); // Keep this true to avoid loading screen
     setCurrentVideoIndex(0);
-    setTextAnimationKey(prev => prev + 1); // Reset text animation
     setScrollProgress(0); // Reset scroll progress
-    setTextPosition(0); // Reset text position
   }, [videoQuality]);
 
   // Check if hero section is visible on the page
@@ -299,38 +294,37 @@ const Hero: React.FC = () => {
       }
       setScrollProgress(newProgress);
 
-      // Map progress to position with clamping for first and last text
-      let newPosition = 100 - (newProgress / maxScroll) * 200;
-      if (currentVideoIndex === 0) {
-        // First text: clamp between 0 (middle) and -100 (top)
-        newPosition = Math.max(Math.min(newPosition, 0), -100);
-      } else if (currentVideoIndex === videos.length - 1) {
-        // Last text: clamp between 100 (bottom) and 0 (middle)
-        newPosition = Math.max(Math.min(newPosition, 100), 0);
+      // Switch background video at mid-progress to match next text appearance
+      if (currentVideoIndex < videos.length - 1) {
+        const midReached = newProgress >= 50;
+        const target = midReached ? currentVideoIndex + 1 : currentVideoIndex;
+        if (activeVideoIndex !== target) {
+          setActiveVideoIndex(target);
+        }
+      } else {
+        // At last slide keep last video active
+        if (activeVideoIndex !== currentVideoIndex) {
+          setActiveVideoIndex(currentVideoIndex);
+        }
       }
-      setTextPosition(newPosition);
 
-      // Navigation logic at ends
+      // Navigation logic at segment ends (text changes only at 100%/0%)
       if (newProgress >= maxScroll && currentVideoIndex < videos.length - 1) {
-        // Move to next video, reset progress and set text to start below (100vh)
         handleVideoNavigation('next');
         setScrollProgress(0);
-        setTextPosition(100);
       } else if (newProgress <= 0 && currentVideoIndex > 0) {
-        // Move to previous video, reset progress and set text to start above (-100vh)
         handleVideoNavigation('prev');
-        setScrollProgress(maxScroll);
-        setTextPosition(-100);
-      } else if (newProgress >= maxScroll && currentVideoIndex === videos.length - 1) {
-        // At last video, unlock section and scroll to next section
-        setSectionUnlocked(true);
-        // Add a small delay to ensure smooth transition
-        setTimeout(() => {
-          const nextSection = sectionRef.current?.nextElementSibling;
-          if (nextSection) {
-            nextSection.scrollIntoView({ behavior: 'smooth' });
-          }
-        }, 100);
+      } else if (currentVideoIndex === videos.length - 1 && newProgress >= 50) {
+        // On last slide: when half progress reached, unlock and move to next section
+        if (!sectionUnlocked) {
+          setSectionUnlocked(true);
+          setTimeout(() => {
+            const nextSection = sectionRef.current?.nextElementSibling;
+            if (nextSection) {
+              nextSection.scrollIntoView({ behavior: 'smooth' });
+            }
+          }, 50);
+        }
       }
 
       lastWheelTime.current = now;
@@ -353,7 +347,7 @@ const Hero: React.FC = () => {
         clearTimeout(scrollTimeout.current);
       }
     };
-  }, [videos.length, allVideosLoaded, currentVideoIndex, isTransitioning, sectionUnlocked, isVisible, handleVideoNavigation, scrollProgress]);
+  }, [videos.length, allVideosLoaded, currentVideoIndex, isTransitioning, sectionUnlocked, isVisible, handleVideoNavigation, scrollProgress, activeVideoIndex]);
 
   // Cleanup effect to ensure scroll is unlocked on unmount
   useEffect(() => {
@@ -422,7 +416,7 @@ const Hero: React.FC = () => {
             onLoadedData={() => handleVideoLoad(index)}
             onError={(e) => handleVideoError(index, e)}
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-              index === currentVideoIndex ? 'opacity-100' : 'opacity-0'
+              index === activeVideoIndex ? 'opacity-100' : 'opacity-0'
             }`}
             poster={getPosterImage(index, videoQuality)}
           >
@@ -437,7 +431,7 @@ const Hero: React.FC = () => {
             {videos.map((_, index) => (
               <button
                 key={index}
-                onClick={() => setCurrentVideoIndex(index)}
+                onClick={() => { setCurrentVideoIndex(index); setActiveVideoIndex(index); setScrollProgress(0); }}
                 className={`w-3 h-3 rounded-full transition-all duration-300 ${
                   index === currentVideoIndex 
                     ? 'bg-yellow-300 scale-125' : 'bg-white/50 hover:bg-white/75'
@@ -489,17 +483,19 @@ const Hero: React.FC = () => {
               }
               
               setScrollProgress(newProgress);
-              
-              // Update text position based on scroll progress
-              let newPosition = 100 - (newProgress / 100) * 200;
-              if (currentVideoIndex === 0) {
-                // First text: clamp between 0 (middle) and -100 (top)
-                newPosition = Math.max(Math.min(newPosition, 0), -100);
-              } else if (currentVideoIndex === videos.length - 1) {
-                // Last text: clamp between 100 (bottom) and 0 (middle)
-                newPosition = Math.max(Math.min(newPosition, 100), 0);
+
+              // Switch background video at mid-progress to match next text appearance
+              if (currentVideoIndex < videos.length - 1) {
+                const midReached = newProgress >= 50;
+                const target = midReached ? currentVideoIndex + 1 : currentVideoIndex;
+                if (activeVideoIndex !== target) {
+                  setActiveVideoIndex(target);
+                }
+              } else {
+                if (activeVideoIndex !== currentVideoIndex) {
+                  setActiveVideoIndex(currentVideoIndex);
+                }
               }
-              setTextPosition(newPosition);
               
               // Update touch end position for final calculation
               touchEndY.current = currentY;
@@ -517,33 +513,25 @@ const Hero: React.FC = () => {
                 sectionUnlocked
               });
               
-              // Handle navigation based on final scroll progress
+              // Handle navigation based on final scroll progress (text changes only at 100%/0%)
               if (scrollProgress >= 100 && currentVideoIndex < videos.length - 1) {
-                // Progress reached 100% - go to next video
                 console.log('Progress 100% - going to next video');
                 handleVideoNavigation('next');
                 setScrollProgress(0);
-                setTextPosition(100);
               } else if (scrollProgress <= 0 && currentVideoIndex > 0) {
-                // Progress reached 0% - go to previous video
                 console.log('Progress 0% - going to previous video');
                 handleVideoNavigation('prev');
-                setScrollProgress(100);
-                setTextPosition(-100);
-              } else if (scrollProgress >= 100 && currentVideoIndex === videos.length - 1) {
-                // At last video with 100% progress - unlock section
-                console.log('Last video at 100% - unlocking section for mobile');
+              } else if (currentVideoIndex === videos.length - 1 && scrollProgress >= 25) {
+                // On last slide: unlock section at half progress and move to next
+                console.log('Last video at 50% - unlocking section for mobile');
                 setSectionUnlocked(true);
                 setScrollProgress(0);
-                setTextPosition(0);
-                
-                // Smooth scroll to next section
                 setTimeout(() => {
                   const nextSection = sectionRef.current?.nextElementSibling;
                   if (nextSection) {
                     nextSection.scrollIntoView({ behavior: 'smooth' });
                   }
-                }, 100);
+                }, 50);
               }
               
               // Reset scrolling state
@@ -556,35 +544,41 @@ const Hero: React.FC = () => {
         )}
       </div>
 
-      {/* Content - Scroll-responsive text overlay that spans entire screen */}
+      {/* Content - Single continuous scroll text overlay */}
       <div className="absolute inset-0 z-10 pointer-events-none">
-        {/* Text container that spans the entire screen height */}
+        {/* Single continuous text container */}
         <div 
-          className="relative w-full h-full"
+          className="relative w-full"
           style={{
-            transform: `translateY(${textPosition}vh)`,
+            height: `${videos.length * 100}vh`,
+            transform: `translateY(-${currentVideoIndex * 100 + (currentVideoIndex === videos.length - 1 ? Math.min(scrollProgress, 3) : scrollProgress)}vh)`,
             transition: isScrolling.current ? 'none' : 'transform 0.1s linear'
           }}
         >
-          {/* Text positioned to be visible across the entire screen */}
-          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center px-4">
-            <div className="text-center max-w-5xl mx-auto w-full">
-              {/* Dynamic Video-Specific Text */}
-              <div key={textAnimationKey} className="overflow-hidden">
-                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 sm:mb-8 text-white drop-shadow-2xl leading-tight">
-                  {videoTexts[currentVideoIndex].title}
-                </h2>
-                <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-medium mb-6 sm:mb-8 text-white/90 drop-shadow-2xl max-w-4xl mx-auto leading-relaxed">
-                  {videoTexts[currentVideoIndex].subtitle}
-                </p>
-                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-white/80 drop-shadow-2xl max-w-4xl mx-auto leading-relaxed">
-                  {videoTexts[currentVideoIndex].description}
-                </p>
-                
-                
+          {/* All text elements positioned sequentially */}
+          {videoTexts.map((text, index) => (
+            <div 
+              key={`text-${index}`}
+              className="absolute top-0 left-0 w-full h-screen flex items-center justify-center px-4"
+              style={{
+                transform: `translateY(${index * 100}vh)`
+              }}
+            >
+              <div className="text-center max-w-5xl mx-auto w-full">
+                <div className="overflow-hidden">
+                  <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold mb-6 sm:mb-8 text-white drop-shadow-2xl leading-tight">
+                    {text.title}
+                  </h2>
+                  <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-medium mb-6 sm:mb-8 text-white/90 drop-shadow-2xl max-w-4xl mx-auto leading-relaxed">
+                    {text.subtitle}
+                  </p>
+                  <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-white/80 drop-shadow-2xl max-w-4xl mx-auto leading-relaxed">
+                    {text.description}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>
