@@ -293,9 +293,9 @@ const Hero: React.FC = () => {
       // Unified scroll logic for up and down
       let newProgress = scrollProgress;
       if (direction === 'down') {
-        newProgress = Math.min(scrollProgress + (scrollAmount / 10), maxScroll);
+        newProgress = Math.min(scrollProgress + (scrollAmount / 5), maxScroll);
       } else {
-        newProgress = Math.max(scrollProgress - (scrollAmount / 10), 0);
+        newProgress = Math.max(scrollProgress - (scrollAmount / 5), 0);
       }
       setScrollProgress(newProgress);
 
@@ -482,10 +482,10 @@ const Hero: React.FC = () => {
               let newProgress = scrollProgress;
               if (touchDiff > 0) {
                 // Swiping up - increase progress (slower for mobile)
-                newProgress = Math.min(scrollProgress + (normalizedScroll * 1.25), 100);
+                newProgress = Math.min(scrollProgress + (normalizedScroll * 1.35), 100);
               } else {
                 // Swiping down - decrease progress (slower for mobile)
-                newProgress = Math.max(scrollProgress - (normalizedScroll * 1.25), 0);
+                newProgress = Math.max(scrollProgress - (normalizedScroll * 1.35), 0);
               }
               
               setScrollProgress(newProgress);
